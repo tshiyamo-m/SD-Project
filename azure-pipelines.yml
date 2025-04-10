@@ -12,12 +12,21 @@ steps:
 
 - script: |
     npm install
-    npm run build
-  displayName: 'Install dependencies and build'
+    echo "No build step for now"
+  displayName: 'Install dependencies'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/site.zip'
+    replaceExistingArchive: true
+  displayName: 'Zip source'
 
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'AzureConnection'
     appName: 'U-Collab'
-    package: '$(System.DefaultWorkingDirectory)/build'
+    package: '$(Build.ArtifactStagingDirectory)/site.zip'
   displayName: 'Deploy to Azure Web App'
