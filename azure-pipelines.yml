@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -18,7 +13,11 @@ steps:
 - script: |
     npm install
     npm run build
-  displayName: 'Build app'
+  displayName: 'Install dependencies and build'
 
-- script: echo "🎉 Hello from Azure DevOps"
-  displayName: 'Say Hello'
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'AzureConnection'
+    appName: 'U-Collab'
+    package: '$(System.DefaultWorkingDirectory)/build'
+  displayName: 'Deploy to Azure Web App'
