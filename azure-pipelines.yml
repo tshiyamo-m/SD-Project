@@ -1,8 +1,8 @@
 trigger:
-- main
+- main  # or your branch name
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: NodeTool@0
@@ -12,21 +12,28 @@ steps:
 
 - script: |
     npm install
-    echo "No build step for now"
-  displayName: 'Install dependencies'
+    npm run build
+  displayName: 'Install dependencies and build app'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'build'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy build files to staging'
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
     includeRootFolder: false
     archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/site.zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/build.zip'
     replaceExistingArchive: true
-  displayName: 'Zip source'
+  displayName: 'Archive build folder'
 
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'AzureConnection'
     appName: 'U-Collab'
-    package: '$(Build.ArtifactStagingDirectory)/site.zip'
+    package: '$(Build.ArtifactStagingDirectory)/build.zip'
   displayName: 'Deploy to Azure Web App'
