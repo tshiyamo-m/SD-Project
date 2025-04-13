@@ -16,7 +16,7 @@
   "scripts": {
     "start": "serve -s build",
     "build": "react-scripts build",
-    "test": "jest",
+    "test": "react-scripts test",
   "test:coverage": "jest --coverage",
     "eject": "react-scripts eject"
   },
