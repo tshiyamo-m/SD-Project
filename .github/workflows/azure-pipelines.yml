@@ -4,7 +4,7 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-  variables:
+variables:
   CODECOV_TOKEN: $(CODECOV_TOKEN)
 
 steps:
@@ -17,16 +17,10 @@ steps:
     npm install
     npm run build
   displayName: 'Install dependencies and build app'
-  
-  - script: |
+
+- script: |
     npm test -- --coverage
   displayName: 'Run tests with coverage'
-
-  - script: |
-    curl -Os https://uploader.codecov.io/latest/linux/codecov
-    chmod +x codecov
-    ./codecov -t $(CODECOV_TOKEN)
-  displayName: 'Upload coverage to Codecov'
 
 - task: CopyFiles@2
   inputs:
@@ -51,11 +45,8 @@ steps:
     package: '$(Build.ArtifactStagingDirectory)/build.zip'
   displayName: 'Deploy to Azure Web App'
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      curl -Os https://uploader.codecov.io/latest/linux/codecov
-      chmod +x codecov
-      ./codecov -t $CODECOV_TOKEN -f coverage/lcov.info
+- script: |
+    curl -Os https://uploader.codecov.io/latest/linux/codecov
+    chmod +x codecov
+    ./codecov -t $(CODECOV_TOKEN) -f coverage/lcov.info
   displayName: 'Upload coverage to Codecov'
