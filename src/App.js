@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import logo from './assets/logo.png';
+import logo from './logo.png'; 
 import googleIcon from './assets/google-icon.png';
 
 function App() {
