@@ -4,7 +4,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      Odi will make the landing page.
+      Hello!
     </div>
   );
 }
