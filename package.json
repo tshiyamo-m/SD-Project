@@ -19,6 +19,7 @@
     "test": "react-scripts test --coverage --watchAll=false",
     "coverage": "npm test -- --coverage"
   "test:coverage": "jest --coverage",
+    "test:full": "node run-jest.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
