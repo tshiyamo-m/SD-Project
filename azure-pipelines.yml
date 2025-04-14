@@ -22,6 +22,12 @@ steps:
     npm test -- --coverage
   displayName: 'Run tests with coverage'
 
+  - script: |
+    curl -Os https://uploader.codecov.io/latest/linux/codecov
+    chmod +x codecov
+    ./codecov -t $(CODECOV_TOKEN)
+  displayName: 'Upload coverage to Codecov'
+
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'build'
