@@ -1,24 +1,41 @@
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
+import logo from './assets/logo.png';
+import googleIcon from './assets/google-icon.png';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+    <>
+      <nav className="topbar">
+        <a href="#" className="logo-link">
+          <img src={logo} alt="Logo" />
+          U-collab
         </a>
-      </header>
-    </div>
+
+        <ul className="nav-links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Why Us</a></li>
+        </ul>
+
+        <a href="#" className="google-btn">
+          <img src={googleIcon} alt="Google icon" />
+          Sign in/up
+        </a>
+      </nav>
+
+      <main className="app">
+        <header>
+          <img src={logo} alt="U-collab Logo" className="hero-logo" />
+          <h1>Research, Collab, and Innovate</h1>
+          <p>
+            Find the best.<br />
+            Work with the best.<br />
+            Produce the best.
+          </p>
+        </header>
+      </main>
+    </>
   );
 }
 
