@@ -1,38 +1,126 @@
-.App {
+/* Reset and base styling */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+main.app {
+  padding: 40px 20px;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Glowing logo in header (not used in nav anymore) */
+header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 10px;
+  text-shadow: 0 0 5px #00bfff33;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+
+header p {
+  font-size: 18px;
+  color: #444;
+  line-height: 1.6;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Top nav bar */
+nav.topbar {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  padding: 14px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Left logo + title */
+a.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 700;
+  font-size: 18px;
+  gap: 10px;
+}
+
+a.logo-link img {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 0 10px #00bfff);
+}
+
+/* Center nav links */
+ul.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  flex: 1;
+}
+
+ul.nav-links li a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Google sign in button (right) */
+a.google-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: black;
   color: white;
+  border-radius: 24px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
 }
 
-.App-link {
-  color: #61dafb;
+a.google-btn:hover {
+  background: #222;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+a.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  ul.nav-links {
+    display: none;
   }
-  to {
-    transform: rotate(360deg);
+
+  header h1 {
+    font-size: 24px;
   }
+
+  header p {
+    font-size: 16px;
+  }
+}
+/* Center hero logo styling */
+.hero-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 10px #00bfff);
+}
+body {
+  background-color: #dbdfec;
+  background-image: radial-gradient(#516ed6 0.5px, transparent 0.5px);
+  background-size: 30px 30px;
 }
