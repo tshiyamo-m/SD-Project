@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import './App.css';
-import logo from './assets/logo.png';
-import googleIcon from './assets/google-icon.png';
+import logo from './logo.png'; 
+import googleIcon from './google-icon.png';
 
 function App() {
   return (
