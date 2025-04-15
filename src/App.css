@@ -103,11 +103,9 @@ a.google-btn img {
   ul.nav-links {
     display: none;
   }
-
   header h1 {
     font-size: 24px;
   }
-
   header p {
     font-size: 16px;
   }
@@ -124,4 +122,3 @@ body {
   background-image: radial-gradient(#516ed6 0.5px, transparent 0.5px);
   background-size: 30px 30px;
 }
-
