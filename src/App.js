@@ -1,16 +1,16 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import './App.css';
 import logo from './assets/logo.png';
-import googleIcon from './assets/google-icon.png';
+import LoginButton from "./components/login";
 
 function App() {
+
   return (
     <>
       <nav className="topbar">
         <a href="#" className="logo-link">
           <img src={logo} alt="Logo" />
-          U-collab
+          U-Collab
         </a>
 
         <ul className="nav-links">
@@ -19,16 +19,13 @@ function App() {
           <li><a href="#">Why Us</a></li>
         </ul>
 
-        <a href="#" className="google-btn">
-          <img src={googleIcon} alt="Google icon" />
-          Sign in/up
-        </a>
+        <LoginButton />
       </nav>
 
       <main className="app">
         <header>
-          <img src={logo} alt="U-collab Logo" className="hero-logo" />
-          <h1>Research, Collab, and Innovate</h1>
+          <img src={logo} alt="U-collab Logo" className="hero-logo"/>
+          <h1>Research, Collaborate, and Innovate</h1>
           <p>
             Find the best.<br />
             Work with the best.<br />
