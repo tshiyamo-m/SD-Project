@@ -4,7 +4,6 @@ import logo from './assets/logo.png';
 import LoginButton from "./components/login";
 
 function App() {
-
   return (
     <>
       <nav className="topbar">
