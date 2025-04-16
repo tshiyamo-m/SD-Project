@@ -8,18 +8,18 @@ function App() {
   return (
     <>
       <nav className="topbar">
-        <a href="#" className="logo-link">
+        <a href="/" className="logo-link">
           <img src={logo} alt="Logo" />
           U-Collab
         </a>
 
         <ul className="nav-links">
-          <li><a href="#">About Us</a></li>
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Why Us</a></li>
+          <li><a href="/about">About Us</a></li>
+          <li><a href="/features">Features</a></li>
+          <li><a href="/why-us">Why Us</a></li>
         </ul>
 
-        <LoginButton />
+        <LoginButton/>
       </nav>
 
       <main className="app">
