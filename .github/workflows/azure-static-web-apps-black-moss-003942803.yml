@@ -41,7 +41,14 @@ jobs:
           api_location: ""
           output_location: "build"
           # Conditional deployment environment
-          deployment_environment: ${{ github.event_name == 'pull_request' && 'production' || 'preview' }}
+          deployment_environment: ${{ 
+            github.event_name == 'pull_request' && 
+            github.base_ref == 'refs/heads/main' && 
+            'production' || 
+            github.ref == 'refs/heads/testing' && 
+            'preview' || 
+            'preview' 
+          }}
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
