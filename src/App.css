@@ -1,10 +1,35 @@
-/* Reset and base styling */
+/* App css */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
   background: #f9f9f9;
   color: #333;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* For pages with navbar */
+.content-with-navbar {
+  flex: 1;
+  padding-left: 240px; /* Adjust based on your navbar width */
+  padding-top: 60px; /* Space for top header */
+}
+
+/* For full-width pages (like landing) */
+.content-full-width {
+  flex: 1;
+}
+
+/* Project page specific adjustments */
+.project-page-content {
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 main.app {
