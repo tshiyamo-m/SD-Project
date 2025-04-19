@@ -1,0 +1,137 @@
+/* Create Project Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: white;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #4b5563;
+    background-color: #1f2937;
+    color: white;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.collaborator-input {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.collaborator-input input {
+    flex: 1;
+}
+
+.add-button {
+    background-color: #60a5fa;
+    color: white;
+    padding: 0 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.collaborator-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.collaborator-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #374151;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.remove-button {
+    background: none;
+    border: none;
+    color: #f87171;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+    margin: 2rem 0 0 0;
+    list-style: none; /* This removes the dots */
+}
+
+.form-actions li {
+    margin: 0;
+    padding: 0;
+}
+
+.cancel-button {
+    background-color: #374151;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-button {
+    display: flex;
+    align-items: center;
+    background-color: #60a5fa;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.form-group section {
+    margin-bottom: 1.5rem;
+}
+
+.form-row article {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-actions menu {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    list-style: none;
+    padding: 0;
+}

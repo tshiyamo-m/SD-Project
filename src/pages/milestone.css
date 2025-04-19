@@ -1,0 +1,167 @@
+/* Milestones Page */
+.milestones-page {
+    padding: 2rem;
+    color: white;
+}
+
+.milestones-controls {
+    margin-bottom: 2rem;
+}
+
+.add-milestone-button {
+    display: flex;
+    align-items: center;
+    background-color: #60a5fa;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.milestone-form {
+    background-color: #1f2937;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.milestones-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.milestone-card {
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #60a5fa;
+}
+
+.milestone-card.completed {
+    opacity: 0.7;
+    border-left-color: #10b981;
+}
+
+.milestone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.milestone-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.status-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.checkbox {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #d1d5db;
+    border-radius: 0.25rem;
+}
+
+.milestone-status {
+    background-color: #374151;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.milestone-description {
+    margin-bottom: 1rem;
+    color: #d1d5db;
+}
+
+.milestone-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+}
+
+.milestone-meta dt {
+    font-weight: bold;
+}
+
+.milestone-meta dd {
+    margin: 0;
+}
+
+.no-milestones {
+    text-align: center;
+    color: #9ca3af;
+    padding: 2rem;
+}
+
+/* Reuse form styles from CreateProjectPage */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #4b5563;
+    background-color: #1f2937;
+    color: white;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.submit-button {
+    display: flex;
+    align-items: center;
+    background-color: #60a5fa;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
