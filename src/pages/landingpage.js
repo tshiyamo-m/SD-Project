@@ -26,6 +26,7 @@ function LandingPage() {
                     <img src={logo} alt="U-collab Logo" className="hero-logo"/>
                     <h1>Research, Collaborate, and Innovate</h1>
                     <p>
+        Find the best.<br />
                         Find the best.<br />
                         Work with the best.<br />
                         Produce the best.
