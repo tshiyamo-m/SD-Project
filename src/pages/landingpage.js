@@ -28,6 +28,7 @@ function LandingPage() {
                     <p>
         Find the best.<br />
         Find the best.<br />
+        Find the best.<br />
                         Find the best.<br />
                         Work with the best.<br />
                         Produce the best.
