@@ -57,7 +57,7 @@ const ProjectsPage = () => {
         />;
     }
 
-    const handleCreateProject = (newProject) => {
+    const handleCreateProject = (newProject) => {  
         setProjects([...projects, newProject]);
     };
 

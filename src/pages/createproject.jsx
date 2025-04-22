@@ -45,7 +45,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const project = {
             ...formData,
@@ -56,6 +56,36 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
             tags: formData.tags.split(',').map(tag => tag.trim()),
             skills: formData.skills.split(',').map(skill => skill.trim())
         };
+
+        //API CALL TO SUBMIT PROJECT INTO DB
+
+
+        //Create "project" object
+        const Project = {
+            owner: project.owner, // or any other field
+            ...formData,
+           
+        };
+        console.log(Project);
+        
+        //API CALL
+        try{
+            const response = await fetch('/api/Projects', {  
+                method: 'POST',
+                body: JSON.stringify(Project),
+                headers: {
+                    'Content-Type': 'application/json' 
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create project');
+            }
+        } 
+        catch(error) {
+            console.error('Error creating project:', error);
+        }
+
         onCreateProject(project);
         onBack();
     };
