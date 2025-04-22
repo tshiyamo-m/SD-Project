@@ -4,6 +4,7 @@ import AppLayout from './components/AppLayout'; // Adjust path as needed
 import LandingPage from './pages/landingpage';
 // import HomePage from './app/HomePage';
 import ProjectsPage from './pages/projects';
+import ReviewsPage from './pages/review';
 // import ChatsPage from './app/ChatsPage';
 import FinancesPage from './pages/finance';
 // import SettingsPage from './app/SettingsPage';
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             {/*<Route path="/src/pages/home" element={<HomePage />} />*/}
             <Route path="/src/pages/projects" element={<ProjectsPage />} />
+            <Route path="/src/pages/review" element={<ReviewsPage />} />
             {/*<Route path="/src/pages/chats" element={<ChatsPage />} />*/}
             {<Route path="/src/pages/finance" element={<FinancesPage />} />}
             {/*<Route path="/src/pages/settings" element={<SettingsPage />} />*/}

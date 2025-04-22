@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
-import './project.css';
+import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
 
