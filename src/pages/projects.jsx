@@ -6,7 +6,7 @@ import MilestonesPage from './milestone';
 import ViewProjectPage from './viewproject'; // Import the new component
 
 const ProjectsPage = () => {
-    const [projects] = useState([
+    const [projects, setProjects] = useState([
         {
             id: 1,
             title: "AI-Powered Diagnosis Assistant",
@@ -67,16 +67,16 @@ const ProjectsPage = () => {
         />;
     }
 
+    const handleCreateProject = (newProject) => {
+        setProjects([...projects, newProject]);
+    };
+
     if (showCreateForm) {
         return <CreateProjectPage
             onBack={() => setShowCreateForm(false)}
-            // onCreateProject={handleCreateProject}
+            onCreateProject={handleCreateProject}
         />;
     }
-
-    // const handleCreateProject = (newProject) => {
-    //     setProjects([...projects, newProject]);
-    // };
 
     return (
         <article className="project-page-content">
