@@ -1,0 +1,167 @@
+/* Homepage CSS */
+.homepage-content {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    position: relative;
+    min-height: 100vh;
+}
+
+.welcome-header {
+    margin-bottom: 2rem;
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #111827;
+}
+
+/* Feature section with call to action */
+.feature-section {
+    background-color: #111827;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-content {
+    max-width: 60%;
+    z-index: 1;
+}
+
+.feature-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.feature-description {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: #9ca3af;
+}
+
+.feature-cta {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    color: #9ca3af;
+}
+
+.view-projects-button {
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.view-projects-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.feature-image {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    /*background-image: ;*/
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Stats section */
+.stats-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background-color: #111827;
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+}
+
+.stat-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    border: 2px solid #3b82f6;
+}
+
+.stat-title {
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+/* Notifications panel */
+.notifications-panel {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    width: 300px;
+    background-color: #111827;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notifications-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.no-notifications {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .feature-content {
+        max-width: 100%;
+    }
+
+    .feature-image {
+        display: none;
+    }
+
+    .stats-section {
+        flex-direction: column;
+    }
+
+    .notifications-panel {
+        position: relative;
+        width: 100%;
+        right: 0;
+        margin-top: 2rem;
+    }
+}

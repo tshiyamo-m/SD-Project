@@ -11,6 +11,10 @@
 # production
 /build
 
+#Backend
+src/Backend/.env
+src/Backend/node_modules/
+
 # misc
 .DS_Store
 .env.local
@@ -21,3 +25,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#To ignore any root .env created in future
+.env 
