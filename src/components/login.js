@@ -8,7 +8,7 @@ function Login() {
 
     const onSuccess = async (res) => {
         console.log("LOGIN SUCCESS! User: ", res.clientId);
-        navigate('src/pages/projects');
+        navigate('src/pages/homepage');
 
         //const user = jwtDecode(res.credential);
         //console.log("Decoded User Info:", user);
