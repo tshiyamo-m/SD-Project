@@ -3,9 +3,10 @@ import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
 import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
+import ViewProjectPage from './viewproject'; // Import the new component
 
 const ProjectsPage = () => {
-    const [projects, setProjects] = useState([
+    const [projects] = useState([
         {
             id: 1,
             title: "AI-Powered Diagnosis Assistant",
@@ -49,6 +50,15 @@ const ProjectsPage = () => {
 
     const [viewingMilestones, setViewingMilestones] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [viewingProject, setViewingProject] = useState(null); // New state for viewing a project
+
+    // Handle view transitions
+    if (viewingProject) {
+        return <ViewProjectPage
+            project={viewingProject}
+            onBack={() => setViewingProject(null)}
+        />;
+    }
 
     if (viewingMilestones) {
         return <MilestonesPage
@@ -57,16 +67,16 @@ const ProjectsPage = () => {
         />;
     }
 
-    const handleCreateProject = (newProject) => {  
-        setProjects([...projects, newProject]);
-    };
-
     if (showCreateForm) {
         return <CreateProjectPage
             onBack={() => setShowCreateForm(false)}
-            onCreateProject={handleCreateProject}
+            // onCreateProject={handleCreateProject}
         />;
     }
+
+    // const handleCreateProject = (newProject) => {
+    //     setProjects([...projects, newProject]);
+    // };
 
     return (
         <article className="project-page-content">
@@ -115,7 +125,6 @@ const ProjectsPage = () => {
                 </button>
             </section>
 
-
             <section className="space-y-4">
                 {projects.map(project => (
                     <article key={project.id} className="project-card">
@@ -156,7 +165,10 @@ const ProjectsPage = () => {
                             >
                                 Milestones
                             </button>
-                            <button className="view-button" onClick={() => window.location.href = './app/projects.jsx'}>
+                            <button
+                                className="view-button"
+                                onClick={() => setViewingProject(project)}
+                            >
                                 View
                             </button>
                         </footer>

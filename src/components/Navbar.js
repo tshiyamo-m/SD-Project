@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 //import { Home, Folder, MessageCircle, DollarSign, Settings, LogOut , ChartBar} from 'lucide-react';
-import { Folder, DollarSign, ChartBar} from 'lucide-react';
+import { Folder, DollarSign, ChartBar, Home } from 'lucide-react';
 
 const Navbar = () => {
     return (
@@ -14,15 +14,15 @@ const Navbar = () => {
             <section className="navbar-main-links">
                 <nav className="primary-navigation" aria-label="Main navigation">
                     <ul>
-                        {/*<li>*/}
-                        {/*    <NavLink*/}
-                        {/*        to="/src/pages/home"*/}
-                        {/*        className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}*/}
-                        {/*    >*/}
-                        {/*        <Home size={20}/>*/}
-                        {/*        <span>Home</span>*/}
-                        {/*    </NavLink>*/}
-                        {/*</li>*/}
+                        <li>
+                            <NavLink
+                                to="/src/pages/homepage"
+                                className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
+                            >
+                                <Home size={20}/>
+                                <span>Home</span>
+                            </NavLink>
+                        </li>
                         <li>
                             <NavLink
                                 to="/src/pages/projects"

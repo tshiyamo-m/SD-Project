@@ -2,13 +2,13 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './components/AppLayout'; // Adjust path as needed
 import LandingPage from './pages/landingpage';
-// import HomePage from './app/HomePage';
+import HomePage from './pages/homepage';
 import ProjectsPage from './pages/projects';
 import ReviewsPage from './pages/review';
-// import ChatsPage from './app/ChatsPage';
+// import ChatsPage from './pages/ChatsPage';
 import FinancesPage from './pages/finance';
-// import SettingsPage from './app/SettingsPage';
-// import LogoutPage from './app/LogoutPage';
+// import SettingsPage from './pages/SettingsPage';
+// import LogoutPage from './pages/LogoutPage';
 import './App.css';
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
         <AppLayout>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            {/*<Route path="/src/pages/home" element={<HomePage />} />*/}
+            <Route path="/src/pages/homepage" element={<HomePage />} />
             <Route path="/src/pages/projects" element={<ProjectsPage />} />
             <Route path="/src/pages/review" element={<ReviewsPage />} />
             {/*<Route path="/src/pages/chats" element={<ChatsPage />} />*/}

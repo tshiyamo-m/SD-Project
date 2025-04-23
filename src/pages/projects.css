@@ -205,3 +205,189 @@ body {
 .view-button:hover {
     background-color: #3b82f6;
 }
+
+/* Additional CSS for the project view and documents functionality */
+
+/* Project full view styles */
+.project-full-view {
+    margin-bottom: 2rem;
+}
+
+.project-status {
+    padding: 0.25rem 0.75rem;
+    background-color: #4b5563;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+}
+
+.project-metadata {
+    margin-top: 1.5rem;
+}
+
+/* Documents section styles */
+.documents-section {
+    margin-top: 2rem;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.upload-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #60a5fa;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.upload-button:hover {
+    background-color: #3b82f6;
+}
+
+/* Upload form styles */
+.upload-form {
+    background-color: #1e293b;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    border: none;
+    padding: 0;
+}
+
+.form-group legend {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.file-input-label {
+    display: block;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.file-input-label input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.file-input-text {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #374151;
+    border-radius: 0.25rem;
+    border: 1px dashed #60a5fa;
+    width: 100%;
+    text-align: center;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.cancel-button {
+    background-color: #374151;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-button {
+    background-color: #60a5fa;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-button:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* Documents table styles */
+.documents-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    color: white;
+}
+
+.documents-table th {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid #374151;
+    font-weight: bold;
+}
+
+.documents-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #374151;
+}
+
+.document-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.document-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    color: white;
+    border-radius: 0.25rem;
+}
+
+.download-button:hover {
+    background-color: #4b5563;
+}
+
+.delete-button:hover {
+    background-color: #dc2626;
+}
+
+.no-documents-message {
+    text-align: center;
+    padding: 2rem;
+    background-color: #1e293b;
+    border-radius: 0.5rem;
+    color: #9ca3af;
+}
