@@ -197,7 +197,7 @@ const ProjectsPage = () => {
                                         <h2>Invite Collaborator</h2>
                                     </header>
 
-                                    <form onSubmit={handleSendInvite}>//when the user clicks 'send invite'
+                                    <form onSubmit={handleSendInvite}>
                                         <label htmlFor="inviteEmail">Collaborator's Email:</label>
                                         <input
                                         type="email"
