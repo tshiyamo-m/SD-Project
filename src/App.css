@@ -1,0 +1,149 @@
+/* App css */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9f9f9;
+  color: #333;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* For pages with navbar */
+.content-with-navbar {
+  flex: 1;
+  padding-left: 240px; /* Adjust based on your navbar width */
+  padding-top: 60px; /* Space for top header */
+}
+
+/* For full-width pages (like landing) */
+.content-full-width {
+  flex: 1;
+}
+
+/* Project page specific adjustments */
+.project-page-content {
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+main.app {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* Glowing logo in header (not used in nav anymore) */
+header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 10px;
+  text-shadow: 0 0 5px #00bfff33;
+}
+
+
+header p {
+  font-size: 18px;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Top nav bar */
+nav.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid #ddd;
+  padding: 14px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Left logo + title */
+a.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: 700;
+  font-size: 18px;
+  gap: 10px;
+}
+
+a.logo-link img {
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 0 10px #00bfff);
+}
+
+/* Center nav links */
+ul.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+  flex: 1;
+}
+
+ul.nav-links li a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Google sign in button (right) */
+a.google-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: black;
+  color: white;
+  border-radius: 24px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+a.google-btn:hover {
+  background: #222;
+}
+
+a.google-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  ul.nav-links {
+    display: none;
+  }
+  header h1 {
+    font-size: 24px;
+  }
+  header p {
+    font-size: 16px;
+  }
+}
+/* Center hero logo styling */
+.hero-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 10px #00bfff);
+}
+body {
+  background-color: #dbdfec;
+  background-image: radial-gradient(#516ed6 0.5px, transparent 0.5px);
+  background-size: 30px 30px;
+}
