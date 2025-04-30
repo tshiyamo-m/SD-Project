@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './components/AppLayout'; // Adjust path as needed
 import LandingPage from './pages/landingpage';
@@ -12,6 +13,22 @@ import FinancesPage from './pages/finance';
 import './App.css';
 
 function App() {
+  //To fix the refreshing issue
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main aria-busy="true" aria-live="polite">
+        <progress value={null} /> {/* Indeterminate progress bar */}
+        <p>Loading application...</p>
+      </main>
+    );
+  }
+
   return (
       <BrowserRouter>
         <AppLayout>
