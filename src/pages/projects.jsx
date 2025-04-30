@@ -4,6 +4,8 @@ import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
 import ViewProjectPage from './viewproject'; // Import the new component
+import axios from 'axios';
+
 
 const ProjectsPage = () => {
     const [projects, setProjects] = useState([
@@ -51,6 +53,12 @@ const ProjectsPage = () => {
     const [viewingMilestones, setViewingMilestones] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [viewingProject, setViewingProject] = useState(null); // New state for viewing a project
+    const [showInviteModal, setShowInviteModal] = useState(false);
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [invitingProjectId, setInvitingProjectId] = useState(null);
+    const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
+
+
 
     // Handle view transitions
     if (viewingProject) {
@@ -78,6 +86,11 @@ const ProjectsPage = () => {
         />;
     }
 
+    const handleSendInvite = async (e) => {
+        e.preventDefault();
+        await axios.post('http://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+        setShowInviteModal(false);
+      };
     return (
         <article className="project-page-content">
             <header className="flex justify-between items-center mb-8">
@@ -171,6 +184,39 @@ const ProjectsPage = () => {
                             >
                                 View
                             </button>
+                            <button className="invite-button"
+                                onClick={() =>{
+                                    setInvitingProjectId(project.id);           
+                                    setInvitingProjectTitle(project.title);     
+                                    setShowInviteModal(true); }}
+                            >Invite Collaborator</button>
+                            {showInviteModal && (
+                                <section className="modal-overlay" aria-modal="true" role="dialog">
+                                    <article className="modal-content">
+                                    <header>
+                                        <h2>Invite Collaborator</h2>
+                                    </header>
+
+                                    <form onSubmit={handleSendInvite}>//when the user clicks 'send invite'
+                                        <label htmlFor="inviteEmail">Collaborator's Email:</label>
+                                        <input
+                                        type="email"
+                                        id="inviteEmail"
+                                        name="inviteEmail"
+                                        value={inviteEmail}//text is stored in React state
+                                        onChange={(e) => setInviteEmail(e.target.value)}
+                                        placeholder="Enter email address"
+                                        required
+                                        />
+
+                                        <footer>
+                                        <button type="submit">Send Invite</button>
+                                        <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
+                                        </footer>
+                                    </form>
+                                    </article>
+                                </section>
+                            )}
                         </footer>
                     </article>
                 ))}

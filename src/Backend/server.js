@@ -5,6 +5,9 @@ require('dotenv').config();
 
 const LoginRoutes = require('./routes/LoginRoutes');
 const ProjectsRoutes =require('./routes/ProjectsRoutes');
+const InviteRoutes = require('./routes/InviteRoutes');//import the router that tells us how to handle 
+
+
 
 //express app
 const app = express();
@@ -29,6 +32,8 @@ app.use((req, res, next) => {
 //routes
 app.use('/api/login', LoginRoutes);
 app.use('/api/Projects', ProjectsRoutes);
+app.use('/api/invite', InviteRoutes);//Tells express to take any request starting with /api/invite to go to InviteRoutes.js
+
 
 
 

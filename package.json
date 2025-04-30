@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.9.0",
     "cors": "^2.8.5",
     "gapi-script": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
