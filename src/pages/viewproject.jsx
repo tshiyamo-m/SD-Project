@@ -1,8 +1,15 @@
 import { useState } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2 } from 'lucide-react';
+import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X } from 'lucide-react';
 import './projects.css';
+import './viewproject.css';
 
-const ViewProjectPage = ({ project, onBack }) => {
+const ViewProjectPage = ({ project: initialProject, onBack }) => {
+    // State for project data with edit mode
+    const [project, setProject] = useState(initialProject);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({...initialProject});
+
+    // Document state management
     const [documents, setDocuments] = useState([
         {
             id: 1,
@@ -22,12 +29,14 @@ const ViewProjectPage = ({ project, onBack }) => {
         }
     ]);
 
+    // Upload form state
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [newDocument, setNewDocument] = useState({
         name: "",
         file: null
     });
 
+    // Handle file selection
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -39,6 +48,7 @@ const ViewProjectPage = ({ project, onBack }) => {
         }
     };
 
+    // Handle document upload
     const handleUpload = (e) => {
         e.preventDefault();
         if (newDocument.file) {
@@ -57,28 +67,64 @@ const ViewProjectPage = ({ project, onBack }) => {
         }
     };
 
+    // Handle document deletion
     const handleDeleteDocument = (docId) => {
         setDocuments(documents.filter(doc => doc.id !== docId));
     };
 
+    // Enable edit mode
+    const enableEditMode = () => {
+        setEditData({...project});
+        setIsEditing(true);
+    };
+
+    // Cancel edit mode
+    const cancelEditMode = () => {
+        setIsEditing(false);
+    };
+
+    // Save project changes
+    const saveProjectChanges = () => {
+        setProject({...editData, updated: new Date().toISOString().split('T')[0]});
+        setIsEditing(false);
+    };
+
+    // Handle form input changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditData({
+            ...editData,
+            [name]: value
+        });
+    };
+
+    // Handle array input changes (tags, skills, collaborators)
+    const handleArrayInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditData({
+            ...editData,
+            [name]: value.split(',').map(item => item.trim())
+        });
+    };
+
     return (
         <article className="project-page-content">
-            <header className="flex justify-between items-center mb-8">
-                <header className="header">
-                    <hgroup className="header-title-group">
-                        <figure className="back-arrow" onClick={onBack}>
-                            <ArrowLeft />
-                        </figure>
-                        <h1 className="page-title">{project.title}</h1>
-                    </hgroup>
-                    <menu className="header-menu">
+            <header className="header">
+                <hgroup className="header-title-group">
+                    <button className="back-arrow" onClick={onBack} aria-label="Go back">
+                        <ArrowLeft />
+                    </button>
+                    <h1 className="page-title">{project.title}</h1>
+                </hgroup>
+                <nav className="header-menu">
+                    <ul>
                         <li>
-                            <button className="icon-button">
+                            <button className="icon-button" aria-label="Search">
                                 <Search size={20} />
                             </button>
                         </li>
                         <li>
-                            <button className="icon-button">
+                            <button className="icon-button" aria-label="Notifications">
                                 <Bell size={20} />
                             </button>
                         </li>
@@ -87,60 +133,198 @@ const ViewProjectPage = ({ project, onBack }) => {
                                 <figure className="user-icon">
                                     <User size={20} />
                                 </figure>
-                                <mark className="user-name">Monare</mark>
+                                <em className="user-name">Monare</em>
                             </button>
                         </li>
                         <li>
-                            <button className="menu-button">
+                            <button className="menu-button" aria-label="More options">
                                 <MoreVertical size={20} />
                             </button>
                         </li>
-                    </menu>
-                </header>
+                    </ul>
+                </nav>
             </header>
 
             <section className="project-details">
                 <article className="project-card project-full-view">
                     <header className="project-header">
-                        <h2 className="project-title">{project.title}</h2>
-                        <p className="project-status">{project.status}</p>
+                        {!isEditing ? (
+                            <>
+                                <h2 className="project-title">{project.title}</h2>
+                                <p className="project-status">{project.status}</p>
+                                <button
+                                    className="edit-button"
+                                    onClick={enableEditMode}
+                                    aria-label="Edit project details"
+                                >
+                                    <Edit size={16} />
+                                    <span>Edit</span>
+                                </button>
+                            </>
+                        ) : (
+                            <form className="edit-form">
+                                <h2>Edit Project Details</h2>
+                                <section className="form-header">
+                                    <label htmlFor="title">
+                                        Title:
+                                        <input
+                                            type="text"
+                                            id="title"
+                                            name="title"
+                                            value={editData.title}
+                                            onChange={handleInputChange}
+                                            required
+                                        />
+                                    </label>
+                                    <label htmlFor="status">
+                                        Status:
+                                        <select
+                                            id="status"
+                                            name="status"
+                                            value={editData.status}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="Active">Active</option>
+                                            <option value="Completed">Completed</option>
+                                            <option value="On Hold">On Hold</option>
+                                            <option value="Planning">Planning</option>
+                                        </select>
+                                    </label>
+                                </section>
+                            </form>
+                        )}
                     </header>
 
-                    <p className="project-description">{project.description}</p>
+                    {!isEditing ? (
+                        <p className="project-description">{project.description}</p>
+                    ) : (
+                        <label htmlFor="description" className="description-label">
+                            Description:
+                            <textarea
+                                id="description"
+                                name="description"
+                                value={editData.description}
+                                onChange={handleInputChange}
+                                rows="4"
+                            />
+                        </label>
+                    )}
 
                     <section className="project-metadata">
-                        <dl className="project-meta">
-                            <dt>Owner:</dt>
-                            <dd>{project.owner}</dd>
-                        </dl>
+                        {!isEditing ? (
+                            <>
+                                <dl className="project-meta">
+                                    <dt>Owner:</dt>
+                                    <dd>{project.owner}</dd>
+                                </dl>
 
-                        <dl className="project-meta">
-                            <dt>Field:</dt>
-                            <dd>{project.field}</dd>
-                        </dl>
+                                <dl className="project-meta">
+                                    <dt>Field:</dt>
+                                    <dd>{project.field}</dd>
+                                </dl>
 
-                        <dl className="project-meta">
-                            <dt>Created:</dt>
-                            <dd>{project.created}</dd>
+                                <dl className="project-meta">
+                                    <dt>Created:</dt>
+                                    <dd>{project.created}</dd>
 
-                            <dt>Last updated:</dt>
-                            <dd>{project.updated}</dd>
-                        </dl>
+                                    <dt>Last updated:</dt>
+                                    <dd>{project.updated}</dd>
+                                </dl>
 
-                        <dl className="project-meta">
-                            <dt>Collaborators:</dt>
-                            <dd>{project.collaborators.join(", ")}</dd>
-                        </dl>
+                                <dl className="project-meta">
+                                    <dt>Collaborators:</dt>
+                                    <dd>{project.collaborators.join(", ")}</dd>
+                                </dl>
 
-                        <dl className="project-meta">
-                            <dt>Required skills:</dt>
-                            <dd>{project.skills.join(", ")}</dd>
-                        </dl>
+                                <dl className="project-meta">
+                                    <dt>Required skills:</dt>
+                                    <dd>{project.skills.join(", ")}</dd>
+                                </dl>
 
-                        <dl className="project-meta">
-                            <dt>Tags:</dt>
-                            <dd>{project.tags.join(", ")}</dd>
-                        </dl>
+                                <dl className="project-meta">
+                                    <dt>Tags:</dt>
+                                    <dd>{project.tags.join(", ")}</dd>
+                                </dl>
+                            </>
+                        ) : (
+                            <fieldset className="edit-metadata">
+                                <legend>Project Details</legend>
+
+                                <label htmlFor="owner">
+                                    Owner:
+                                    <input
+                                        type="text"
+                                        id="owner"
+                                        name="owner"
+                                        value={editData.owner}
+                                        onChange={handleInputChange}
+                                    />
+                                </label>
+
+                                <label htmlFor="field">
+                                    Field:
+                                    <input
+                                        type="text"
+                                        id="field"
+                                        name="field"
+                                        value={editData.field}
+                                        onChange={handleInputChange}
+                                    />
+                                </label>
+
+                                <label htmlFor="collaborators">
+                                    Collaborators (comma-separated):
+                                    <input
+                                        type="text"
+                                        id="collaborators"
+                                        name="collaborators"
+                                        value={editData.collaborators.join(", ")}
+                                        onChange={handleArrayInputChange}
+                                    />
+                                </label>
+
+                                <label htmlFor="skills">
+                                    Required skills (comma-separated):
+                                    <input
+                                        type="text"
+                                        id="skills"
+                                        name="skills"
+                                        value={editData.skills.join(", ")}
+                                        onChange={handleArrayInputChange}
+                                    />
+                                </label>
+
+                                <label htmlFor="tags">
+                                    Tags (comma-separated):
+                                    <input
+                                        type="text"
+                                        id="tags"
+                                        name="tags"
+                                        value={editData.tags.join(", ")}
+                                        onChange={handleArrayInputChange}
+                                    />
+                                </label>
+
+                                <section className="edit-actions">
+                                    <button
+                                        type="button"
+                                        className="cancel-button"
+                                        onClick={cancelEditMode}
+                                    >
+                                        <X size={16} />
+                                        <span>Cancel</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="save-button"
+                                        onClick={saveProjectChanges}
+                                    >
+                                        <Save size={16} />
+                                        <span>Save Changes</span>
+                                    </button>
+                                </section>
+                            </fieldset>
+                        )}
                     </section>
                 </article>
             </section>
@@ -169,12 +353,12 @@ const ViewProjectPage = ({ project, onBack }) => {
                                     onChange={handleFileSelect}
                                     required
                                 />
-                                <span className="file-input-text">
+                                <output className="file-input-text">
                                     {newDocument.file ? newDocument.file.name : 'Choose a file'}
-                                </span>
+                                </output>
                             </label>
 
-                            <div className="form-actions">
+                            <section className="form-actions">
                                 <button
                                     type="button"
                                     className="cancel-button"
@@ -189,7 +373,7 @@ const ViewProjectPage = ({ project, onBack }) => {
                                 >
                                     Upload
                                 </button>
-                            </div>
+                            </section>
                         </fieldset>
                     </form>
                 )}
@@ -210,27 +394,32 @@ const ViewProjectPage = ({ project, onBack }) => {
                         {documents.map(doc => (
                             <tr key={doc.id}>
                                 <td>
-                                    <div className="document-name">
+                                    <figure className="document-name">
                                         <FileText size={16} />
-                                        <span>{doc.name}</span>
-                                    </div>
+                                        <figcaption>{doc.name}</figcaption>
+                                    </figure>
                                 </td>
                                 <td>{doc.type}</td>
                                 <td>{doc.uploadedBy}</td>
                                 <td>{doc.uploadDate}</td>
                                 <td>{doc.size}</td>
                                 <td>
-                                    <div className="document-actions">
-                                        <button className="action-button download-button">
-                                            <Download size={16} />
-                                        </button>
-                                        <button
-                                            className="action-button delete-button"
-                                            onClick={() => handleDeleteDocument(doc.id)}
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
+                                    <menu className="document-actions">
+                                        <li>
+                                            <button className="action-button download-button" aria-label="Download document">
+                                                <Download size={16} />
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button
+                                                className="action-button delete-button"
+                                                onClick={() => handleDeleteDocument(doc.id)}
+                                                aria-label="Delete document"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </li>
+                                    </menu>
                                 </td>
                             </tr>
                         ))}
