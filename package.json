@@ -59,6 +59,7 @@
     ]
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "jest": "^27.5.1"
   }
 }

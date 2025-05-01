@@ -16,12 +16,12 @@ const ProjectSchema = new Schema({//Layout of schema
 
     description: {
         type: String,
-        required: true
+        required: false
     },
 
     field: {
         type: String,
-        required: true
+        required: false
     },
 
     collaborators: {
@@ -61,12 +61,12 @@ const ProjectSchema = new Schema({//Layout of schema
     },
 
     tags: {
-        type: String,
+        type: [String],
         required: false
     },
 
     skills: {
-        type: String,
+        type: [String],
         required: false
     }
 

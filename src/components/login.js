@@ -1,6 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
-
+import { jwtDecode } from 'jwt-decode';
 
 function Login() {
 
@@ -10,16 +10,19 @@ function Login() {
         console.log("LOGIN SUCCESS! User: ", res.clientId);
         navigate('src/pages/homepage');
 
-        //const user = jwtDecode(res.credential);
-        //console.log("Decoded User Info:", user);
-        //console.log(res.credential)
+        const user = jwtDecode(res.credential);
+        localStorage.setItem('fullName', user.name);
+
+        localStorage.setItem('token', res.credential); 
+        //console.log("token:", res.credential);
 
         const response = await fetch('/api/login', {
             method: 'POST',
             body: JSON.stringify({
                 //user_name: user.name,  
                 //user_email: user.email,  
-                token: res.credential
+                token: res.credential,
+                projects: []
             }),
             headers: {
                 'Content-Type': 'application/json' 
@@ -29,8 +32,9 @@ function Login() {
 
         // Optional: check response
         const json = await response.json();
-        console.log("Server response:", json);
-               
+        //console.log("Server response:", json);
+        localStorage.setItem('Mongo_id', json._id);   
+        //console.log("Mongo ID:", json._id);    
     }
 
     const onFailure = (err) => {

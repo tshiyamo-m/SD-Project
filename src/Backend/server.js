@@ -42,7 +42,7 @@ app.use('/api/invite', InviteRoutes);//Tells express to take any request startin
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         //listen for requests
-        app.listen(process.env.PORT, () => {
+        app.listen(process.env.PORT, () => {  //A minimal and flexible Node.js framework to create backend APIs.
         console.log('connected to db & listening on port', process.env.PORT)
 })
     })
