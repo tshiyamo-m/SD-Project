@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
 import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
 import ViewProjectPage from './viewproject'; // Import the new component
 import axios from 'axios';
-
+import { jwtDecode } from 'jwt-decode';
 
 const ProjectsPage = () => {
-    const [projects, setProjects] = useState([
+    
+
+    const [projects, setProjects] = useState([]/*[
         {
             id: 1,
             title: "AI-Powered Diagnosis Assistant",
@@ -48,7 +50,109 @@ const ProjectsPage = () => {
             skills: ["Full Stack Development", "GIS", "Sustainability Analysis"],
             tags: ["Agriculture", "Sustainability", "Community"]
         }
-    ]);
+    ]*/);
+
+    useEffect(() => {
+
+        const Id = localStorage.getItem('Mongo_id');
+        const fullName = localStorage.getItem('fullName');
+        const fetchProjects = async () => {
+
+            try{
+                const response = await fetch('/api/Projects/find', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: Id,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json' 
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to find projects!');
+                }/*
+                else{
+                    const Project_data = await response.json();
+                    //const num_projects = data.projects.length                   
+
+                    if (Project_data != null){
+
+                        const Projects_in_Format = [];
+
+                        let id = 1;
+                        
+                        for (const Project of Project_data){
+                            
+                            const Project_in_Format = {
+                                id: ""+ id,
+                                title: Project.title,
+                                owner: fullName,
+                                status: "Active",
+                                collaborators: Project.collaborators,
+                                field: Project.field,
+                                created: Project.created,
+                                updated: Project.updated,
+                                skills: Project.skills,
+                                tags: Project.tags
+                            }
+                            Projects_in_Format.push(Project_in_Format);
+                            id++;
+                        }
+
+                        //return Projects_in_Format;
+                        //console.log(Projects_in_Format);
+                        setProjects([], Projects_in_Format);
+                        
+                    }
+                    else{
+                        console.log("Could not find projects");
+                        return [];
+                        
+                    }
+                
+                    //What happens if data == null?
+
+                    
+                } */
+                const Project_data = await response.json();
+
+                if (!Array.isArray(Project_data)) {
+                    console.warn('API response is not an array:', Project_data);
+                    return [];
+                }
+                //map data since we are making an async call
+                return Project_data.map((project, index) => ({
+                    id: String(index + 1),
+                    title: project.title,
+                    owner: fullName,
+                    status: "Active",
+                    collaborators: project.collaborators,
+                    field: project.field,
+                    created: project.created,
+                    updated: project.updated,
+                    skills: project.skills,
+                    tags: project.tags
+                }));
+                
+
+            }
+            catch(error) {
+                console.error('Error finding projects:', error);
+                return [];
+            }
+        }
+
+        const loadProjects = async () => {
+            const projects = await fetchProjects();
+            setProjects(projects);
+        };
+    
+        loadProjects();
+        
+
+
+    }, []);
+    
 
     const [viewingMilestones, setViewingMilestones] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
@@ -59,6 +163,29 @@ const ProjectsPage = () => {
     const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
 
 
+    const [name, setName] = useState("");
+
+    useEffect(() => {
+        // This will only run when the component mounts
+        const token = localStorage.getItem('token');
+        
+        //console.log("token: ", token);
+
+        if (token) {
+            try {
+                const decodedUser = jwtDecode(token);
+                if (decodedUser && decodedUser.name) {
+                    const fullName = decodedUser.name.split(" ");
+                    setName(fullName[0]);
+                    
+                }
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                // Handle invalid token (optional: clear the token)
+                // localStorage.removeItem("token");
+            }
+        }
+    }, []);
 
     // Handle view transitions
     if (viewingProject) {
@@ -74,6 +201,10 @@ const ProjectsPage = () => {
             onBack={() => setViewingMilestones(null)}
         />;
     }
+    //API call to retrieve other projects from db
+    
+    //const Projects_From_Db = fetchProjects();
+
 
     const handleCreateProject = (newProject) => {
         setProjects([...projects, newProject]);
@@ -91,6 +222,7 @@ const ProjectsPage = () => {
         await axios.post('http://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
         setShowInviteModal(false);
       };
+
     return (
         <article className="project-page-content">
             <header className="flex justify-between items-center mb-8">
@@ -117,7 +249,7 @@ const ProjectsPage = () => {
                                 <figure className="user-icon">
                                     <User size={20} />
                                 </figure>
-                                <mark className="user-name">Monare</mark>
+                                <mark className="user-name">{name}</mark>
                             </button>
                         </li>
                         <li>
