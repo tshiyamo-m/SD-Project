@@ -3,7 +3,8 @@ import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
 import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
-import ViewProjectPage from './viewproject'; // Import the new component
+import ViewProjectPage from './viewproject';
+import ReviewsPage from './viewreview';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
@@ -156,7 +157,8 @@ const ProjectsPage = () => {
 
     const [viewingMilestones, setViewingMilestones] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [viewingProject, setViewingProject] = useState(null); // New state for viewing a project
+    const [viewingProject, setViewingProject] = useState(null);
+    const [viewingReviews, setViewingReviews] = useState(null); // New state for viewing reviews
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [invitingProjectId, setInvitingProjectId] = useState(null);
@@ -206,6 +208,14 @@ const ProjectsPage = () => {
     //const Projects_From_Db = fetchProjects();
 
 
+    // New condition for reviews page
+    if (viewingReviews) {
+        return <ReviewsPage
+            project={viewingReviews}
+            onBack={() => setViewingReviews(null)}
+        />;
+    }
+
     const handleCreateProject = (newProject) => {
         setProjects([...projects, newProject]);
     };
@@ -219,9 +229,9 @@ const ProjectsPage = () => {
 
     const handleSendInvite = async (e) => {
         e.preventDefault();
-        await axios.post('http://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
         setShowInviteModal(false);
-      };
+    };
 
     return (
         <article className="project-page-content">
@@ -311,41 +321,47 @@ const ProjectsPage = () => {
                                 Milestones
                             </button>
                             <button
+                                className="reviews-button"
+                                onClick={() => setViewingReviews(project)}
+                            >
+                                Reviews
+                            </button>
+                            <button
                                 className="view-button"
                                 onClick={() => setViewingProject(project)}
                             >
                                 View
                             </button>
                             <button className="invite-button"
-                                onClick={() =>{
-                                    setInvitingProjectId(project.id);           
-                                    setInvitingProjectTitle(project.title);     
-                                    setShowInviteModal(true); }}
+                                    onClick={() =>{
+                                        setInvitingProjectId(project.id);
+                                        setInvitingProjectTitle(project.title);
+                                        setShowInviteModal(true); }}
                             >Invite Collaborator</button>
                             {showInviteModal && (
                                 <section className="modal-overlay" aria-modal="true" role="dialog">
                                     <article className="modal-content">
-                                    <header>
-                                        <h2>Invite Collaborator</h2>
-                                    </header>
+                                        <header>
+                                            <h2>Invite Collaborator</h2>
+                                        </header>
 
-                                    <form onSubmit={handleSendInvite}>
-                                        <label htmlFor="inviteEmail">Collaborator's Email:</label>
-                                        <input
-                                        type="email"
-                                        id="inviteEmail"
-                                        name="inviteEmail"
-                                        value={inviteEmail}//text is stored in React state
-                                        onChange={(e) => setInviteEmail(e.target.value)}
-                                        placeholder="Enter email address"
-                                        required
-                                        />
+                                        <form onSubmit={handleSendInvite}>
+                                            <label htmlFor="inviteEmail">Collaborator's Email:</label>
+                                            <input
+                                                type="email"
+                                                id="inviteEmail"
+                                                name="inviteEmail"
+                                                value={inviteEmail}
+                                                onChange={(e) => setInviteEmail(e.target.value)}
+                                                placeholder="Enter email address"
+                                                required
+                                            />
 
-                                        <footer>
-                                        <button type="submit">Send Invite</button>
-                                        <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
-                                        </footer>
-                                    </form>
+                                            <footer>
+                                                <button type="submit">Send Invite</button>
+                                                <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
+                                            </footer>
+                                        </form>
                                     </article>
                                 </section>
                             )}
