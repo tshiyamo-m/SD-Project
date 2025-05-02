@@ -88,7 +88,7 @@ const ProjectsPage = () => {
 
     const handleSendInvite = async (e) => {
         e.preventDefault();
-        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite/', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
         setShowInviteModal(false);
       };
     return (
