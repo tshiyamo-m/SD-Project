@@ -6,7 +6,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 // POST route to create an invite
-router.post('/', async (req, res) => {
+router.post('/api/invite', async (req, res) => {
     try {
         const { email, projectId, projectTitle } = req.body;//Takes email and projectID from the request body
 

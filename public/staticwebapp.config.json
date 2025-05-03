@@ -14,10 +14,18 @@
       }
     },
     "routes": [
+        {
+        "route": "/api/invite",
+        "methods": ["POST"],
+        "allowedRoles": ["anonymous"]
+      },
       {
         "route": "/*",
         "serve": "/index.html",
         "statusCode": 200
       }
-    ]
+    ],
+    "globalHeaders": {
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+    }
   }
