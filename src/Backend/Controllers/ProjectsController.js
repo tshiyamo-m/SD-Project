@@ -57,13 +57,29 @@ const retrieve_projects = async (req, res) => {
 
         const AllProjects = await ProjectModel.find({ owner: id });  //Find the projects
         res.status(200).json(AllProjects)
-        
+
     }
     catch(error) {
         res.status(400).json({error: error.message});
         console.log("Could Not Find Projects!")
     }
-  
+
+}
+
+const retrieve_active_projects = async (req, res) => {
+    const { status } = req.body;
+
+    try {
+
+        const AllProjects = await ProjectModel.find({ status: status });  //Find the projects
+        res.status(200).json(AllProjects)
+
+    }
+    catch(error) {
+        res.status(400).json({error: error.message});
+        console.log("Could Not Find Projects!")
+    }
+
 }
 
 //POST Project id into user's project list
@@ -90,5 +106,6 @@ const add_project = async (req, res) => {
 module.exports = {
     submit_project,
     retrieve_projects,
+    retrieve_active_projects,
     add_project
 }
