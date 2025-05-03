@@ -59,7 +59,7 @@ export default function MilestonesPage({ project, onBack }) {
 
 
 
-    }, [project.id]);
+    }, [project, project.id]);
 
     const [newMilestone, setNewMilestone] = useState({
         name: '',

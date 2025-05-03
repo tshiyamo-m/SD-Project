@@ -115,6 +115,7 @@ const ReviewsPage = ({ project, onBack }) => {
     const [reviewerNames, setReviewerNames] = useState({});
 
     // Function to fetch and cache reviewer names
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const getReviewerName = async (reviewerId) => {
         // Check if we already have this name cached
         if (reviewerNames[reviewerId]) {
@@ -149,7 +150,7 @@ const ReviewsPage = ({ project, onBack }) => {
         if (reviews.length > 0) {
             loadReviewerNames();
         }
-    }, [reviews]);
+    }, [getReviewerName, reviewerNames, reviews]);
 
     // Handle star rating
     const handleRatingChange = (rating) => {
