@@ -1,325 +1,678 @@
-import { useState } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, XCircle, MessageSquare } from 'lucide-react';
-import './review.css';
+import {useEffect, useState} from 'react';
+import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
+import './projects.css'
+import './review.css'
+import { useUser } from "../components/UserContext";
+import { jwtDecode } from 'jwt-decode';
 
 const ReviewerPage = () => {
-    const [proposals, setProposals] = useState([
-        {
-            id: 1,
-            title: "Neural Network for Climate Prediction",
-            description: "Using deep learning to improve long-term climate forecasting models.",
-            submitter: "Dr. Sarah Williams",
-            institution: "Climate Research Institute",
-            status: "Pending Review",
-            field: "Environmental Science",
-            submitted: "2025-03-15",
-            deadline: "2025-04-30",
-            keywords: ["Deep Learning", "Climate Science", "Forecasting"],
-            score: null,
-            comments: ""
-        },
-        {
-            id: 2,
-            title: "Quantum Computing Applications in Cryptography",
-            description: "Exploring post-quantum cryptographic methods to enhance data security.",
-            submitter: "Prof. David Chen",
-            institution: "Tech University",
-            status: "In Progress",
-            field: "Computer Science",
-            submitted: "2025-03-01",
-            deadline: "2025-04-20",
-            keywords: ["Quantum Computing", "Cryptography", "Security"],
-            score: 7,
-            comments: "Interesting approach but needs more discussion on implementation challenges."
-        },
-        {
-            id: 3,
-            title: "Biodegradable Plastics from Agricultural Waste",
-            description: "Developing eco-friendly plastics using byproducts from corn production.",
-            submitter: "Dr. Aisha Patel",
-            institution: "Green Materials Lab",
-            status: "Completed",
-            field: "Material Science",
-            submitted: "2025-02-10",
-            deadline: "2025-03-25",
-            keywords: ["Biodegradable", "Sustainable Materials", "Waste Reduction"],
-            score: 9,
-            comments: "Excellent proposal with strong methodology and clear impact potential."
-        }
-    ]);
+    // User state
+    const { userId } = useUser();
+    const [user, setUser] = useState({});
 
-    const [selectedProposal, setSelectedProposal] = useState(null);
-    const [reviewForm, setReviewForm] = useState({
-        score: 0,
-        comments: ""
-    });
+    const getUser = async (findId) => {
+        try {
+            const response = await fetch('/api/login/getUser', {
+                method: 'POST',
+                body: JSON.stringify({ id: findId }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-    const handleReviewSubmit = (proposalId, decision) => {
-        setProposals(proposals.map(proposal => {
-            if (proposal.id === proposalId) {
-                return {
-                    ...proposal,
-                    status: decision === 'accept' ? 'Accepted' : 'Rejected',
-                    score: reviewForm.score,
-                    comments: reviewForm.comments
-                };
+            if (!response.ok) {
+                throw new Error('Failed to find user!');
             }
-            return proposal;
-        }));
-        setSelectedProposal(null);
-        setReviewForm({ score: 0, comments: "" });
+
+            const uD = await response.json();
+            // if (!Array.isArray(userData) || userData.length === 0) {
+            //     console.warn('API response is not a valid array:', userData);
+            //     return null;
+            // }
+            //const userData = ud;
+            //console.log(userData);
+            //console.log("token", userData.token)
+            const decoded = jwtDecode(uD.token);
+            //console.log('decoded: ', decoded.name);
+            return {
+                name: decoded.name || '',
+                isReviewer: uD.isReviewer,
+                token: uD.token,
+            };
+
+        } catch (error) {
+            console.error('Error finding user:', error);
+            return null;
+        }
     };
 
+    useEffect(() => {
+        if (!userId) return;
+
+        const loadUser = async () => {
+            const userEnter = await getUser(userId);
+            if (userEnter) {
+                setUser(userEnter);
+                //console.log("User loaded:", userEnter.name);
+            }
+        };
+
+        loadUser();
+    }, [userId]);
+
+    //remove this
+    // useEffect(() => {
+    //     if (Object.keys(user).length > 0) {
+    //         console.log('Updated user state:', user.name);
+    //     }
+    // }, [user]);
+
+
+    // const tokenName = (token) => {
+    //     try {
+    //         const decodedUser = jwtDecode(token);
+    //         if (decodedUser && decodedUser.name) {
+    //             return decodedUser.name;
+    //         }
+    //     } catch (error) {
+    //         console.error("Error decoding token:", error);
+    //     }
+    // }
+
+    const [activeTab, setActiveTab] = useState('available');
+    const [activeProject, setActiveProject] = useState(null);
+
+    // Projects data
+    const [projects, setProjects] = useState([]);
+
+    const getAllProjects = async () => {
+        try {
+            const response = await fetch('/api/Projects/find_active_projects', {
+                method: 'POST',
+                body: JSON.stringify({ status: "Active" }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to find projects!');
+            }
+
+            const userData = await response.json();
+            if (!Array.isArray(userData) || userData.length === 0) {
+                console.warn('API response is not a valid array:', userData);
+                return null;
+            }
+            //const userData = ud;
+            //console.log('userdata', userData);
+            //console.log("token", userData.token)
+            //const decoded = jwtDecode(userData.token);
+            //console.log('decoded: ', decoded.name);
+            return userData.map((project) => ({
+                    _id: project._id,
+                    owner: project.owner,
+                    title: project.title,
+                    description: project.description,
+                    field: project.field,
+                    collaborators: project.collaborators,
+                    requirements: project.requirements,
+                    fundingAmount: project.fundingAmount,
+                    fundingSource: project.fundingSource,
+                    startDate: project.createdAt.split('T')[0],
+                    endDate: project.endDate.split('T')[0],
+                    tags: project.tags,
+                    skills: project.skills,
+                    documents: Array.isArray(project.documents) ? project.documents : []
+            }))
+
+        } catch (error) {
+            console.error('Error finding projects:', error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+
+        const loadProjects = async () => {
+            const userEnter = await getAllProjects();
+            if (userEnter) {
+                setProjects(userEnter);
+                //console.log("User loaded:", userEnter.name);
+            }
+        };
+
+        loadProjects();
+    }, [userId]);
+
+    // Reviews data
+    const [reviews, setReviews] = useState([]);
+
+    useEffect(() => {
+
+        //const fullName = localStorage.getItem('fullName');
+        const fetchAllReviews = async () => {
+
+            try{
+                const response = await fetch('/api/Review/get_all_reviews', {
+                    method: 'POST',
+                    body: JSON.stringify({}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to find reviews!');
+                }
+                const Review_data = await response.json();
+
+                if (!Array.isArray(Review_data)) {
+                    console.warn('API response is not an array:', Review_data);
+                    return [];
+                }
+                //map data since we are making an async call
+                return Review_data.map((review, index) => ({
+                    _id: review._id,
+                    reviewerId: review.reviewerId,
+                    projectId: review.projectId,
+                    rating: review.rating,
+                    comment: review.comment,
+                    date: review.date,
+                    type: review.type,
+                }));
+
+
+            }
+            catch(error) {
+                console.error('Error finding reviews:', error);
+                //console.log("hello sir");
+                return [];
+            }
+        }
+
+        const loadReviews = async () => {
+            const reviews = await fetchAllReviews();
+            setReviews(reviews);
+        };
+
+        loadReviews();
+
+    }, []);
+
+    // Toggle reviewer status
+    const handleToggleReviewerStatus = () => {
+        setUser(prevUser => ({
+            ...prevUser,
+            isReviewer: !prevUser.isReviewer
+        }));
+    };
+
+    // Request to become a reviewer
+    const handleRequestReviewer = () => {
+        alert("Request to become a reviewer has been submitted!");
+    };
+
+    const [reviewerNames, setReviewerNames] = useState({});
+
+    // Function to fetch and cache reviewer names
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const getReviewerName = async (reviewerId) => {
+        // Check if we already have this name cached
+        if (reviewerNames[reviewerId]) {
+            return reviewerNames[reviewerId];
+        }
+
+        // Fetch the user data
+        const reviewer = await getUser(reviewerId);
+        if (reviewer) {
+            // Update the cache
+            setReviewerNames(prev => ({
+                ...prev,
+                [reviewerId]: reviewer.name
+            }));
+            return reviewer.name;
+        }
+
+        return "Unknown Reviewer";
+    };
+
+    useEffect(() => {
+        const loadReviewerNames = async () => {
+            const uniqueReviewerIds = [...new Set(reviews.map(r => r.reviewerId))];
+
+            for (const reviewerId of uniqueReviewerIds) {
+                if (!reviewerNames[reviewerId]) {
+                    await getReviewerName(reviewerId);
+                }
+            }
+        };
+
+        if (reviews.length > 0) {
+            loadReviewerNames();
+        }
+    }, [getReviewerName, reviewerNames, reviews]);
+
+    // Search functionality
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredProjects = () => {
+        if (!searchTerm) return projects;
+
+        return projects.filter(project =>
+            project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            project.field.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    };
+
+    // Review form state
+    const [reviewForm, setReviewForm] = useState({
+        rating: 0,
+        comment: ""
+    });
+
+    // Handle review form changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setReviewForm({
             ...reviewForm,
-            [name]: name === 'score' ? parseInt(value) || 0 : value
+            [name]: name === 'rating' ? parseInt(value) || 0 : value
         });
     };
 
-    const getStatusClass = (status) => {
-        switch (status) {
-            case 'Pending Review':
-                return 'status-pending';
-            case 'In Progress':
-                return 'status-progress';
-            case 'Completed':
-                return 'status-completed';
-            case 'Accepted':
-                return 'status-accepted';
-            case 'Rejected':
-                return 'status-rejected';
-            default:
-                return '';
+    // Submit a review
+    const handleReviewSubmit = async (projectId) => {
+        const newReview = {
+            //_id: `rev${reviews.length + 1}`,
+            rating: reviewForm.rating,
+            reviewerId: userId,
+            projectId: projectId,
+            comment: reviewForm.comment,
+            date: new Date().toISOString().split('T')[0],
+            type: "reviewer"
+        };
+
+        const API_CREATE_REVIEW = async () => {
+            try{
+                const response = await fetch('/api/Review', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ...newReview
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error('Failed to create review');
+                }
+                else{
+                    //setMilestone_id(result._id);
+                    return result;
+                }
+            }
+            catch(error) {
+                console.error('Error creating review:', error);
+            }
         }
+
+        const recId = await API_CREATE_REVIEW();
+        const addR = recId.review_model;
+        console.log(recId);
+        console.log("mod", recId.review_model.projectId);
+
+        setReviews([...reviews, addR]);
+        setActiveProject(null);
+        setReviewForm({ rating: 0, comment: "" });
     };
 
-    if (selectedProposal) {
-        const proposal = proposals.find(p => p.id === selectedProposal);
-
+    // Non-reviewer view
+    if (!user.isReviewer) {
         return (
-            <article className="reviewer-page-content">
-                <header className="flex justify-between items-center mb-8">
-                    <header className="header">
-                        <hgroup className="header-title-group">
-                            <figure className="back-arrow" onClick={() => setSelectedProposal(null)}>
-                                <ArrowLeft />
-                            </figure>
-                            <h1 className="page-title">Review Proposal</h1>
-                        </hgroup>
-                        <menu className="header-menu">
+            <main className="reviewer-page-content">
+                <header className="header">
+                    <h1>Research Project Reviews</h1>
+                    <nav>
+                        <ul>
                             <li>
-                                <button className="icon-button">
-                                    <Search size={20} />
+                                <button aria-label="Notifications">
+                                    <Bell size={20} aria-hidden="true" />
                                 </button>
                             </li>
                             <li>
-                                <button className="icon-button">
-                                    <Bell size={20} />
+                                <button>
+                                    <User size={20} aria-hidden="true" />
+                                    <strong>{user.name}</strong>
                                 </button>
                             </li>
                             <li>
-                                <button className="user-button">
-                                    <figure className="user-icon">
-                                        <User size={20} />
-                                    </figure>
-                                    <mark className="user-name">Monare</mark>
+                                <button aria-label="More options">
+                                    <MoreVertical size={20} aria-hidden="true" />
                                 </button>
                             </li>
-                            <li>
-                                <button className="menu-button">
-                                    <MoreVertical size={20} />
-                                </button>
-                            </li>
-                        </menu>
-                    </header>
+                        </ul>
+                    </nav>
                 </header>
 
-                <section className="review-proposal-detail">
-                    <article className="proposal-card detailed">
-                        <header className="proposal-header">
-                            <h2 className="proposal-title">{proposal.title}</h2>
-                            <p className={`proposal-status ${getStatusClass(proposal.status)}`}>{proposal.status}</p>
+                <section>
+                    <article>
+                        <h2>Become a Project Reviewer</h2>
+                        <p>You are currently not registered as a project reviewer. Reviewers help evaluate research proposals and contribute to the scientific community.</p>
+
+                        <footer>
+                            <button onClick={handleRequestReviewer} aria-label="Request to become a reviewer">
+                                <CheckCircle size={20} aria-hidden="true" />
+                                Request Reviewer Status
+                            </button>
+                        </footer>
+                    </article>
+
+                    <button onClick={handleToggleReviewerStatus}>
+                        [Demo: Toggle Reviewer Status]
+                    </button>
+                </section>
+            </main>
+        );
+    }
+
+    // If viewing a specific project
+    if (activeProject) {
+        const project = projects.find(p => p._id === activeProject);
+        const projectReviews = reviews.filter(r => r.projectId === activeProject);
+
+        return (
+            <main className="reviewer-page-content">
+                <header>
+                    <hgroup>
+                        <button onClick={() => setActiveProject(null)}>
+                            <ArrowLeft aria-hidden="true" />
+                            <span className="sr-only">Back to projects</span>
+                        </button>
+                        <h1>Review Project</h1>
+                    </hgroup>
+                    <nav>
+                        <ul>
+                            <li>
+                                <button aria-label="Search">
+                                    <Search size={20} aria-hidden="true" />
+                                </button>
+                            </li>
+                            <li>
+                                <button aria-label="Notifications">
+                                    <Bell size={20} aria-hidden="true" />
+                                </button>
+                            </li>
+                            <li>
+                                <button>
+                                    <User size={20} aria-hidden="true" />
+                                    <strong>{user.name}</strong>
+                                </button>
+                            </li>
+                            <li>
+                                <button aria-label="More options">
+                                    <MoreVertical size={20} aria-hidden="true" />
+                                </button>
+                            </li>
+                        </ul>
+                    </nav>
+                </header>
+
+                <section>
+                    <article>
+                        <header>
+                            <h2>{project.title}</h2>
                         </header>
-                        <p className="proposal-description">{proposal.description}</p>
-                        <dl className="proposal-meta">
-                            <dt>Submitter:</dt>
-                            <dd>{proposal.submitter}.</dd>
+                        <p>{project.description}</p>
 
-                            <dt>Institution:</dt>
-                            <dd>{proposal.institution}.</dd>
-                        </dl>
-                        <dl className="proposal-meta">
-                            <dt>Field:</dt>
-                            <dd>{proposal.field}.</dd>
-                        </dl>
-                        <dl className="proposal-meta">
-                            <dt>Submitted:</dt>
-                            <dd>{proposal.submitted}.</dd>
+                        <dl>
+                            <dt>Owner</dt>
+                            <dd>{project.owner}</dd>
 
-                            <dt>Review Deadline:</dt>
-                            <dd>{proposal.deadline}.</dd>
-                        </dl>
-                        <dl className="proposal-meta">
-                            <dt>Keywords:</dt>
-                            <dd>{proposal.keywords.join(", ")}.</dd>
+                            <dt>Field</dt>
+                            <dd>{project.field}</dd>
+
+                            <dt>Requirements</dt>
+                            <dd>{project.requirements}</dd>
+
+                            <dt>Funding Amount</dt>
+                            <dd>${project.fundingAmount}</dd>
+
+                            <dt>Funding Source</dt>
+                            <dd>{project.fundingSource}</dd>
+
+                            <dt>Start Date</dt>
+                            <dd>{project.startDate}</dd>
+
+                            <dt>End Date</dt>
+                            <dd>{project.endDate}</dd>
+
+                            <dt>Tags</dt>
+                            <dd>{project.tags.join(", ")}</dd>
+
+                            <dt>Required Skills</dt>
+                            <dd>{project.skills.join(", ")}</dd>
+
+                            <dt>Documents</dt>
+                            <dd>
+                                <ul>
+                                    {Array.isArray(project.documents) ? (
+                                        project.documents.map((doc, index) => (
+                                            <li key={index}>
+                                                <a href={`/documents/${project._id}/${doc}`} target="_blank" rel="noopener noreferrer">
+                                                    {doc}
+                                                </a>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <li>No documents available.</li>
+                                    )}
+                                </ul>
+                            </dd>
                         </dl>
                     </article>
 
-                    <form className="review-form">
-                        <fieldset className="review-fieldset">
-                            <legend>Your Review</legend>
+                    {projectReviews.length > 0 && (
+                        <section>
+                            <h3>Previous Reviews</h3>
+                            {projectReviews.map(review => (
+                                <article key={review._id}>
+                                    <header>
+                                        <h4>Review by {reviewerNames[review.reviewerId] || "Loading..."}</h4>
+                                        <p>Rating: {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</p>
+                                    </header>
+                                    <blockquote>{review.comment}</blockquote>
+                                    <footer>
+                                        <time dateTime={review.date}>{review.date}</time>
+                                    </footer>
+                                </article>
+                            ))}
+                        </section>
+                    )}
 
-                            <label htmlFor="score" className="score-label">Score (1-10):</label>
-                            <input
-                                type="number"
-                                id="score"
-                                name="score"
-                                min="1"
-                                max="10"
-                                value={reviewForm.score}
+                    <form>
+                        <fieldset>
+                            <legend>Submit Your Review</legend>
+
+                            <label htmlFor="rating">Rating (1-5 stars)</label>
+                            <select
+                                id="rating"
+                                name="rating"
+                                value={reviewForm.rating}
                                 onChange={handleInputChange}
-                                className="score-input"
-                            />
+                            >
+                                <option value="0">Select rating</option>
+                                <option value="1">1 ★</option>
+                                <option value="2">2 ★★</option>
+                                <option value="3">3 ★★★</option>
+                                <option value="4">4 ★★★★</option>
+                                <option value="5">5 ★★★★★</option>
+                            </select>
 
-                            <label htmlFor="comments" className="comments-label">Comments:</label>
+                            <label htmlFor="comment">Comments</label>
                             <textarea
-                                id="comments"
-                                name="comments"
-                                value={reviewForm.comments}
+                                id="comment"
+                                name="comment"
+                                value={reviewForm.comment}
                                 onChange={handleInputChange}
-                                className="comments-input"
                                 placeholder="Enter your review comments here..."
                                 rows="5"
                             ></textarea>
                         </fieldset>
 
-                        <footer className="review-actions">
-                            <button
-                                type="button"
-                                className="reject-button"
-                                onClick={() => handleReviewSubmit(proposal.id, 'reject')}
-                            >
-                                <XCircle size={20} />
-                                Reject Proposal
-                            </button>
-                            <button
-                                type="button"
-                                className="accept-button"
-                                onClick={() => handleReviewSubmit(proposal.id, 'accept')}
-                            >
-                                <CheckCircle size={20} />
-                                Accept Proposal
+                        <footer>
+                            <button type="button" onClick={() => handleReviewSubmit(project._id)}>
+                                Submit Review
                             </button>
                         </footer>
                     </form>
                 </section>
-            </article>
+
+                <button onClick={handleToggleReviewerStatus}>
+                    [Demo: Toggle Reviewer Status]
+                </button>
+            </main>
         );
     }
 
+    // Main reviewer view with tabs
     return (
-        <article className="reviewer-page-content">
-            <header className="flex justify-between items-center mb-8">
-                <header className="header">
-                    <hgroup className="header-title-group">
-                        <figure className="back-arrow">
-                            <ArrowLeft />
-                        </figure>
-                        <h1 className="page-title">My Reviews</h1>
-                    </hgroup>
-                    <menu className="header-menu">
+        <main className="reviewer-page-content">
+            <header>
+                <h1>Research Project Reviews</h1>
+                <nav>
+                    <ul>
                         <li>
-                            <button className="icon-button">
-                                <Search size={20} />
+                            <form role="search" onSubmit={e => e.preventDefault()}>
+                                <label htmlFor="search">Search projects</label>
+                                <input
+                                    type="search"
+                                    id="search"
+                                    placeholder="Search projects..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <button type="submit">
+                                    <Search size={20} aria-hidden="true" />
+                                    <span className="sr-only">Search</span>
+                                </button>
+                            </form>
+                        </li>
+                        <li>
+                            <button aria-label="Notifications">
+                                <Bell size={20} aria-hidden="true" />
                             </button>
                         </li>
                         <li>
-                            <button className="icon-button">
-                                <Bell size={20} />
+                            <button>
+                                <User size={20} aria-hidden="true" />
+                                <strong>{user.name}</strong>
                             </button>
                         </li>
                         <li>
-                            <button className="user-button">
-                                <figure className="user-icon">
-                                    <User size={20} />
-                                </figure>
-                                <mark className="user-name">Monare</mark>
+                            <button aria-label="More options">
+                                <MoreVertical size={20} aria-hidden="true" />
                             </button>
                         </li>
-                        <li>
-                            <button className="menu-button">
-                                <MoreVertical size={20} />
-                            </button>
-                        </li>
-                    </menu>
-                </header>
+                    </ul>
+                </nav>
             </header>
 
-            <section className="review-filters">
-                <button className="filter-button active">All Proposals</button>
-                <button className="filter-button">Pending Review</button>
-                <button className="filter-button">In Progress</button>
-                <button className="filter-button">Completed</button>
+            <nav>
+                <ul role="tablist">
+                    <li role="presentation">
+                        <button
+                            role="tab"
+                            aria-selected={activeTab === 'available'}
+                            onClick={() => setActiveTab('available')}
+                        >
+                            Available Projects
+                        </button>
+                    </li>
+                    <li role="presentation">
+                        <button
+                            role="tab"
+                            aria-selected={activeTab === 'completed'}
+                            onClick={() => setActiveTab('completed')}
+                        >
+                            My Completed Reviews
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <section aria-labelledby="available-tab" hidden={activeTab !== 'available'}>
+                {filteredProjects().length === 0 ? (
+                    <p>No available projects match your search.</p>
+                ) : (
+                    filteredProjects().map(project => (
+                        <article key={project._id}>
+                            <header>
+                                <h2>{project.title}</h2>
+                            </header>
+                            <p>{project.description}</p>
+                            <dl>
+                                <dt>Field</dt>
+                                <dd>{project.field}</dd>
+
+                                <dt>Requirements</dt>
+                                <dd>{project.requirements}</dd>
+
+                                <dt>Start Date</dt>
+                                <dd>{project.startDate}</dd>
+
+                                <dt>End Date</dt>
+                                <dd>{project.endDate}</dd>
+                            </dl>
+                            <footer>
+                                <button onClick={() => setActiveProject(project._id)}>
+                                    <MessageSquare size={16} aria-hidden="true" />
+                                    View Project
+                                </button>
+                            </footer>
+                        </article>
+                    ))
+                )}
             </section>
 
-            <section className="space-y-4">
-                {proposals.map(proposal => (
-                    <article key={proposal.id} className="proposal-card">
-                        <header className="proposal-header">
-                            <h2 className="proposal-title">{proposal.title}</h2>
-                            <p className={`proposal-status ${getStatusClass(proposal.status)}`}>{proposal.status}</p>
-                        </header>
-                        <p className="proposal-description">{proposal.description}</p>
-                        <dl className="proposal-meta">
-                            <dt>Submitter:</dt>
-                            <dd>{proposal.submitter}.</dd>
-
-                            <dt>Institution:</dt>
-                            <dd>{proposal.institution}.</dd>
-                        </dl>
-                        <dl className="proposal-meta">
-                            <dt>Field:</dt>
-                            <dd>{proposal.field}.</dd>
-                        </dl>
-                        <dl className="proposal-meta">
-                            <dt>Submitted:</dt>
-                            <dd>{proposal.submitted}.</dd>
-
-                            <dt>Review Deadline:</dt>
-                            <dd>{proposal.deadline}.</dd>
-                        </dl>
-                        <dl className="proposal-meta">
-                            <dt>Keywords:</dt>
-                            <dd>{proposal.keywords.join(", ")}.</dd>
-                        </dl>
-                        {proposal.score && (
-                            <dl className="proposal-meta">
-                                <dt>Your Score:</dt>
-                                <dd>{proposal.score}/10.</dd>
-                            </dl>
-                        )}
-                        {proposal.comments && (
-                            <dl className="proposal-meta comments-meta">
-                                <dt>Your Comments:</dt>
-                                <dd className="comments-text">{proposal.comments}</dd>
-                            </dl>
-                        )}
-                        <footer className="proposal-footer">
-                            <button
-                                className="review-button"
-                                onClick={() => setSelectedProposal(proposal.id)}
-                            >
-                                <MessageSquare size={16} />
-                                Review
-                            </button>
-                        </footer>
-                    </article>
-                ))}
+            <section aria-labelledby="completed-tab" hidden={activeTab !== 'completed'}>
+                {reviews.filter(r => r.reviewerId === userId).length === 0 ? (
+                    <p>No completed reviews match your search.</p>
+                ) : (
+                    reviews.filter(r => r.reviewerId === userId).map(review => {
+                        // console.log("Projects:", projects);
+                        // console.log("Review:", review);
+                        // console.log("Looking for project with ID:", review.projectId);
+                        const project = projects.find(p => String(p._id) === String(review.projectId));
+                        // console.log("review", review);
+                        // console.log("project", project);
+                        return (
+                            <article key={review._id}>
+                                <header>
+                                    <h2>{project?.title || "Unknown Project"}</h2>
+                                    <p>Your Rating: {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</p>
+                                </header>
+                                <blockquote>{review.comment}</blockquote>
+                                <footer>
+                                    <button onClick={() => setActiveProject(review.projectId)}>
+                                        <MessageSquare size={16} aria-hidden="true" />
+                                        View Details
+                                    </button>
+                                </footer>
+                            </article>
+                        );
+                    })
+                )}
             </section>
-        </article>
+
+            <button onClick={handleToggleReviewerStatus}>
+                [Demo: Toggle Reviewer Status]
+            </button>
+        </main>
     );
-}
+};
 
 export default ReviewerPage;

@@ -1,45 +1,72 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { ArrowLeft, Star, StarOff, Send, XCircle, UserCircle, Calendar } from 'lucide-react';
 import './projects.css';
 import './viewreview.css';
+import {jwtDecode} from "jwt-decode";
 
 const ReviewsPage = ({ project, onBack }) => {
     // Sample reviews data (in a real app, this would be fetched from an API)
-    const [reviews, setReviews] = useState([
-        {
-            id: 1,
-            projectId: 1,
-            reviewerId: "user123",
-            reviewerName: "Michael Brown",
-            rating: 4,
-            comment: "Excellent project with clear milestones. The team was responsive and the implementation met our specifications.",
-            date: "2025-04-15",
-            type: "Collaborator"
-        },
-        {
-            id: 2,
-            projectId: 1,
-            reviewerId: "user456",
-            reviewerName: "Sarah Johnson",
-            rating: 5,
-            comment: "Outstanding work! The AI diagnostic tool already shows promising results in our early tests. Looking forward to the full implementation.",
-            date: "2025-04-12",
-            type: "Stakeholder"
-        },
-        {
-            id: 3,
-            projectId: 2,
-            reviewerId: "user789",
-            reviewerName: "David Chen",
-            rating: 3,
-            comment: "Good progress, but timeline estimates were optimistic. Would recommend more buffer time for future planning phases.",
-            date: "2025-04-10",
-            type: "Project Manager"
-        }
-    ]);
+    const [reviews, setReviews] = useState([]);
 
     // Filter reviews for the current project
-    const projectReviews = reviews.filter(review => review.projectId === project.id);
+    //const projectReviews = reviews.filter(review => review.projectId === project.id);
+
+    useEffect(() => {
+
+        const Id = project.id;
+        //console.log(project);
+        //const fullName = localStorage.getItem('fullName');
+        const fetchReviews = async () => {
+
+            try{
+                const response = await fetch('/api/Review/find_research', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: Id,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to find reviews!');
+                }
+                const Review_data = await response.json();
+
+                if (!Array.isArray(Review_data)) {
+                    console.warn('API response is not an array:', Review_data);
+                    return [];
+                }
+                //map data since we are making an async call
+                return Review_data.map((review, index) => ({
+                    id: review._id,
+                    reviewerId: review.reviewerId,
+                    projectId: review.projectId,
+                    rating: review.rating,
+                    comment: review.comment,
+                    date: review.date,
+                    type: review.type,
+                }));
+
+
+            }
+            catch(error) {
+                console.error('Error finding reviews:', error);
+                //console.log("hello sir");
+                return [];
+            }
+        }
+
+        const loadReviews = async () => {
+            const reviews = await fetchReviews();
+            setReviews(reviews);
+        };
+
+        loadReviews();
+
+
+
+    }, [project.id]);
 
     // State for new review form
     const [showReviewForm, setShowReviewForm] = useState(false);
@@ -49,30 +76,131 @@ const ReviewsPage = ({ project, onBack }) => {
         type: 'Collaborator'
     });
 
+    const getUser = async (findId) => {
+        try {
+            const response = await fetch('/api/login/getUser', {
+                method: 'POST',
+                body: JSON.stringify({ id: findId }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to find user!');
+            }
+
+            const userData = await response.json();
+            // if (!Array.isArray(userData) || userData.length === 0) {
+            //     console.warn('API response is not a valid array:', userData);
+            //     return null;
+            // }
+            //const userData = ud;
+            //console.log(userData);
+            //console.log("token", userData.token)
+            const decoded = jwtDecode(userData.token);
+            //console.log('decoded: ', decoded.name);
+            return {
+                name: decoded.name || '',
+                isReviewer: userData.isReviewer,
+                token: userData.token,
+            };
+
+        } catch (error) {
+            console.error('Error finding user:', error);
+            return null;
+        }
+    };
+
+    const [reviewerNames, setReviewerNames] = useState({});
+
+    // Function to fetch and cache reviewer names
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const getReviewerName = async (reviewerId) => {
+        // Check if we already have this name cached
+        if (reviewerNames[reviewerId]) {
+            return reviewerNames[reviewerId];
+        }
+
+        // Fetch the user data
+        const reviewer = await getUser(reviewerId);
+        if (reviewer) {
+            // Update the cache
+            setReviewerNames(prev => ({
+                ...prev,
+                [reviewerId]: reviewer.name
+            }));
+            return reviewer.name;
+        }
+
+        return "Unknown Reviewer";
+    };
+
+    useEffect(() => {
+        const loadReviewerNames = async () => {
+            const uniqueReviewerIds = [...new Set(reviews.map(r => r.reviewerId))];
+
+            for (const reviewerId of uniqueReviewerIds) {
+                if (!reviewerNames[reviewerId]) {
+                    await getReviewerName(reviewerId);
+                }
+            }
+        };
+
+        if (reviews.length > 0) {
+            loadReviewerNames();
+        }
+    }, [getReviewerName, reviewerNames, reviews]);
+
     // Handle star rating
     const handleRatingChange = (rating) => {
         setNewReview({ ...newReview, rating });
     };
 
     // Handle form submission
-    const handleSubmitReview = (e) => {
+    const handleSubmitReview = async (e) => {
         e.preventDefault();
-
         // Create new review
         const reviewToAdd = {
-            id: reviews.length + 1,
             projectId: project.id,
-            reviewerId: "currentUser", // In a real app, this would come from authentication
-            reviewerName: "Monare", // This would also come from authentication
+            reviewerId: project.ownerId,
             rating: newReview.rating,
             comment: newReview.comment,
             date: new Date().toISOString().split('T')[0],
             type: newReview.type
         };
 
-        // Add to reviews and reset form
-        setReviews([...reviews, reviewToAdd]);
+        const API_CALL_CREATE_REVIEW = async () => {
+            try{
+                const response = await fetch('/api/Review', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ...reviewToAdd
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error('Failed to create review');
+                }
+                else{
+                    //setMilestone_id(result._id);
+                    return result._id;
+                }
+            }
+            catch(error) {
+                console.error('Error creating review:', error);
+            }
+        }
+
+        await API_CALL_CREATE_REVIEW();
+
         setNewReview({ rating: 0, comment: '', type: 'Collaborator' });
+        setReviews([...reviews, reviewToAdd]);
         setShowReviewForm(false);
     };
 
@@ -201,13 +329,13 @@ const ReviewsPage = ({ project, onBack }) => {
                     </form>
                 )}
 
-                {projectReviews.length === 0 ? (
+                {reviews.length === 0 ? (
                     <p className="no-reviews-message">
                         No reviews yet for this project.
                     </p>
                 ) : (
                     <section className="reviews-list">
-                        {projectReviews.map(review => (
+                        {reviews.map(review => (
                             <article key={review.id} className="review-card">
                                 <header className="review-header">
                                     <figure className="reviewer-info">
@@ -215,7 +343,7 @@ const ReviewsPage = ({ project, onBack }) => {
                                             <UserCircle size={32} />
                                         </figure>
                                         <figcaption>
-                                            <h3 className="reviewer-name">{review.reviewerName}</h3>
+                                            <h3 className="reviewer-name">{reviewerNames[review.reviewerId] || "Loading..."}</h3>
                                             <mark className="reviewer-type">{review.type}</mark>
                                         </figcaption>
                                     </figure>

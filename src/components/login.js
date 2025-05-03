@@ -1,9 +1,11 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useUser } from "./UserContext";
 
 
 function Login() {
+    const { setUserId } = useUser();
 
     const navigate = useNavigate();
 
@@ -11,7 +13,6 @@ function Login() {
 
     const onSuccess = async (res) => {
         console.log("LOGIN SUCCESS! User: ", res.clientId);
-        navigate('src/pages/homepage');
 
         const user = jwtDecode(res.credential);
 
@@ -32,9 +33,11 @@ function Login() {
 
         // Optional: check response
         const json = await response.json();
-        
+        //console.log("Server response:", json);
         localStorage.setItem('Mongo_id', json._id);
-
+        setUserId(json._id);
+        navigate('src/pages/homepage');
+        //console.log("Mongo ID:", json._id);
     }
 
     const onFailure = (err) => {
