@@ -9,7 +9,6 @@ const submit_user = async (req, res) => {
     
     //add token to db
     try{
-
         const allUsers = await LoginModel.find({});
         const decoded = jwt.decode(token);
 
@@ -59,7 +58,6 @@ const get_user = async (req, res) => {
         console.log("Could Not Find User!")
     }
 }
-
 
 
 module.exports = {

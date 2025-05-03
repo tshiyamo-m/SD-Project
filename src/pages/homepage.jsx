@@ -1,44 +1,27 @@
 import { useState, useEffect } from 'react';
 import './homepage.css';
-//import { jwtDecode } from 'jwt-decode';
+
 
     
 const HomePage = () => {
     const [name, setName] = useState("");
+    
     const [stats, setStats] = useState({
         activeProjects: 0,
         projectsReviewed: 0,
         collaborations: 0
     });
 
+
     //React hook to make sure code only runs when homepage renders
     useEffect(() => {
-        // This will only run when the component mounts
-        //const token = localStorage.getItem('token');
         const fullName = localStorage.getItem('fullName').split(" ");
         setName(fullName[0]);
-        //console.log("token: ", token);
-                                                    
-        /*if (token) {
-            try {
-                const decodedUser = jwtDecode(token);
-                if (decodedUser && decodedUser.name) {
-                    const fullName = decodedUser.name.split(" ");
-                    setName(fullName[0]);
-                    
-                }
-            } catch (error) {
-                console.error("Error decoding token:", error);
-                // Handle invalid token (optional: clear the token)
-                // localStorage.removeItem("token");
-            }
-        }*/
-
     }, []); 
     useEffect(() => {
 
         const Id = localStorage.getItem('Mongo_id');
-        //console.log(Id)
+       
         const fetchProjects = async () => {
 
             try{
@@ -56,8 +39,8 @@ const HomePage = () => {
                 }
                 else{
                     const data = await response.json();
-                    //const num_projects = data.projects.length
                     
+                    //console.log(data)
                     if (data != null){
                         const updateStats = () => {
                             setStats(prevStats => ({
@@ -65,7 +48,7 @@ const HomePage = () => {
                                 activeProjects: data.length,  // Update specific property
                             }));
                         };
-                        //console.log(data.projects.length);
+                        
                         updateStats();
                     }
                     
@@ -74,10 +57,12 @@ const HomePage = () => {
             catch(error) {
                 console.error('Error finding projects:', error);
             }
-        }
+        };
+
         fetchProjects();
 
     }, []);
+
 
 //  WHY IS THERE A DIV IN THIS CODE???
     return (
@@ -94,7 +79,9 @@ const HomePage = () => {
                     </p>
                     <p className="feature-cta">START YOUR DREAM PROJECT NOW</p>
 
-                    <button className="view-projects-button">
+                    <button className="view-projects-button"
+                    >
+                        
                         View Projects Page
                     </button>
                 </div> 

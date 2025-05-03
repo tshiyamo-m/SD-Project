@@ -1,9 +1,8 @@
 const ProjectModel = require('../models/ProjectsModel');
 const LoginModel = require('../models/LoginModel');
-const AddProjectModel = require('../models/AddProjectModel');
+const express = require('express');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const { ObjectId } = require('mongodb'); 
+const { ObjectId } = mongoose.Types;
 
 //POST Project
 
@@ -20,7 +19,8 @@ const submit_project = async (req, res) => {
         endDate,
         status,
         tags,
-        skills  } = req.body;
+        skills,
+        Documents  } = req.body;
 
 
     try{
@@ -37,7 +37,8 @@ const submit_project = async (req, res) => {
                                                         endDate,
                                                         status,
                                                         tags,
-                                                        skills})
+                                                        skills,
+                                                        Documents})
         res.status(200).json({
             project_model: project_model,
             _id: project_model._id})
@@ -103,9 +104,51 @@ const add_project = async (req, res) => {
     }
 }
 
+
+//POST Updated project into db
+const update_project = async (req,res) => {
+    
+    try {
+     
+        const { updates, projectId } = req.body;
+
+      // Prevent updating protected fields
+        const { id, created, ...sanitizedUpdates } = updates;
+        
+        const updatedProject = await mongoose.connection.db
+            .collection('Projects') // Replace with your actual collection name
+            .findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(projectId) },
+            { $set: sanitizedUpdates },
+            { returnDocument: 'after' } // Returns the updated document
+            );
+            
+        if (!updatedProject) {
+            return res.status(404).json({ error: "Project not found" });
+            
+        }
+        
+        res.status(200).json({
+            success: true,
+            project: updatedProject.value 
+        });
+          
+
+        } catch (err) {
+            console.error("Update error:", err);
+            res.status(500).json({ error: "Server error during update" });
+        }
+
+
+};    
+
+
+
+
 module.exports = {
     submit_project,
     retrieve_projects,
+    add_project,
+    update_project,
     retrieve_active_projects,
-    add_project
 }
