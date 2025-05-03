@@ -1,5 +1,4 @@
 const LoginModel = require('../models/LoginModel')
-const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken');
 
 //POST token
@@ -9,7 +8,7 @@ const submit_user = async (req, res) => {
     //add token to db
     try{
 
-        const allUsers = await LoginModel.find({}); //Wack, fix this later
+        const allUsers = await LoginModel.find({}); 
         const decoded = jwt.decode(token);
 
         if (!decoded) {
@@ -36,12 +35,6 @@ const submit_user = async (req, res) => {
         res.status(400).json({error: error.message})
         console.log("POST Request FAILED")
     }
-}
-
-
-//Delete a token
-const delete_token = async (req, res) => {
-    
 }
 
 

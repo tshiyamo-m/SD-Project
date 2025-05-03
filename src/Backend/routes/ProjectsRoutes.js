@@ -3,7 +3,8 @@ const express = require('express')
 const {
     submit_project,
     retrieve_projects,
-    add_project
+    add_project,
+    update_project
 } = require('../Controllers/ProjectsController')
 
 const router = express.Router()
@@ -13,5 +14,7 @@ router.post('/', submit_project)
 router.post('/find', retrieve_projects)
 
 router.post('/addproject', add_project)
+
+router.post('/updateproject', update_project )
 
 module.exports = router

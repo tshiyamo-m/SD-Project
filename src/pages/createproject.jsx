@@ -55,19 +55,13 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
             created: new Date().toISOString().split('T')[0],
             updated: new Date().toISOString().split('T')[0],
             tags: formData.tags.split(',').map(tag => tag.trim()),
-            skills: formData.skills.split(',').map(skill => skill.trim())
+            skills: formData.skills.split(',').map(skill => skill.trim()),
+            Documents: []
         };
 
         //API CALL TO SUBMIT PROJECT INTO DB
 
         const Mongo_id = localStorage.getItem('Mongo_id');
-        //Create "Project" object
-        // const Project = {
-        //     owner: Mongo_id, // or any other field
-        //     ...formData,
-           
-        // };
-        //console.log(Project);
         
         const API_CALL_CREATE_PROJECT = async () => {
             try{
