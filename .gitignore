@@ -28,3 +28,4 @@ yarn-error.log*
 
 #To ignore any root .env created in future
 .env 
+api/.env

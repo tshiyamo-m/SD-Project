@@ -23,6 +23,11 @@
         "route": "/*",
         "serve": "/index.html",
         "statusCode": 200
+      }, 
+      {
+        "route": "/api/invite",
+        "methods": ["POST"],
+        "allowedRoles": ["anonymous"]
       }
     ],
     "globalHeaders": {

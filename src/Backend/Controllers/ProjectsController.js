@@ -1,5 +1,8 @@
-const ProjectModel = require('../models/ProjectsModel')
-const mongoose = require('mongoose')
+const ProjectModel = require('../models/ProjectsModel');
+const LoginModel = require('../models/LoginModel');
+const express = require('express');
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 
 //POST Project
 
@@ -16,7 +19,9 @@ const submit_project = async (req, res) => {
         endDate,
         status,
         tags,
-        skills  } = req.body;
+        skills,
+        Documents  } = req.body;
+
 
     try{
 
@@ -32,20 +37,101 @@ const submit_project = async (req, res) => {
                                                         endDate,
                                                         status,
                                                         tags,
-                                                        skills})
-        res.status(200).json(project_model)
+                                                        skills,
+                                                        Documents})
+        res.status(200).json({
+            project_model: project_model,
+            _id: project_model._id})
         console.log("New Project Created!")
+        //console.log(project_model._id)
     } catch (error) {
         res.status(400).json({error: error.message})
-        console.log("Could Not Create Project!")
+        console.log("Could Not Create Project!");
     }
 }
 
-//GET Projects
-const retrieve_project = async (req, res) => {
-    //Discuss how projects are going to be retrieved i.e. through a query
+//Post Mongo_id to retrieve projects
+const retrieve_projects = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+
+        const AllProjects = await ProjectModel.find({ owner: id });  //Find the projects
+        res.status(200).json(AllProjects)
+        
+    }
+    catch(error) {
+        res.status(400).json({error: error.message});
+        console.log("Could Not Find Projects!")
+    }
+  
 }
 
+//POST Project id into user's project list
+const add_project = async (req, res) => {
+    const { user_id, project_id } = req.body; 
+
+    try{
+        const AddProject = await LoginModel.findByIdAndUpdate(
+            user_id,
+            { $push : {projects: project_id} },
+            {new: true }
+        );
+
+        res.status(200).json(AddProject)
+        console.log("Project Added!")
+
+    }
+    catch(error){
+        res.status(400).json({error: error.message});
+        console.log("Could Not Add Projects");
+    }
+}
+
+
+//POST Updated project into db
+const update_project = async (req,res) => {
+    
+    try {
+     
+        const { updates, projectId } = req.body;
+
+      // Prevent updating protected fields
+        const { id, created, ...sanitizedUpdates } = updates;
+        
+        const updatedProject = await mongoose.connection.db
+            .collection('Projects') // Replace with your actual collection name
+            .findOneAndUpdate(
+            { _id: new mongoose.Types.ObjectId(projectId) },
+            { $set: sanitizedUpdates },
+            { returnDocument: 'after' } // Returns the updated document
+            );
+            
+        if (!updatedProject) {
+            return res.status(404).json({ error: "Project not found" });
+            
+        }
+        
+        res.status(200).json({
+            success: true,
+            project: updatedProject.value 
+        });
+          
+
+        } catch (err) {
+            console.error("Update error:", err);
+            res.status(500).json({ error: "Server error during update" });
+        }
+
+
+};    
+
+
+
+
 module.exports = {
-    submit_project
+    submit_project,
+    retrieve_projects,
+    add_project,
+    update_project
 }

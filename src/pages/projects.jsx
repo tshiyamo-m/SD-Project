@@ -1,64 +1,93 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
 import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
-import ViewProjectPage from './viewproject'; // Import the new component
+import ViewProjectPage from './viewproject';
+import ReviewsPage from './viewreview';
 import axios from 'axios';
 
-
 const ProjectsPage = () => {
-    const [projects, setProjects] = useState([
-        {
-            id: 1,
-            title: "AI-Powered Diagnosis Assistant",
-            description: "Developing an AI tool for early diagnosis of respiratory illnesses.",
-            owner: "Dr. Jane Doe",
-            status: "Ongoing",
-            collaborators: ["John Smith", "Alice Lee"],
-            field: "Healthcare AI",
-            created: "2025-02-01",
-            updated: "2025-04-10",
-            skills: ["Machine Learning", "Python", "Medical Imaging"],
-            tags: ["Urgent", "Healthcare", "AI"]
-        },
-        {
-            id: 2,
-            title: "Smart City Traffic Management",
-            description: "Real-time traffic analysis system to reduce congestion in urban areas.",
-            owner: "Robert Chen",
-            status: "Planning",
-            collaborators: ["Maria Garcia", "Wei Zhang"],
-            field: "Urban Planning",
-            created: "2025-03-15",
-            updated: "2025-04-12",
-            skills: ["IoT", "Data Analysis", "Traffic Modeling"],
-            tags: ["Infrastructure", "Smart City", "Analytics"]
-        },
-        {
-            id: 3,
-            title: "Sustainable Agriculture Platform",
-            description: "Developing a platform that connects small farms with sustainable practices.",
-            owner: "Emily Johnson",
-            status: "Active",
-            collaborators: ["Michael Brown", "Sophia Rodriguez"],
-            field: "AgTech",
-            created: "2025-01-10",
-            updated: "2025-04-05",
-            skills: ["Full Stack Development", "GIS", "Sustainability Analysis"],
-            tags: ["Agriculture", "Sustainability", "Community"]
+    
+    const fullName = localStorage.getItem('fullName');
+    const [projects, setProjects] = useState([]);
+
+    useEffect(() => {
+
+        const Id = localStorage.getItem('Mongo_id');
+        const fullName = localStorage.getItem('fullName'); 
+        
+        const fetchProjects = async () => {
+            
+            try{
+                const response = await fetch('/api/Projects/find', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: Id,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json' 
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to find projects!');
+                }
+                const Project_data = await response.json();
+
+                if (!Array.isArray(Project_data)) {
+                    console.warn('API response is not an array:', Project_data);
+                    return [];
+                }
+                //map data since we are making an async call
+                
+                return Project_data.map((project) => ({
+                    id: project._id,
+                    title: project.title,
+                    owner: fullName,
+                    status: project.status,
+                    collaborators: project.collaborators,
+                    field: project.field,
+                    created: project.created,
+                    updated: project.updated,
+                    skills: project.skills,
+                    tags: project.tags
+                }));
+                
+
+            }
+            catch(error) {
+                console.error('Error finding projects:', error);
+                return [];
+            }
         }
-    ]);
+
+        const loadProjects = async () => {
+            const projects = await fetchProjects();
+            setProjects(projects);
+        };
+    
+        loadProjects();
+        
+
+
+    }, []);
+    
 
     const [viewingMilestones, setViewingMilestones] = useState(null);
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [viewingProject, setViewingProject] = useState(null); // New state for viewing a project
+    const [viewingProject, setViewingProject] = useState(null);
+    const [viewingReviews, setViewingReviews] = useState(null); // New state for viewing reviews
     const [showInviteModal, setShowInviteModal] = useState(false);
     const [inviteEmail, setInviteEmail] = useState('');
     const [invitingProjectId, setInvitingProjectId] = useState(null);
     const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
+    const [name, setName] = useState("");
 
-
+    useEffect(() => {
+        // This will only run when the component mounts
+        const fullName = localStorage.getItem('fullName');
+        setName(fullName);
+    }, []);
 
     // Handle view transitions
     if (viewingProject) {
@@ -75,6 +104,15 @@ const ProjectsPage = () => {
         />;
     }
 
+
+    // New condition for reviews page
+    if (viewingReviews) {
+        return <ReviewsPage
+            project={viewingReviews}
+            onBack={() => setViewingReviews(null)}
+        />;
+    }
+
     const handleCreateProject = (newProject) => {
         setProjects([...projects, newProject]);
     };
@@ -85,12 +123,13 @@ const ProjectsPage = () => {
             onCreateProject={handleCreateProject}
         />;
     }
-
+    
     const handleSendInvite = async (e) => {
         e.preventDefault();
-        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite/', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
         setShowInviteModal(false);
-      };
+    };
+
     return (
         <article className="project-page-content">
             <header className="flex justify-between items-center mb-8">
@@ -117,7 +156,7 @@ const ProjectsPage = () => {
                                 <figure className="user-icon">
                                     <User size={20} />
                                 </figure>
-                                <mark className="user-name">Monare</mark>
+                                <mark className="user-name">{name}</mark>
                             </button>
                         </li>
                         <li>
@@ -144,7 +183,7 @@ const ProjectsPage = () => {
                         <header className="project-header">
                             <h2 className="project-title">{project.title}</h2>
                             <hgroup className="project-info-group">
-                                <p><strong>Owner:</strong> {project.owner}</p>
+                                <p><strong>Owner:</strong> {fullName}</p>
                                 <p><strong>Status:</strong> {project.status}</p>
                             </hgroup>
                         </header>
@@ -179,41 +218,48 @@ const ProjectsPage = () => {
                                 Milestones
                             </button>
                             <button
+                                className="reviews-button"
+                                onClick={() => setViewingReviews(project)}
+                            >
+                                Reviews
+                            </button>
+                            <button
                                 className="view-button"
-                                onClick={() => setViewingProject(project)}
+                                onClick={() => {
+                                    setViewingProject({...project, owner: fullName})}}
                             >
                                 View
                             </button>
                             <button className="invite-button"
-                                onClick={() =>{
-                                    setInvitingProjectId(project.id);           
-                                    setInvitingProjectTitle(project.title);     
-                                    setShowInviteModal(true); }}
+                                    onClick={() =>{
+                                        setInvitingProjectId(project.id);
+                                        setInvitingProjectTitle(project.title);
+                                        setShowInviteModal(true); }}
                             >Invite Collaborator</button>
                             {showInviteModal && (
                                 <section className="modal-overlay" aria-modal="true" role="dialog">
                                     <article className="modal-content">
-                                    <header>
-                                        <h2>Invite Collaborator</h2>
-                                    </header>
+                                        <header>
+                                            <h2>Invite Collaborator</h2>
+                                        </header>
 
-                                    <form onSubmit={handleSendInvite}>
-                                        <label htmlFor="inviteEmail">Collaborator's Email:</label>
-                                        <input
-                                        type="email"
-                                        id="inviteEmail"
-                                        name="inviteEmail"
-                                        value={inviteEmail}//text is stored in React state
-                                        onChange={(e) => setInviteEmail(e.target.value)}
-                                        placeholder="Enter email address"
-                                        required
-                                        />
+                                        <form onSubmit={handleSendInvite}>
+                                            <label htmlFor="inviteEmail">Collaborator's Email:</label>
+                                            <input
+                                                type="email"
+                                                id="inviteEmail"
+                                                name="inviteEmail"
+                                                value={inviteEmail}
+                                                onChange={(e) => setInviteEmail(e.target.value)}
+                                                placeholder="Enter email address"
+                                                required
+                                            />
 
-                                        <footer>
-                                        <button type="submit">Send Invite</button>
-                                        <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
-                                        </footer>
-                                    </form>
+                                            <footer>
+                                                <button type="submit">Send Invite</button>
+                                                <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
+                                            </footer>
+                                        </form>
                                     </article>
                                 </section>
                             )}
