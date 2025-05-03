@@ -23,9 +23,18 @@
         "route": "/*",
         "serve": "/index.html",
         "statusCode": 200
+      }, 
+      {
+        "route": "/api/invite",
+        "methods": ["POST"],
+        "allowedRoles": ["anonymous"]
       }
     ],
     "globalHeaders": {
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
     }
+<<<<<<< HEAD
   }
+=======
+  }
+>>>>>>> ad725b5c9ebcc9cfecc4c244c31ec0696f34c966
