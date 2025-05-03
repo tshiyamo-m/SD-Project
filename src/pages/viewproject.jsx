@@ -1,33 +1,88 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X } from 'lucide-react';
 import './projects.css';
 import './viewproject.css';
 
-const ViewProjectPage = ({ project: initialProject, onBack }) => {
+const ViewProjectPage = ({ project: initialProject, onBack}) => {
     // State for project data with edit mode
     const [project, setProject] = useState(initialProject);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({...initialProject});
+    
+    const projectId = initialProject.id;
+    const fullName = localStorage.getItem('fullName');
+    
+    //API CALL TO VIEW DOCUMENTS HERE
 
     // Document state management
-    const [documents, setDocuments] = useState([
-        {
-            id: 1,
-            name: "Project Proposal",
-            type: "PDF",
-            uploadedBy: "Dr. Jane Doe",
-            uploadDate: "2025-03-12",
-            size: "2.4 MB"
-        },
-        {
-            id: 2,
-            name: "Initial Research Findings",
-            type: "DOCX",
-            uploadedBy: "John Smith",
-            uploadDate: "2025-03-28",
-            size: "4.1 MB"
+    const [documents, setDocuments] = useState([]);
+    
+
+    const fetchFiles = async (ProjectID) => {
+        try {
+
+
+            if (!ProjectID || typeof ProjectID !== 'string') {
+                throw new Error('Invalid project ID');
+            }
+            
+            const response = await fetch('/Bucket/retrievedocs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({projectID: ProjectID})
+            });
+      
+            if (!response.ok) {
+                const errorData = await response.text();
+                console.error('Download failed with status:', response.status, errorData);
+                throw new Error('Failed to download file');
+            }
+      
+            const fileData = await response.json();
+
+            if (!(fileData == null)){
+                //console.log('Retrieved file:', fileData);
+
+                return fileData.map(file => ({
+                    id: file._id.toString(),
+                    name: file.filename,
+                    type: file.filename.split('.').pop().toUpperCase(),
+                    uploadedBy: file.uploadedBy, // You might want to store this in metadata
+                    uploadDate: new Date(file.uploadDate).toLocaleDateString(),
+                    size: `${(file.length / 1024).toFixed(1)} KB`,
+                    metadata: file.metadata // Include all metadata
+                }));
+            }
+            else{
+                return [];
+            }
+
+        } catch (error) {
+          console.error('Error fetching documents:', error);
+          throw error;
         }
-    ]);
+      };
+
+      useEffect(() => {
+        const loadDocuments = async () => {
+            
+            try {
+                const fetchedDocuments = await fetchFiles(initialProject.id);
+                setDocuments(fetchedDocuments);
+            } catch (err) {
+                console.error('Failed to load documents:', err);
+                
+            } finally {
+                
+            }
+        };
+
+        if (initialProject.id) {
+            loadDocuments();
+        }
+    }, [initialProject.id]);
 
     // Upload form state
     const [showUploadForm, setShowUploadForm] = useState(false);
@@ -47,30 +102,114 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
             });
         }
     };
+    //const Mongo_id = localStorage.getItem("Mongo_id")
 
     // Handle document upload
-    const handleUpload = (e) => {
+    const handleUpload = async (e) => {
         e.preventDefault();
         if (newDocument.file) {
             const uploadedDoc = {
                 id: documents.length + 1,
                 name: newDocument.name,
                 type: newDocument.file.name.split('.').pop().toUpperCase(),
-                uploadedBy: "Monare", // Current user
+                uploadedBy: fullName, // Current user
                 uploadDate: new Date().toISOString().split('T')[0],
                 size: `${(newDocument.file.size / (1024 * 1024)).toFixed(1)} MB`
+
+
             };
+
+            const formData = new FormData();
+            formData.append('file', newDocument.file); // 'file' should match the multer field name
+            formData.append('ProjectID', projectId); 
+            formData.append('uploadedBy', uploadedDoc.uploadedBy)
+            
+            await fetch('/Bucket/submitdoc', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Upload successful:', data);
+              // Save data.fileId for future reference
+            })
+            .catch(error => {
+              console.error('Upload error:', error); 
+            });
+
 
             setDocuments([...documents, uploadedDoc]);
             setShowUploadForm(false);
             setNewDocument({ name: "", file: null });
+
         }
     };
+    
 
     // Handle document deletion
-    const handleDeleteDocument = (docId) => {
-        setDocuments(documents.filter(doc => doc.id !== docId));
+    const handleDeleteDocument = async (docId) => {
+
+        setDocuments(documents.filter(doc => doc.id !== docId));  //delete from UI
+
+        const strDocId = docId.toString();
+
+        try { //Delete from Database
+            const response = await fetch('/Bucket/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({fileId: strDocId})
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+                
+            }
+
+            console.log(response.message);
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            
+        }
+
     };
+
+    
+
+    const handleDownloadDocument = async (docId, docName) => {
+        
+        const strDocId = docId.toString();
+        try {
+            const response = await fetch('/Bucket/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({fileId: strDocId})
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+                
+            }
+    
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = docName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            
+        }
+    }
 
     // Enable edit mode
     const enableEditMode = () => {
@@ -85,9 +224,40 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
 
     // Save project changes
     const saveProjectChanges = () => {
-        setProject({...editData, updated: new Date().toISOString().split('T')[0]});
+        const Mongo_id = localStorage.getItem("Mongo_id");
+        const Updated_Project =  {...editData, owner: Mongo_id, updated: new Date().toISOString().split('T')[0]}
+        setProject({...editData, updated: new Date().toISOString().split('T')[0]});  
         setIsEditing(false);
-    };
+
+        const UpdateProject = async () => {
+
+            try{
+                const response = await fetch('/api/Projects/updateproject', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        updates: Updated_Project,
+                        projectId: projectId
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json' 
+                    }
+                });
+                if (!response.ok) {
+                    console.log("mayne");
+                    throw new Error('Failed to update project!');
+                }
+                
+
+            }
+            catch(error) {
+                console.log('Error updating project:', error);
+            }
+        }
+
+        UpdateProject();
+
+        
+    }
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -133,7 +303,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                 <figure className="user-icon">
                                     <User size={20} />
                                 </figure>
-                                <em className="user-name">Monare</em>
+                                <em className="user-name">{fullName}</em> 
                             </button>
                         </li>
                         <li>
@@ -206,7 +376,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                 value={editData.description}
                                 onChange={handleInputChange}
                                 rows="4"
-                            />
+                            /> 
                         </label>
                     )}
 
@@ -324,7 +494,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                     </button>
                                 </section>
                             </fieldset>
-                        )}
+                        )} 
                     </section>
                 </article>
             </section>
@@ -406,8 +576,12 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                 <td>
                                     <menu className="document-actions">
                                         <li>
-                                            <button className="action-button download-button" aria-label="Download document">
+                                            <button 
+                                                className="action-button download-button" 
+                                                aria-label="Download document"
+                                                onClick={() => handleDownloadDocument(doc.id, doc.name)}>
                                                 <Download size={16} />
+                                                
                                             </button>
                                         </li>
                                         <li>
