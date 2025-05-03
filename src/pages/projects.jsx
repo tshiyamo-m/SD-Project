@@ -39,11 +39,11 @@ const ProjectsPage = () => {
                     return [];
                 }
                 //map data since we are making an async call
-                
-                return Project_data.map((project) => ({
+                return Project_data.map((project, index) => ({
                     id: project._id,
                     title: project.title,
                     owner: fullName,
+                    ownerId: project.owner,
                     status: project.status,
                     collaborators: project.collaborators,
                     field: project.field,
@@ -52,7 +52,6 @@ const ProjectsPage = () => {
                     skills: project.skills,
                     tags: project.tags
                 }));
-                
 
             }
             catch(error) {

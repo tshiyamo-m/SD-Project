@@ -4,7 +4,8 @@ const {
     submit_project,
     retrieve_projects,
     add_project,
-    update_project
+    update_project,
+    retrieve_active_projects,
 } = require('../Controllers/ProjectsController')
 
 const router = express.Router()
@@ -12,6 +13,8 @@ const router = express.Router()
 router.post('/', submit_project)
 
 router.post('/find', retrieve_projects)
+
+router.post('/find_active_projects', retrieve_active_projects)
 
 router.post('/addproject', add_project)
 
