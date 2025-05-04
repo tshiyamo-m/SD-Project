@@ -1,7 +1,6 @@
 const LoginModel = require('../models/LoginModel')
 //const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken');
-const mongoose = require("mongoose");
 //const {ObjectId} = require("mongoose");
 
 //POST token
@@ -46,11 +45,11 @@ const submit_user = async (req, res) => {
 // }
 
 const get_user = async (req, res) => {
-    const findId= req.body.findId;
+    const userId = "6813d05ff67ef87dd1c25893";
 
     try {
 
-        const User = await LoginModel.findById(findId);
+        const User = await LoginModel.findById(userId);
         res.status(200).json(User)
 
     }
@@ -60,83 +59,8 @@ const get_user = async (req, res) => {
     }
 }
 
-const get_all_users = async (req, res) => {
-    try {
-        const User = await LoginModel.find({});
-        res.status(200).json(User)
-
-    }
-    catch(error) {
-        res.status(400).json({error: error.message});
-        console.log("Could Not Find Users!")
-    }
-}
-
-const update_is_reviewer = async (req, res) => {
-    try {
-        //const { userId, isReviewer } = req.body;
-        const userId = req.body.userId;
-        const isReviewer = req.body.isReviewer;
-
-        // No need to sanitize isReviewer since it should be a string value, not an object
-
-        const updatedUser = await mongoose.connection.db
-            .collection('Users')
-            .findOneAndUpdate(
-                { _id: new mongoose.Types.ObjectId(userId) },
-                { $set: { isReviewer: isReviewer } }, // Correct way to set the isReviewer field
-                { returnDocument: 'after' } // Returns the updated document
-            );
-
-        if (!updatedUser) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.status(200).json({
-            success: true,
-            user: updatedUser // Return the updated user document
-        });
-
-    } catch (err) {
-        console.error("Update error:", err);
-        res.status(500).json({ error: "Server error during update" });
-    }
-};
-
-const make_admin = async (req, res) => {
-    try {
-        const { userId } = req.body;
-
-        // No need to sanitize isReviewer since it should be a string value, not an object
-
-        const updatedUserAdmin = await mongoose.connection.db
-            .collection('Users')
-            .findOneAndUpdate(
-                { _id: new mongoose.Types.ObjectId(userId) },
-                { $set: { isAdmin : true } },
-                { returnDocument: 'after' } // Returns the updated document
-            );
-
-        if (!updatedUserAdmin) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.status(200).json({
-            success: true,
-            user: updatedUserAdmin // Return the updated user document
-        });
-
-    } catch (err) {
-        console.error("Update error:", err);
-        res.status(500).json({ error: "Server error during update" });
-    }
-};
-
 
 module.exports = {
     submit_user,
-    get_user,
-    get_all_users,
-    update_is_reviewer,
-    make_admin,
+    get_user
 }
