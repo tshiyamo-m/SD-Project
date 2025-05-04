@@ -1,0 +1,11 @@
+{
+    "name": "functions-api",
+    "version": "1.0.0",
+    "description": "Azure Functions backend",
+    "main": "index.js",
+    "scripts": {
+      "start": "func start"
+    },
+    "dependencies": {}
+  }
+  
