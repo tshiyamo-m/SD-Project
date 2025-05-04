@@ -1,72 +1,89 @@
-{
-  "name": "sd-project",
-  "version": "0.1.0",
-  "proxy": "http://localhost:4000",
-  "private": true,
-  "dependencies": {
-    "@react-oauth/google": "^0.12.1",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.9.0",
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "fs": "^0.0.1-security",
-    "gapi-script": "^1.2.0",
-    "jsonwebtoken": "^9.0.2",
-    "jwt-decode": "^4.0.0",
-    "lucide-react": "^0.488.0",
-    "method-override": "^3.0.0",
-    "mongodb": "^6.15.0",
-    "mongoose": "^8.14.1",
-    "multer": "^1.4.4",
-    "multer-gridfs-storage": "^5.0.2",
-    "nodemailer": "^6.10.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-hot-toast": "^2.5.2",
-    "react-icons": "^5.5.0",
-    "react-router-dom": "^7.5.0",
-    "react-scripts": "5.0.1",
-    "sd-project": "file:",
-    "serve": "^14.2.4",
-    "uuid": "^11.1.0",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "serve -s build -l 8080",
-    "build": "react-scripts build",
-    "dev": "react-scripts start",
-    "server": "cd src/Backend && npm run dev",
-    "start:both": "concurrently \"npm run dev\" \"npm run server\"",
-    "test": "react-scripts test --coverage --watchAll=false",
-    "coverage": "npm test -- --coverage",
-    "test:coverage": "jest --coverage",
-    "eject": "react-scripts eject",
-    "test:full": "node run-jest.js"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "concurrently": "^9.1.2",
-    "jest": "^27.5.1"
-  }
-}
+name: Build and deploy Node.js app to Azure Web App - U-Collab
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Test
+        run: npm run test --if-present
+
+      # Only zip necessary files (exclude node_modules)
+      - name: Zip artifact for deployment
+        run: |
+          zip -r release.zip . \
+            -x 'node_modules/*' \
+            -x '.git/*' \
+            -x '.github/*'
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: release.zip
+          retention-days: 1
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+          path: .
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip -d .
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_F53C3B888BB748348E36489683778223 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_1C4CF83ED09C4CA3993AB4F5F52D2E34 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_19DBA8B65014451C82DABA70D2B671BD }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'U-Collab'
+          slot-name: 'Production'
+          package: .
