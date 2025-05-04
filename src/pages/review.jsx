@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useState} from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
 import './projects.css'
