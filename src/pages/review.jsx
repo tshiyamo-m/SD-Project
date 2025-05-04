@@ -8,16 +8,13 @@ import { jwtDecode } from 'jwt-decode';
 const ReviewerPage = () => {
     // User state
     const { userId } = useUser();
-
     const [user, setUser] = useState({});
 
     const getUser = async (findId) => {
         try {
             const response = await fetch('/api/login/getUser', {
                 method: 'POST',
-                body: JSON.stringify({
-                    findId: findId
-                }),
+                body: JSON.stringify({ id: findId }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -33,7 +30,7 @@ const ReviewerPage = () => {
             //     return null;
             // }
             //const userData = ud;
-            //console.log(uD);
+            //console.log(userData);
             //console.log("token", userData.token)
             const decoded = jwtDecode(uD.token);
             //console.log('decoded: ', decoded.name);
@@ -87,7 +84,6 @@ const ReviewerPage = () => {
 
     // Projects data
     const [projects, setProjects] = useState([]);
-    const [documents, setDocuments] = useState([]);
 
     const getAllProjects = async () => {
         try {
@@ -127,7 +123,7 @@ const ReviewerPage = () => {
                     endDate: project.endDate.split('T')[0],
                     tags: project.tags,
                     skills: project.skills,
-                    //documents: Array.isArray(project.documents) ? project.documents : []
+                    documents: Array.isArray(project.documents) ? project.documents : []
             }))
 
         } catch (error) {
@@ -135,70 +131,6 @@ const ReviewerPage = () => {
             return null;
         }
     };
-
-
-    const fetchFiles = async (ProjectID) => {
-        try {
-
-
-            if (!ProjectID || typeof ProjectID !== 'string') {
-                throw new Error('Invalid project ID');
-            }
-
-            const response = await fetch('/Bucket/retrievedocs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({projectID: ProjectID})
-            });
-
-            if (!response.ok) {
-                const errorData = await response.text();
-                console.error('Download failed with status:', response.status, errorData);
-                throw new Error('Failed to download file');
-            }
-
-            const fileData = await response.json();
-
-            if (!(fileData == null)){
-                //console.log('Retrieved file:', fileData);
-
-                return fileData.map(file => ({
-                    id: file._id.toString(),
-                    name: file.filename,
-                    type: file.filename.split('.').pop().toUpperCase(),
-                    uploadedBy: file.uploadedBy, // You might want to store this in metadata
-                    uploadDate: new Date(file.uploadDate).toLocaleDateString(),
-                    size: `${(file.length / 1024).toFixed(1)} KB`,
-                    metadata: file.metadata // Include all metadata
-                }));
-            }
-            else{
-                return [];
-            }
-
-        } catch (error) {
-            console.error('Error fetching documents:', error);
-            throw error;
-        }
-    };
-
-    useEffect(() => {
-        if (!activeProject) return;
-
-        const loadDocuments = async () => {
-            try {
-                const fetchedDocuments = await fetchFiles(activeProject);
-                setDocuments(fetchedDocuments);
-            } catch (err) {
-                console.error('Failed to load documents:', err);
-                setDocuments([]);
-            }
-        };
-
-        loadDocuments();
-    }, [activeProject]);
 
     useEffect(() => {
 
@@ -267,54 +199,17 @@ const ReviewerPage = () => {
 
     }, []);
 
-    const changeReviewStatus = () => {
-        //const Mongo_id = localStorage.getItem("Mongo_id");
-        const UpdateProject = async () => {
-
-            try{
-                const response = await fetch('/api/login/update_is_reviewer', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        isReviewer: "pending",
-                        userId: userId
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    //console.log("mayne");
-                    throw new Error('Failed to update project!');
-                }
-
-
-            }
-            catch(error) {
-                console.log('Error updating project:', error);
-            }
-        }
-
-        UpdateProject();
-
-
-    }
-
     // Toggle reviewer status
     const handleToggleReviewerStatus = () => {
         setUser(prevUser => ({
             ...prevUser,
-            isReviewer: "false"
+            isReviewer: !prevUser.isReviewer
         }));
     };
 
     // Request to become a reviewer
     const handleRequestReviewer = () => {
-        setUser(prevUser => ({
-            ...prevUser,
-            isReviewer: "pending"
-        }));
-        changeReviewStatus();
-        //alert("Request to become a reviewer has been submitted!");
+        alert("Request to become a reviewer has been submitted!");
     };
 
     const [reviewerNames, setReviewerNames] = useState({});
@@ -435,41 +330,8 @@ const ReviewerPage = () => {
         setReviewForm({ rating: 0, comment: "" });
     };
 
-    const handleDownloadDoc = async (docId, docName) => {
-
-        const stringDocId = docId.toString();
-        try {
-            const response = await fetch('/Bucket/download', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({fileId: stringDocId})
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to download file');
-
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = docName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            a.remove();
-
-        } catch (error) {
-            console.error('Download error:', error);
-
-        }
-    }
-
     // Non-reviewer view
-    if (user.isReviewer === "false") {
+    if (!user.isReviewer) {
         return (
             <main className="reviewer-page-content">
                 <header className="header">
@@ -508,43 +370,10 @@ const ReviewerPage = () => {
                             </button>
                         </footer>
                     </article>
-                </section>
-            </main>
-        );
-    }
 
-    if (user.isReviewer === "pending") {
-        return (
-            <main className="reviewer-page-content">
-                <header className="header">
-                    <h1>Research Project Reviews</h1>
-                    <nav>
-                        <ul>
-                            <li>
-                                <button aria-label="Notifications">
-                                    <Bell size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                            <li>
-                                <button>
-                                    <User size={20} aria-hidden="true" />
-                                    <strong>{user.name}</strong>
-                                </button>
-                            </li>
-                            <li>
-                                <button aria-label="More options">
-                                    <MoreVertical size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
-                </header>
-
-                <section>
-                    <article>
-                        <h2>Become a Project Reviewer</h2>
-                        <p>You have applied to be a reviewer. An admin should attend to your request in due time.</p>
-                    </article>
+                    <button onClick={handleToggleReviewerStatus}>
+                        [Demo: Toggle Reviewer Status]
+                    </button>
                 </section>
             </main>
         );
@@ -559,11 +388,8 @@ const ReviewerPage = () => {
             <main className="reviewer-page-content">
                 <header>
                     <hgroup>
-                        <button onClick={() => {
-                            setActiveProject(null);
-                            setDocuments([]);
-                        }}>
-                            <ArrowLeft aria-hidden="true"/>
+                        <button onClick={() => setActiveProject(null)}>
+                            <ArrowLeft aria-hidden="true" />
                             <span className="sr-only">Back to projects</span>
                         </button>
                         <h1>Review Project</h1>
@@ -571,7 +397,7 @@ const ReviewerPage = () => {
                     <nav>
                         <ul>
                             <li>
-                            <button aria-label="Search">
+                                <button aria-label="Search">
                                     <Search size={20} aria-hidden="true" />
                                 </button>
                             </li>
@@ -633,20 +459,12 @@ const ReviewerPage = () => {
                             <dt>Documents</dt>
                             <dd>
                                 <ul>
-                                    {documents.length > 0 ? (
-                                        documents.map((doc, index) => (
+                                    {Array.isArray(project.documents) ? (
+                                        project.documents.map((doc, index) => (
                                             <li key={index}>
-                                                <a
-                                                    href="#"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleDownloadDoc(doc.id, doc.name);
-                                                    }}
-                                                    style={{ color: 'blue', textDecoration: 'underline' }}
-                                                >
-                                                    {doc.name}
+                                                <a href={`/documents/${project._id}/${doc}`} target="_blank" rel="noopener noreferrer">
+                                                    {doc}
                                                 </a>
-                                                <span> ({doc.type}, {doc.size})</span>
                                             </li>
                                         ))
                                     ) : (
@@ -712,6 +530,10 @@ const ReviewerPage = () => {
                         </footer>
                     </form>
                 </section>
+
+                <button onClick={handleToggleReviewerStatus}>
+                    [Demo: Toggle Reviewer Status]
+                </button>
             </main>
         );
     }
@@ -845,6 +667,10 @@ const ReviewerPage = () => {
                     })
                 )}
             </section>
+
+            <button onClick={handleToggleReviewerStatus}>
+                [Demo: Toggle Reviewer Status]
+            </button>
         </main>
     );
 };

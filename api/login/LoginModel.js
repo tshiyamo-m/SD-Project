@@ -10,14 +10,6 @@ const loginSchema = new Schema({  //Layout of schema
     projects: {
         type:[String],
         required: true
-    },
-    isReviewer: {
-        type: String,
-        default: "false"
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false
     }
 }, { timestamps : true } ) //timestamp argument gives a 'date created' attribute to a document created in the db
 
