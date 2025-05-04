@@ -25,7 +25,7 @@ const HomePage = () => {
         const fetchProjects = async () => {
 
             try{
-                const response = await fetch('/api/Projects/find', {
+                const response = await fetch('/api/projects/retrieveActiveProjects', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,

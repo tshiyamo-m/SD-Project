@@ -29,3 +29,6 @@ yarn-error.log*
 #To ignore any root .env created in future
 .env 
 api/.env
+
+#Azure equivalent of .env
+local.settings.json

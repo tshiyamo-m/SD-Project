@@ -20,7 +20,7 @@ const ProjectsPage = () => {
         const fetchProjects = async () => {
             
             try{
-                const response = await fetch('/api/Projects/find', {
+                const response = await fetch('/api/projects/retrieveProjects', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,
@@ -125,7 +125,7 @@ const ProjectsPage = () => {
     
     const handleSendInvite = async (e) => {
         e.preventDefault();
-        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+        await axios.post('api/invites', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
         setShowInviteModal(false);
     };
 

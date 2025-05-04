@@ -65,7 +65,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         
         const API_CALL_CREATE_PROJECT = async () => {
             try{
-                const response = await fetch('/api/Projects', {  
+                const response = await fetch('/api/projects/submitProject', {  
                     method: 'POST',
                     body: JSON.stringify({
                         owner: Mongo_id,
@@ -104,7 +104,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         const API_CALL_ADD_PROJECT = async () => {
 
             try{
-                const response = await fetch('/api/Projects/addproject', {  
+                const response = await fetch('/api/projects/addProject', {  
                     method: 'POST',
                     body: JSON.stringify(Data),
                     headers: {
