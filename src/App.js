@@ -12,6 +12,7 @@ import FinancesPage from './pages/finance';
 // import LogoutPage from './pages/LogoutPage';
 import './App.css';
 import { UserProvider } from "./components/UserContext";
+import AdminPage from "./pages/admin_pages/admin";
 
 function App() {
   //To fix the refreshing issue
@@ -43,6 +44,7 @@ function App() {
                       {<Route path="/src/pages/finance" element={<FinancesPage />} />}
                       {/*<Route path="/src/pages/settings" element={<SettingsPage />} />*/}
                       {/*<Route path="/src/pages/logout" element={<LogoutPage />} />*/}
+                      {<Route path="/src/pages/admin_pages/admin" element={<AdminPage />} />}
                   </Routes>
               </AppLayout>
           </BrowserRouter>
