@@ -23,7 +23,9 @@ function Login() {
             method: 'POST',
             body: JSON.stringify({
                 token: res.credential,
-                projects: []
+                projects: [],
+                isReviewed: "false",
+                isAdmin: false,
             }),
             headers: {
                 'Content-Type': 'application/json' 
@@ -36,7 +38,10 @@ function Login() {
         //console.log("Server response:", json);
         localStorage.setItem('Mongo_id', json._id);
         setUserId(json._id);
-        navigate('src/pages/homepage');
+        if (json.isAdmin) navigate('src/pages/admin_pages/admin');
+        else navigate('src/pages/homepage');
+        //navigate('src/pages/homepage');
+        //navigate('src/pages/admin_pages/admin');
         //console.log("Mongo ID:", json._id);
     }
 
