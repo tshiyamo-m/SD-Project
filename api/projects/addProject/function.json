@@ -1,0 +1,19 @@
+{
+    "bindings": [
+      {
+        "authLevel": "function",
+        "type": "httpTrigger",
+        "direction": "in",
+        "name": "req",
+        "methods": ["post"],
+        "route": "projects/addproject"
+      },
+      {
+        "type": "http",
+        "direction": "out",
+        "name": "res"
+      }
+    ],
+    "scriptFile": "../index.js",
+    "entryPoint": "add_project" 
+  }

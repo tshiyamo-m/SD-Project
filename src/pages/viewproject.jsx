@@ -26,7 +26,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                 throw new Error('Invalid project ID');
             }
             
-            const response = await fetch('/Bucket/retrievedocs', {
+            const response = await fetch('/api/buckets', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -124,7 +124,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
             formData.append('ProjectID', projectId); 
             formData.append('uploadedBy', uploadedDoc.uploadedBy)
             
-            await fetch('/Bucket/submitdoc', {
+            await fetch('/api/buckets', {
               method: 'POST',
               body: formData
             })
@@ -154,7 +154,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
         const strDocId = docId.toString();
 
         try { //Delete from Database
-            const response = await fetch('/Bucket/delete', {
+            const response = await fetch('/api/buckets', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -182,7 +182,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
         
         const strDocId = docId.toString();
         try {
-            const response = await fetch('/Bucket/download', {
+            const response = await fetch('/api/buckets', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -232,7 +232,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
         const UpdateProject = async () => {
 
             try{
-                const response = await fetch('/api/Projects/updateproject', {
+                const response = await fetch('/api/projects/updateProject', {
                     method: 'POST',
                     body: JSON.stringify({
                         updates: Updated_Project,

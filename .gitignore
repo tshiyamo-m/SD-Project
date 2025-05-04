@@ -11,6 +11,7 @@
 # production
 /build
 
+
 #Backend
 src/Backend/.env
 src/Backend/node_modules/
@@ -29,3 +30,6 @@ yarn-error.log*
 #To ignore any root .env created in future
 .env 
 api/.env
+
+#Azure equivalent of .env
+local.settings.json

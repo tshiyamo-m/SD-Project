@@ -91,7 +91,7 @@ const ReviewerPage = () => {
 
     const getAllProjects = async () => {
         try {
-            const response = await fetch('/api/Projects/find_active_projects', {
+            const response = await fetch('/api/projects/retrieveActiveProjects', {
                 method: 'POST',
                 body: JSON.stringify({ status: "Active" }),
                 headers: {
@@ -222,7 +222,7 @@ const ReviewerPage = () => {
         const fetchAllReviews = async () => {
 
             try{
-                const response = await fetch('/api/Review/get_all_reviews', {
+                const response = await fetch('/api/reviews/getAllReviews', {
                     method: 'POST',
                     body: JSON.stringify({}),
                     headers: {
@@ -400,7 +400,7 @@ const ReviewerPage = () => {
 
         const API_CREATE_REVIEW = async () => {
             try{
-                const response = await fetch('/api/Review', {
+                const response = await fetch('/api/reviews/submitReview', {
                     method: 'POST',
                     body: JSON.stringify({
                         ...newReview

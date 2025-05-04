@@ -1,7 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
-const Invite = require('../../../api/invite/InviteModel');
+const Invite = require('./InviteModel');//"./" means in the same/current directory
 const nodemailer = require('nodemailer');
+require('dotenv').config({ path: '../.env' });//For running locally
 
 module.exports = async function (context, req) {
     try {

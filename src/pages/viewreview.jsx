@@ -19,7 +19,7 @@ const ReviewsPage = ({ project, onBack }) => {
         const fetchReviews = async () => {
 
             try{
-                const response = await fetch('/api/Review/find_research', {
+                const response = await fetch('/api/reviews/retrieveReviewsResearcher', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,
@@ -172,7 +172,7 @@ const ReviewsPage = ({ project, onBack }) => {
 
         const API_CALL_CREATE_REVIEW = async () => {
             try{
-                const response = await fetch('/api/Review', {
+                const response = await fetch('/api/reviews/submitReview', {
                     method: 'POST',
                     body: JSON.stringify({
                         ...reviewToAdd
