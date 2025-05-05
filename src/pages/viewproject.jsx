@@ -1,31 +1,209 @@
-import { useState,useEffect } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
 import './projects.css';
 import './viewproject.css';
+import { jwtDecode } from "jwt-decode";
 
-const ViewProjectPage = ({ project: initialProject, onBack}) => {
+const ViewProjectPage = ({ project: initialProject, onBack }) => {
     // State for project data with edit mode
     const [project, setProject] = useState(initialProject);
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({...initialProject});
-    
+    const [allUsers, setAllUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const [reviewerNames, setReviewerNames] = useState({});
+    //const [isLoadingNames, setIsLoadingNames] = useState(false);
+
     const projectId = initialProject.id;
     const fullName = localStorage.getItem('fullName');
-    
-    //API CALL TO VIEW DOCUMENTS HERE
+    const loggedInUserId = localStorage.getItem('Mongo_id');
+    const projectOwnerId = initialProject.ownerId;
 
     // Document state management
     const [documents, setDocuments] = useState([]);
-    
+
+    // Pre-fetch and store collaborator names
+    useEffect(() => {
+        const fetchCollaboratorNames = async () => {
+            //setIsLoadingNames(true);
+            try {
+                const namesObj = {};
+                for (const collabId of initialProject.collaborators) {
+                    if (!reviewerNames[collabId]) {
+                        const user = await getUser(collabId);
+                        if (user) {
+                            namesObj[collabId] = user.name;
+                        } else {
+                            namesObj[collabId] = "Unknown Reviewer";
+                        }
+                    }
+                }
+
+                setReviewerNames(prev => ({
+                    ...prev,
+                    ...namesObj
+                }));
+            } catch (error) {
+                console.error('Error fetching collaborator names:', error);
+            } finally {
+                //setIsLoadingNames(false);
+            }
+        };
+
+        if (initialProject.collaborators.length > 0) {
+            fetchCollaboratorNames();
+        }
+    }, [initialProject.collaborators]);
+
+    // Fetch all users when component mounts
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('/api/login/getAllUsers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users!');
+                }
+
+                const data = await response.json();
+
+                // Process users to decode tokens
+                const processedUsers = data.map(user => {
+                    try {
+                        if (user.token) {
+                            const decoded = jwtDecode(user.token);
+                            return {
+                                ...user,
+                                name: decoded.name,
+                                email: decoded.email
+                            };
+                        }
+                        return user;
+                    } catch (error) {
+                        console.error('Error decoding user token:', error);
+                        return {
+                            ...user,
+                            name: 'Unknown',
+                            email: 'No email available'
+                        };
+                    }
+                });
+
+                setAllUsers(processedUsers);
+                setFilteredUsers(processedUsers.filter(user =>
+                    !initialProject.collaborators.includes(user._id) &&
+                    !user.isAdmin &&
+                    user._id !== loggedInUserId &&
+                    user._id !== projectOwnerId
+                ));
+
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    // Filter users based on search term
+    useEffect(() => {
+        if (searchTerm === '') {
+            setFilteredUsers(allUsers.filter(user =>
+                !editData.collaborators.includes(user._id) &&
+                !user.isAdmin &&
+                user._id !== loggedInUserId &&
+                user._id !== projectOwnerId
+            ));
+        } else {
+            const filtered = allUsers.filter(user =>
+                (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    user.email?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+                !editData.collaborators.includes(user._id) &&
+                !user.isAdmin &&
+                user._id !== loggedInUserId &&
+                user._id !== projectOwnerId
+            );
+            setFilteredUsers(filtered);
+        }
+    }, [searchTerm, allUsers, editData.collaborators, loggedInUserId, projectOwnerId]);
+
+    // Get user data - modified to be non-async in rendering context
+    const getUser = async (findId) => {
+        try {
+            const response = await fetch('/api/login/getUser', {
+                method: 'POST',
+                body: JSON.stringify({
+                    findId: findId
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to find user!');
+            }
+
+            const uD = await response.json();
+            const decoded = jwtDecode(uD.token);
+            return {
+                name: decoded.name || '',
+                isReviewer: uD.isReviewer,
+                token: uD.token,
+            };
+        } catch (error) {
+            console.error('Error finding user:', error);
+            return null;
+        }
+    };
+
+    // Display reviewer name from cache instead of async call
+    const displayReviewerName = (reviewerId) => {
+        return reviewerNames[reviewerId] || "Loading...";
+    };
+
+    // Add collaborator to project
+    const addCollaborator = (userId) => {
+        if (!editData.collaborators.includes(userId)) {
+            setEditData(prev => ({
+                ...prev,
+                collaborators: [...prev.collaborators, userId]
+            }));
+
+            // Find the user in allUsers to get their name
+            const user = allUsers.find(u => u._id === userId);
+            if (user && user.name) {
+                setReviewerNames(prev => ({
+                    ...prev,
+                    [userId]: user.name
+                }));
+            }
+        }
+        setSearchTerm('');
+        setShowUserDropdown(false);
+    };
+
+    // Remove collaborator from project
+    const removeCollaborator = (userId) => {
+        setEditData(prev => ({
+            ...prev,
+            collaborators: prev.collaborators.filter(id => id !== userId)
+        }));
+    };
 
     const fetchFiles = async (ProjectID) => {
         try {
-
-
             if (!ProjectID || typeof ProjectID !== 'string') {
                 throw new Error('Invalid project ID');
             }
-            
+
             const response = await fetch('/Bucket/retrievedocs', {
                 method: 'POST',
                 headers: {
@@ -33,26 +211,24 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                 },
                 body: JSON.stringify({projectID: ProjectID})
             });
-      
+
             if (!response.ok) {
                 const errorData = await response.text();
                 console.error('Download failed with status:', response.status, errorData);
                 throw new Error('Failed to download file');
             }
-      
+
             const fileData = await response.json();
 
             if (!(fileData == null)){
-                //console.log('Retrieved file:', fileData);
-
                 return fileData.map(file => ({
                     id: file._id.toString(),
                     name: file.filename,
                     type: file.filename.split('.').pop().toUpperCase(),
-                    uploadedBy: file.uploadedBy, // You might want to store this in metadata
+                    uploadedBy: file.uploadedBy,
                     uploadDate: new Date(file.uploadDate).toLocaleDateString(),
                     size: `${(file.length / 1024).toFixed(1)} KB`,
-                    metadata: file.metadata // Include all metadata
+                    metadata: file.metadata
                 }));
             }
             else{
@@ -60,22 +236,18 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
             }
 
         } catch (error) {
-          console.error('Error fetching documents:', error);
-          throw error;
+            console.error('Error fetching documents:', error);
+            throw error;
         }
-      };
+    };
 
-      useEffect(() => {
+    useEffect(() => {
         const loadDocuments = async () => {
-            
             try {
                 const fetchedDocuments = await fetchFiles(initialProject.id);
                 setDocuments(fetchedDocuments);
             } catch (err) {
                 console.error('Failed to load documents:', err);
-                
-            } finally {
-                
             }
         };
 
@@ -102,7 +274,6 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
             });
         }
     };
-    //const Mongo_id = localStorage.getItem("Mongo_id")
 
     // Handle document upload
     const handleUpload = async (e) => {
@@ -112,48 +283,43 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                 id: documents.length + 1,
                 name: newDocument.name,
                 type: newDocument.file.name.split('.').pop().toUpperCase(),
-                uploadedBy: fullName, // Current user
+                uploadedBy: fullName,
                 uploadDate: new Date().toISOString().split('T')[0],
                 size: `${(newDocument.file.size / (1024 * 1024)).toFixed(1)} MB`
-
-
             };
 
             const formData = new FormData();
-            formData.append('file', newDocument.file); // 'file' should match the multer field name
-            formData.append('ProjectID', projectId); 
-            formData.append('uploadedBy', uploadedDoc.uploadedBy)
-            
-            await fetch('/Bucket/submitdoc', {
-              method: 'POST',
-              body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-              console.log('Upload successful:', data);
-              // Save data.fileId for future reference
-            })
-            .catch(error => {
-              console.error('Upload error:', error); 
-            });
+            formData.append('file', newDocument.file);
+            formData.append('ProjectID', projectId);
+            formData.append('uploadedBy', uploadedDoc.uploadedBy);
 
+            try {
+                const response = await fetch('/Bucket/submitdoc', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            setDocuments([...documents, uploadedDoc]);
+                const data = await response.json();
+                console.log('Upload successful:', data);
+
+                // Refresh documents list after upload
+                const fetchedDocuments = await fetchFiles(projectId);
+                setDocuments(fetchedDocuments);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+            }
+
             setShowUploadForm(false);
             setNewDocument({ name: "", file: null });
-
         }
     };
-    
 
     // Handle document deletion
     const handleDeleteDocument = async (docId) => {
-
-        setDocuments(documents.filter(doc => doc.id !== docId));  //delete from UI
-
         const strDocId = docId.toString();
 
-        try { //Delete from Database
+        try {
             const response = await fetch('/Bucket/delete', {
                 method: 'POST',
                 headers: {
@@ -161,25 +327,21 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                 },
                 body: JSON.stringify({fileId: strDocId})
             });
-            
+
             if (!response.ok) {
-                throw new Error('Failed to download file');
-                
+                throw new Error('Failed to delete file');
             }
 
-            console.log(response.message);
-            
-        } catch (error) {
-            console.error('Download error:', error);
-            
-        }
+            // Update UI after successful deletion
+            setDocuments(documents.filter(doc => doc.id !== docId));
+            console.log('File deleted successfully');
 
+        } catch (error) {
+            console.error('Delete error:', error);
+        }
     };
 
-    
-
     const handleDownloadDocument = async (docId, docName) => {
-        
         const strDocId = docId.toString();
         try {
             const response = await fetch('/Bucket/download', {
@@ -189,12 +351,11 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                 },
                 body: JSON.stringify({fileId: strDocId})
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to download file');
-                
             }
-    
+
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -204,12 +365,11 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
             a.click();
             window.URL.revokeObjectURL(url);
             a.remove();
-            
+
         } catch (error) {
             console.error('Download error:', error);
-            
         }
-    }
+    };
 
     // Enable edit mode
     const enableEditMode = () => {
@@ -225,13 +385,12 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
     // Save project changes
     const saveProjectChanges = () => {
         const Mongo_id = localStorage.getItem("Mongo_id");
-        const Updated_Project =  {...editData, owner: Mongo_id, updated: new Date().toISOString().split('T')[0]}
-        setProject({...editData, updated: new Date().toISOString().split('T')[0]});  
+        const Updated_Project = {...editData, owner: Mongo_id, updated: new Date().toISOString().split('T')[0]};
+        setProject({...editData, updated: new Date().toISOString().split('T')[0]});
         setIsEditing(false);
 
         const UpdateProject = async () => {
-
-            try{
+            try {
                 const response = await fetch('/api/Projects/updateproject', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -239,25 +398,21 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                         projectId: projectId
                     }),
                     headers: {
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json'
                     }
                 });
+
                 if (!response.ok) {
-                    console.log("mayne");
                     throw new Error('Failed to update project!');
                 }
-                
-
             }
             catch(error) {
-                console.log('Error updating project:', error);
+                console.error('Error updating project:', error);
             }
-        }
+        };
 
         UpdateProject();
-
-        
-    }
+    };
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -303,7 +458,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                                 <figure className="user-icon">
                                     <User size={20} />
                                 </figure>
-                                <em className="user-name">{fullName}</em> 
+                                <em className="user-name">{fullName}</em>
                             </button>
                         </li>
                         <li>
@@ -376,7 +531,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                                 value={editData.description}
                                 onChange={handleInputChange}
                                 rows="4"
-                            /> 
+                            />
                         </label>
                     )}
 
@@ -403,7 +558,14 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
 
                                 <dl className="project-meta">
                                     <dt>Collaborators:</dt>
-                                    <dd>{project.collaborators.join(", ")}</dd>
+                                    <dd>
+                                        {project.collaborators.map((collabId, index) => (
+                                            <span key={collabId}>
+                                                {displayReviewerName(collabId)}
+                                                {index < project.collaborators.length - 1 ? ', ' : ''}
+                                            </span>
+                                        ))}
+                                    </dd>
                                 </dl>
 
                                 <dl className="project-meta">
@@ -428,6 +590,8 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                                         name="owner"
                                         value={editData.owner}
                                         onChange={handleInputChange}
+                                        readOnly  // Add this attribute
+                                        className="read-only-input"  // Optional: add a class for styling
                                     />
                                 </label>
 
@@ -443,14 +607,69 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                                 </label>
 
                                 <label htmlFor="collaborators">
-                                    Collaborators (comma-separated):
-                                    <input
-                                        type="text"
-                                        id="collaborators"
-                                        name="collaborators"
-                                        value={editData.collaborators.join(", ")}
-                                        onChange={handleArrayInputChange}
-                                    />
+                                    Collaborators:
+                                    <section className="collaborator-input-container">
+                                        <section className="selected-collaborators">
+                                            {editData.collaborators.map(collabId => (
+                                                <span key={collabId} className="collaborator-tag">
+                                                    {displayReviewerName(collabId)}
+                                                    <button
+                                                        type="button"
+                                                        className="remove-collaborator"
+                                                        onClick={() => removeCollaborator(collabId)}
+                                                    >
+                                                        <X size={12}/>
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </section>
+                                        <section className="user-dropdown-container">
+                                            <button
+                                                type="button"
+                                                className="dropdown-toggle"
+                                                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                                            >
+                                                <span>Add collaborator</span>
+                                                <ChevronDown size={16}/>
+                                            </button>
+                                            {showUserDropdown && (
+                                                <section className="user-dropdown">
+                                                    <section className="dropdown-search">
+                                                        <Search size={16}/>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search users..."
+                                                            value={searchTerm}
+                                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                                            autoFocus
+                                                        />
+                                                    </section>
+                                                    <section className="dropdown-list">
+                                                        {filteredUsers.length > 0 ? (
+                                                            filteredUsers.map(user => (
+                                                                <button
+                                                                    type="button"
+                                                                    key={user._id}
+                                                                    className="user-option"
+                                                                    onClick={() => addCollaborator(user._id)}
+                                                                >
+                                                                    <section className="user-info">
+                                                                        <strong>{user.name}</strong>
+                                                                        <p>{user.email}</p>
+                                                                    </section>
+                                                                    {editData.collaborators.includes(user._id) && (
+                                                                        <Check size={16} className="selected-icon"/>
+                                                                    )}
+                                                                </button>
+                                                            ))
+                                                        ) : (
+                                                            <p className="no-results">No users found</p>
+                                                        )}
+                                                    </section>
+                                                </section>
+                                            )}
+                                        </section>
+                                    </section>
                                 </label>
 
                                 <label htmlFor="skills">
@@ -494,7 +713,7 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                                     </button>
                                 </section>
                             </fieldset>
-                        )} 
+                        )}
                     </section>
                 </article>
             </section>
@@ -576,12 +795,12 @@ const ViewProjectPage = ({ project: initialProject, onBack}) => {
                                 <td>
                                     <menu className="document-actions">
                                         <li>
-                                            <button 
-                                                className="action-button download-button" 
+                                            <button
+                                                className="action-button download-button"
                                                 aria-label="Download document"
-                                                onClick={() => handleDownloadDocument(doc.id, doc.name)}>
+                                                onClick={() => handleDownloadDocument(doc.id, doc.name)}
+                                            >
                                                 <Download size={16} />
-                                                
                                             </button>
                                         </li>
                                         <li>

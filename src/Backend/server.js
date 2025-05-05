@@ -23,6 +23,7 @@ const InviteRoutes = require('./routes/InviteRoutes');//import the router that t
 //const BucketRoutes = require('./routes/BucketRoutes');
 const MilestoneRoutes = require('./routes/MilestoneRoutes');
 const ReviewRoutes = require('./routes/ReviewRoutes');
+const FinanceRoutes = require('./routes/FinanceRoutes');
 
 //express app
 const app = express();
@@ -50,6 +51,7 @@ app.use('/api/Projects', ProjectsRoutes);
 app.use('/api/invite', InviteRoutes);//Tells express to take any request starting with /api/invite to go to InviteRoutes.js
 app.use('/api/Milestone', MilestoneRoutes);
 app.use('/api/Review', ReviewRoutes);
+app.use('/api/Finance', FinanceRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

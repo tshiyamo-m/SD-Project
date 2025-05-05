@@ -38,7 +38,7 @@ const ReviewsPage = ({ project, onBack }) => {
                     return [];
                 }
                 //map data since we are making an async call
-                return Review_data.map((review, index) => ({
+                return Review_data.map((review) => ({
                     id: review._id,
                     reviewerId: review.reviewerId,
                     projectId: review.projectId,
@@ -80,7 +80,7 @@ const ReviewsPage = ({ project, onBack }) => {
         try {
             const response = await fetch('/api/login/getUser', {
                 method: 'POST',
-                body: JSON.stringify({ id: findId }),
+                body: JSON.stringify({ findId : findId }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -98,8 +98,8 @@ const ReviewsPage = ({ project, onBack }) => {
             //const userData = ud;
             //console.log(userData);
             //console.log("token", userData.token)
+            //console.log('rev: ', findId);
             const decoded = jwtDecode(userData.token);
-            //console.log('decoded: ', decoded.name);
             return {
                 name: decoded.name || '',
                 isReviewer: userData.isReviewer,

@@ -5,22 +5,33 @@ import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
 import ViewProjectPage from './viewproject';
 import ReviewsPage from './viewreview';
-import axios from 'axios';
+//import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
 
 const ProjectsPage = () => {
     
-    const fullName = localStorage.getItem('fullName');
+    //const fullName = localStorage.getItem('fullName');
     const [projects, setProjects] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+
+    const getUserNameById = (userId) => {
+        const user = allUsers.find(user => user._id === userId);
+        return user ? user.name : 'Unknown';
+    };
+
+    const getCollaboratorNames = (collaboratorIds) => {
+        return collaboratorIds.map(id => getUserNameById(id)).join(", ");
+    };
 
     useEffect(() => {
 
         const Id = localStorage.getItem('Mongo_id');
-        const fullName = localStorage.getItem('fullName'); 
+        //const fullName = localStorage.getItem('fullName');
         
         const fetchProjects = async () => {
             
             try{
-                const response = await fetch('/api/Projects/find', {
+                const response = await fetch('/api/Projects/get_all_users', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,
@@ -39,13 +50,14 @@ const ProjectsPage = () => {
                     return [];
                 }
                 //map data since we are making an async call
-                return Project_data.map((project, index) => ({
+                return Project_data.map((project) => ({
                     id: project._id,
                     title: project.title,
-                    owner: fullName,
+                    owner: getUserNameById(project.owner),
                     ownerId: project.owner,
                     status: project.status,
                     collaborators: project.collaborators,
+                    collaboratorNames: getCollaboratorNames(project.collaborators),
                     field: project.field,
                     created: project.created,
                     updated: project.updated,
@@ -64,11 +76,63 @@ const ProjectsPage = () => {
             const projects = await fetchProjects();
             setProjects(projects);
         };
-    
-        loadProjects();
-        
+
+        // Only load projects if allUsers is populated
+        if (allUsers.length > 0) {
+            loadProjects();
+        }
 
 
+
+
+    }, [allUsers]);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const res = await fetch('/api/login/getAllUsers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch users!');
+                }
+
+                const data = await res.json();
+
+                // Process users to decode tokens
+                const processUsers = data.map(user => {
+                    try {
+                        if (user.token) {
+                            const decoded = jwtDecode(user.token);
+                            return {
+                                ...user,
+                                name: decoded.name,
+                                email: decoded.email
+                            };
+                        }
+                        return user;
+                    } catch (error) {
+                        console.error('Error decoding user token:', error);
+                        return {
+                            ...user,
+                            name: 'Unknown',
+                            email: 'No email available'
+                        };
+                    }
+                });
+
+                setAllUsers(processUsers);
+
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchUsers();
     }, []);
     
 
@@ -76,10 +140,10 @@ const ProjectsPage = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [viewingProject, setViewingProject] = useState(null);
     const [viewingReviews, setViewingReviews] = useState(null); // New state for viewing reviews
-    const [showInviteModal, setShowInviteModal] = useState(false);
-    const [inviteEmail, setInviteEmail] = useState('');
-    const [invitingProjectId, setInvitingProjectId] = useState(null);
-    const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
+    // const [showInviteModal, setShowInviteModal] = useState(false);
+    // const [inviteEmail, setInviteEmail] = useState('');
+    // const [invitingProjectId, setInvitingProjectId] = useState(null);
+    // const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
     const [name, setName] = useState("");
 
     useEffect(() => {
@@ -123,11 +187,11 @@ const ProjectsPage = () => {
         />;
     }
     
-    const handleSendInvite = async (e) => {
-        e.preventDefault();
-        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
-        setShowInviteModal(false);
-    };
+    // const handleSendInvite = async (e) => {
+    //     e.preventDefault();
+    //     await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+    //     setShowInviteModal(false);
+    // };
 
     return (
         <article className="project-page-content">
@@ -182,14 +246,14 @@ const ProjectsPage = () => {
                         <header className="project-header">
                             <h2 className="project-title">{project.title}</h2>
                             <hgroup className="project-info-group">
-                                <p><strong>Owner:</strong> {fullName}</p>
+                                <p><strong>Owner:</strong> {project.owner} </p>
                                 <p><strong>Status:</strong> {project.status}</p>
                             </hgroup>
                         </header>
                         <p className="project-description">{project.description}</p>
                         <dl className="project-meta">
                             <dt>Collaborators:</dt>
-                            <dd>{project.collaborators.join(", ")}.</dd>
+                            <dd>{project.collaboratorNames || getCollaboratorNames(project.collaborators)}</dd>
 
                             <dt>Field:</dt>
                             <dd>{project.field}.</dd>
@@ -225,43 +289,43 @@ const ProjectsPage = () => {
                             <button
                                 className="view-button"
                                 onClick={() => {
-                                    setViewingProject({...project, owner: fullName})}}
+                                    setViewingProject({...project, owner: project.owner})}}
                             >
                                 View
                             </button>
-                            <button className="invite-button"
-                                    onClick={() =>{
-                                        setInvitingProjectId(project.id);
-                                        setInvitingProjectTitle(project.title);
-                                        setShowInviteModal(true); }}
-                            >Invite Collaborator</button>
-                            {showInviteModal && (
-                                <section className="modal-overlay" aria-modal="true" role="dialog">
-                                    <article className="modal-content">
-                                        <header>
-                                            <h2>Invite Collaborator</h2>
-                                        </header>
+                            {/*<button className="invite-button"*/}
+                            {/*        onClick={() =>{*/}
+                            {/*            setInvitingProjectId(project.id);*/}
+                            {/*            setInvitingProjectTitle(project.title);*/}
+                            {/*            setShowInviteModal(true); }}*/}
+                            {/*>Invite Collaborator</button>*/}
+                            {/*{showInviteModal && (*/}
+                            {/*    <section className="modal-overlay" aria-modal="true" role="dialog">*/}
+                            {/*        <article className="modal-content">*/}
+                            {/*            <header>*/}
+                            {/*                <h2>Invite Collaborator</h2>*/}
+                            {/*            </header>*/}
 
-                                        <form onSubmit={handleSendInvite}>
-                                            <label htmlFor="inviteEmail">Collaborator's Email:</label>
-                                            <input
-                                                type="email"
-                                                id="inviteEmail"
-                                                name="inviteEmail"
-                                                value={inviteEmail}
-                                                onChange={(e) => setInviteEmail(e.target.value)}
-                                                placeholder="Enter email address"
-                                                required
-                                            />
+                            {/*            <form onSubmit={handleSendInvite}>*/}
+                            {/*                <label htmlFor="inviteEmail">Collaborator's Email:</label>*/}
+                            {/*                <input*/}
+                            {/*                    type="email"*/}
+                            {/*                    id="inviteEmail"*/}
+                            {/*                    name="inviteEmail"*/}
+                            {/*                    value={inviteEmail}*/}
+                            {/*                    onChange={(e) => setInviteEmail(e.target.value)}*/}
+                            {/*                    placeholder="Enter email address"*/}
+                            {/*                    required*/}
+                            {/*                />*/}
 
-                                            <footer>
-                                                <button type="submit">Send Invite</button>
-                                                <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
-                                            </footer>
-                                        </form>
-                                    </article>
-                                </section>
-                            )}
+                            {/*                <footer>*/}
+                            {/*                    <button type="submit">Send Invite</button>*/}
+                            {/*                    <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>*/}
+                            {/*                </footer>*/}
+                            {/*            </form>*/}
+                            {/*        </article>*/}
+                            {/*    </section>*/}
+                            {/*)}*/}
                         </footer>
                     </article>
                 ))}
