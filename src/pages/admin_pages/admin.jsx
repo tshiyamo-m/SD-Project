@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './admin.css';
 
 const AdminPage = () => {
-    const [adminName, setAdminName] = useState("");
+    //const [adminName, setAdminName] = useState("");
     const [users, setUsers] = useState([]);
     const [reviewRequests, setReviewRequests] = useState([]);
     const [admins, setAdmins] = useState([]);
@@ -193,7 +193,7 @@ const AdminPage = () => {
             <header className="admin-header">
                 <h1 className="admin-title">Admin Dashboard</h1>
                 <section className="admin-top-bar">
-                    <p className="admin-welcome">Welcome, {adminName}</p>
+                    <p className="admin-welcome">Welcome</p>
                     <button
                         className="logout-button"
                         onClick={handleLogout}

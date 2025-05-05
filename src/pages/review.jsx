@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useState} from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
 import './projects.css'
@@ -300,12 +301,12 @@ const ReviewerPage = () => {
     }
 
     // Toggle reviewer status
-    const handleToggleReviewerStatus = () => {
-        setUser(prevUser => ({
-            ...prevUser,
-            isReviewer: "false"
-        }));
-    };
+    // const handleToggleReviewerStatus = () => {
+    //     setUser(prevUser => ({
+    //         ...prevUser,
+    //         isReviewer: "false"
+    //     }));
+    // };
 
     // Request to become a reviewer
     const handleRequestReviewer = () => {
@@ -637,7 +638,7 @@ const ReviewerPage = () => {
                                         documents.map((doc, index) => (
                                             <li key={index}>
                                                 <a
-                                                    href="#"
+                                                    //href="#"
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         handleDownloadDoc(doc.id, doc.name);
