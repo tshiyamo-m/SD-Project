@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install serve globally
+        run: npm install -g serve
+
       - name: Build
         run: npm run build --if-present
 
