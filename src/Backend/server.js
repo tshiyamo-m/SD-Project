@@ -51,6 +51,13 @@ app.use('/api/invite', InviteRoutes);//Tells express to take any request startin
 app.use('/api/Milestone', MilestoneRoutes);
 app.use('/api/Review', ReviewRoutes);
 
+app.use(express.static(path.join(__dirname, '../../build')));
+
+// Catch-all handler to serve React's index.html for unmatched routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+});
+
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
