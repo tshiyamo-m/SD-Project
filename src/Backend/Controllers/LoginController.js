@@ -9,7 +9,7 @@ const submit_user = async (req, res) => {
     //add token to db
     try{
 
-        const allUsers = await LoginModel.find({}); //Wack, fix this later
+        const allUsers = await LoginModel.find({});
         const decoded = jwt.decode(token);
 
         if (!decoded) {
@@ -44,8 +44,37 @@ const delete_token = async (req, res) => {
     
 }
 
+// Get list of users
+
+const return_users = async (req, res) => {
+
+    try{
+        const allUsers = await LoginModel.find({});
+        res.status(200).json(allUsers);
+        // if (!allUsers){
+            
+        //     return res.status(404).json({ error: "Users not found" });
+        // }
+        // else {
+        //     const DecodedUsers = [];
+
+        //     for (const user of allUsers) {
+        //         const decoded = jwt.decode(user.token);
+        //         const user_with_id = {_id: user._id, ...decoded}
+        //         DecodedUsers.push(user_with_id);
+        //     }
+
+        //     res.status(200).json(DecodedUsers);
+
+        // }
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
 
 
 module.exports = {
-    submit_user
+    submit_user,
+    return_users
 }
