@@ -1,11 +1,12 @@
-import { useState,useEffect } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
-import './projects.css';
-import CreateProjectPage from "./createproject";
-import MilestonesPage from './milestone';
-import ViewProjectPage from './viewproject';
-import ReviewsPage from './viewreview';
-import axios from 'axios';
+const axios = require('axios').default;
+const { useState, useEffect } = require('react');
+const { Search, Bell, User, MoreVertical, ArrowLeft } = require('lucide-react');
+require('./projects.css');
+const CreateProjectPage = require("./createproject");
+const MilestonesPage = require('./milestone');
+const ViewProjectPage = require('./viewproject');
+const ReviewsPage = require('./viewreview');
+
 
 const ProjectsPage = () => {
     
@@ -125,11 +126,7 @@ const ProjectsPage = () => {
     
     const handleSendInvite = async (e) => {
         e.preventDefault();
-<<<<<<< HEAD
-        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite/', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
-=======
         await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
->>>>>>> ad725b5c9ebcc9cfecc4c244c31ec0696f34c966
         setShowInviteModal(false);
     };
 
