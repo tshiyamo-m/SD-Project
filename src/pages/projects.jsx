@@ -14,14 +14,22 @@ const ProjectsPage = () => {
     const [projects, setProjects] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
 
-    const getUserNameById = (userId) => {
+    const getUserNameById = useCallback(async (userId) => {
         const user = allUsers.find(user => user._id === userId);
         return user ? user.name : 'Unknown';
-    };
+      }, []);
 
-    const getCollaboratorNames = (collaboratorIds) => {
+    // const getUserNameById = (userId) => {
+    //     const user = allUsers.find(user => user._id === userId);
+    //     return user ? user.name : 'Unknown';
+    // };
+
+    // const getCollaboratorNames = (collaboratorIds) => {
+    //     return collaboratorIds.map(id => getUserNameById(id)).join(", ");
+    // };
+    const getCollaboratorName = useCallback(async (collaboratorId) => {
         return collaboratorIds.map(id => getUserNameById(id)).join(", ");
-    };
+      }, [getUserNameById, getCollaboratorName]);    
 
     useEffect(() => {
 
