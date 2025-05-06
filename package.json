@@ -36,7 +36,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "serve -s build -l 8080",
+    "start": "serve -s build",
     "build": "react-scripts build",
     "dev": "react-scripts start",
     "server": "cd src/Backend && npm run dev",
