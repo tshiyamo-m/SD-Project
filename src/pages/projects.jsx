@@ -17,7 +17,7 @@ const ProjectsPage = () => {
     const getUserNameById = useCallback(async (userId) => {
         const user = allUsers.find(user => user._id === userId);
         return user ? user.name : 'Unknown';
-      }, []);
+      }, [allUsers]);
 
     // const getUserNameById = (userId) => {
     //     const user = allUsers.find(user => user._id === userId);
@@ -29,7 +29,7 @@ const ProjectsPage = () => {
     // };
     const getCollaboratorNames = useCallback(async (collaboratorId) => {
         return collaboratorId.map(id => getUserNameById(id)).join(", ");
-      }, [getUserNameById, getCollaboratorNames]);    
+      }, [getUserNameById]);    
 
     useEffect(() => {
 
