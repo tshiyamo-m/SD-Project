@@ -56,9 +56,9 @@ app.use('/api/Finance', FinanceRoutes);
 app.use(express.static(path.join(__dirname, '../../build')));
 
 // Catch-all handler to serve React's index.html for unmatched routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../build', 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+// });
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
