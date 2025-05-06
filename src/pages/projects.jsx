@@ -27,9 +27,9 @@ const ProjectsPage = () => {
     // const getCollaboratorNames = (collaboratorIds) => {
     //     return collaboratorIds.map(id => getUserNameById(id)).join(", ");
     // };
-    const getCollaboratorName = useCallback(async (collaboratorId) => {
-        return collaboratorIds.map(id => getUserNameById(id)).join(", ");
-      }, [getUserNameById, getCollaboratorName]);    
+    const getCollaboratorNames = useCallback(async (collaboratorId) => {
+        return collaboratorId.map(id => getUserNameById(id)).join(", ");
+      }, [getUserNameById, getCollaboratorNames]);    
 
     useEffect(() => {
 
