@@ -40,7 +40,7 @@
     "start": "serve -s build",
     "build": "react-scripts build",
     "dev": "react-scripts start",
-    "server": "cd src/Backend && npm run dev",
+    "server": "cd Backend && npm run dev",
     "start:both": "concurrently \"npm run dev\" \"npm run server\"",
     "test": "react-scripts test --coverage --watchAll=false",
     "coverage": "npm test -- --coverage",
