@@ -40,6 +40,9 @@ app.use(cors({
 //Middleware
 app.use(express.json()) //Checking if any data was in the 'Body' of the request, atttaches it to req if so
 
+app.get('/', (req, res) => {
+  res.send('Backend is live 🚀');
+});
 app.use((req, res, next) => {
     console.log(req.path, req.method) //Log out incoming requests
     next() //Move to next request 
