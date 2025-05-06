@@ -34,7 +34,7 @@ const AdminPage = () => {
         // Fetch all users
         const fetchUsers = async () => {
             try {
-                const response = await fetch('/api/login/getAllUsers', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getAllUsers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -125,7 +125,7 @@ const AdminPage = () => {
 
     const approveReviewer = async (userId) => {
         try {
-            const response = await fetch('/api/login/update_is_reviewer', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/update_is_reviewer', {
                 method: 'POST',
                 body: JSON.stringify({
                     isReviewer: "true",
@@ -152,7 +152,7 @@ const AdminPage = () => {
 
     const makeAdmin = async (userId) => {
         try {
-            const response = await fetch('/api/login/makeAdmin', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/makeAdmin', {
                 method: 'POST',
                 body: JSON.stringify({
                     userId: userId,

@@ -13,7 +13,7 @@ export default function MilestonesPage({ project, onBack }) {
         const fetchMilestones = async () => {
 
             try{
-                const response = await fetch('/api/Milestone/find', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Milestone/find', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,
@@ -86,7 +86,7 @@ export default function MilestonesPage({ project, onBack }) {
 
         const API_CALL_CREATE_MILESTONE = async () => {
             try{
-                const response = await fetch('/api/Milestone', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Milestone', {
                     method: 'POST',
                     body: JSON.stringify({
                         projectId: Mongo_id,

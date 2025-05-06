@@ -22,7 +22,7 @@ const Finance = () => {
   useEffect(() => {
     const fetchFunds = async () => {
       try {
-        const response = await fetch('/api/Finance/find', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Finance/find', {
           method: 'POST',
           body: JSON.stringify({
             id: Id,
@@ -75,7 +75,7 @@ const Finance = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/Finance/add', {
+      const response = await fetch('https://sd-project-qb1w.onrender.com/api/Finance/add', {
         method: 'POST',
         body: JSON.stringify({
           amount: Number(newFund.amount),
@@ -141,7 +141,7 @@ const Finance = () => {
       const newAmountUsed = fund.amountUsed + actualAddition;
 
       // Update the fund in the database
-      const response = await fetch('/api/Finance/update', {
+      const response = await fetch('https://sd-project-qb1w.onrender.com/api/Finance/update', {
         method: 'POST',
         body: JSON.stringify({
           id: id,

@@ -14,7 +14,7 @@ const ReviewerPage = () => {
 
     const getUser = async (findId) => {
         try {
-            const response = await fetch('/api/login/getUser', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getUser', {
                 method: 'POST',
                 body: JSON.stringify({
                     findId: findId
@@ -92,7 +92,7 @@ const ReviewerPage = () => {
 
     const getAllProjects = async () => {
         try {
-            const response = await fetch('/api/Projects/find_active_projects', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/find_active_projects', {
                 method: 'POST',
                 body: JSON.stringify({ status: "Active" }),
                 headers: {
@@ -146,7 +146,7 @@ const ReviewerPage = () => {
                 throw new Error('Invalid project ID');
             }
 
-            const response = await fetch('/Bucket/retrievedocs', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/retrievedocs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -223,7 +223,7 @@ const ReviewerPage = () => {
         const fetchAllReviews = async () => {
 
             try{
-                const response = await fetch('/api/Review/get_all_reviews', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review/get_all_reviews', {
                     method: 'POST',
                     body: JSON.stringify({}),
                     headers: {
@@ -273,7 +273,7 @@ const ReviewerPage = () => {
         const UpdateProject = async () => {
 
             try{
-                const response = await fetch('/api/login/update_is_reviewer', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/update_is_reviewer', {
                     method: 'POST',
                     body: JSON.stringify({
                         isReviewer: "pending",
@@ -401,7 +401,7 @@ const ReviewerPage = () => {
 
         const API_CREATE_REVIEW = async () => {
             try{
-                const response = await fetch('/api/Review', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review', {
                     method: 'POST',
                     body: JSON.stringify({
                         ...newReview
@@ -440,7 +440,7 @@ const ReviewerPage = () => {
 
         const stringDocId = docId.toString();
         try {
-            const response = await fetch('/Bucket/download', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/download', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

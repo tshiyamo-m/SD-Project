@@ -55,13 +55,13 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         if (initialProject.collaborators.length > 0) {
             fetchCollaboratorNames();
         }
-    }, [initialProject.collaborators]);
+    }, [initialProject.collaborators, reviewerNames]);
 
     // Fetch all users when component mounts
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('/api/login/getAllUsers', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getAllUsers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         };
 
         fetchUsers();
-    }, []);
+    }, [initialProject.collaborators, loggedInUserId, projectOwnerId]);
 
     // Filter users based on search term
     useEffect(() => {
@@ -137,7 +137,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     // Get user data - modified to be non-async in rendering context
     const getUser = async (findId) => {
         try {
-            const response = await fetch('/api/login/getUser', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getUser', {
                 method: 'POST',
                 body: JSON.stringify({
                     findId: findId
@@ -204,7 +204,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                 throw new Error('Invalid project ID');
             }
 
-            const response = await fetch('/Bucket/retrievedocs', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/retrievedocs', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -294,7 +294,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
             formData.append('uploadedBy', uploadedDoc.uploadedBy);
 
             try {
-                const response = await fetch('/Bucket/submitdoc', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/submitdoc', {
                     method: 'POST',
                     body: formData
                 });
@@ -320,7 +320,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         const strDocId = docId.toString();
 
         try {
-            const response = await fetch('/Bucket/delete', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -344,7 +344,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const handleDownloadDocument = async (docId, docName) => {
         const strDocId = docId.toString();
         try {
-            const response = await fetch('/Bucket/download', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/download', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -391,7 +391,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
 
         const UpdateProject = async () => {
             try {
-                const response = await fetch('/api/Projects/updateproject', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/updateproject', {
                     method: 'POST',
                     body: JSON.stringify({
                         updates: Updated_Project,

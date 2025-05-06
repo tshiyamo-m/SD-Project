@@ -19,7 +19,7 @@ const HomePage = () => {
 
         const fetchProjects = async () => {
             try {
-                const response = await fetch('/api/Projects/find', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/find', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,

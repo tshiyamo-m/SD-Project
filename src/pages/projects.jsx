@@ -31,7 +31,7 @@ const ProjectsPage = () => {
         const fetchProjects = async () => {
             
             try{
-                const response = await fetch('/api/Projects/get_all_users', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/get_all_users', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,
@@ -85,12 +85,12 @@ const ProjectsPage = () => {
 
 
 
-    }, [allUsers]);
+    }, [allUsers,getCollaboratorNames, getUserNameById ]);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const res = await fetch('/api/login/getAllUsers', {
+                const res = await fetch('https://sd-project-qb1w.onrender.com/api/login/getAllUsers', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

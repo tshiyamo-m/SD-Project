@@ -19,7 +19,7 @@ const ReviewsPage = ({ project, onBack }) => {
         const fetchReviews = async () => {
 
             try{
-                const response = await fetch('/api/Review/find_research', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review/find_research', {
                     method: 'POST',
                     body: JSON.stringify({
                         id: Id,
@@ -78,7 +78,7 @@ const ReviewsPage = ({ project, onBack }) => {
 
     const getUser = async (findId) => {
         try {
-            const response = await fetch('/api/login/getUser', {
+            const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getUser', {
                 method: 'POST',
                 body: JSON.stringify({ findId : findId }),
                 headers: {
@@ -172,7 +172,7 @@ const ReviewsPage = ({ project, onBack }) => {
 
         const API_CALL_CREATE_REVIEW = async () => {
             try{
-                const response = await fetch('/api/Review', {
+                const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review', {
                     method: 'POST',
                     body: JSON.stringify({
                         ...reviewToAdd
