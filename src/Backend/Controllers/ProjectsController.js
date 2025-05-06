@@ -1,8 +1,8 @@
 const ProjectModel = require('../models/ProjectsModel');
 const LoginModel = require('../models/LoginModel');
-const express = require('express');
+//const express = require('express');
 const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
+// { ObjectId } = mongoose.Types;
 
 //POST Project
 
@@ -63,6 +63,25 @@ const retrieve_projects = async (req, res) => {
     catch(error) {
         res.status(400).json({error: error.message});
         console.log("Could Not Find Projects!")
+    }
+
+}
+
+const get_all_projects = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const projects = await ProjectModel.find({
+            $or: [
+                { owner: id },
+                { collaborators: { $in: [id] } }
+            ]
+        }).sort({ updated: -1 }); // Sort by most recently updated
+
+        res.json(projects);
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        res.status(500).json({ error: 'Failed to fetch projects' });
     }
 
 }
@@ -151,4 +170,5 @@ module.exports = {
     add_project,
     update_project,
     retrieve_active_projects,
+    get_all_projects
 }

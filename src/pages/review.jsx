@@ -3,12 +3,12 @@ import {useEffect, useState} from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
 import './projects.css'
 import './review.css'
-import { useUser } from "../components/UserContext";
+//import { useUser } from "../components/UserContext";
 import { jwtDecode } from 'jwt-decode';
 
 const ReviewerPage = () => {
     // User state
-    const { userId } = useUser();
+    const userId  = localStorage.getItem('Mongo_id');
 
     const [user, setUser] = useState({});
 
@@ -240,7 +240,7 @@ const ReviewerPage = () => {
                     return [];
                 }
                 //map data since we are making an async call
-                return Review_data.map((review, index) => ({
+                return Review_data.map((review) => ({
                     _id: review._id,
                     reviewerId: review.reviewerId,
                     projectId: review.projectId,
