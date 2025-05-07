@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './finance.css';
+import {createFinance, getFinance, updateFinance} from '../utils/financeUtils'
 
 const Finance = () => {
   const Id = localStorage.getItem('Mongo_id');
@@ -19,53 +20,43 @@ const Finance = () => {
   const activeFunds = funds.filter(fund => fund.amountUsed < fund.amount);
   const exhaustedFunds = funds.filter(fund => fund.amountUsed >= fund.amount);
 
-  useEffect(() => {
-    const fetchFunds = async () => {
-      try {
-        const response = await fetch('/api/Finance/find', {
-          method: 'POST',
-          body: JSON.stringify({
-            id: Id,
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!response.ok) {
-          throw new Error('Failed to find funds!');
-        }
-        const Finance_data = await response.json();
+  const fetchFunds = async () => {
+    try {
+      const Finance_data = await getFinance(Id);
 
-        if (!Array.isArray(Finance_data)) {
-          console.warn('API response is not an array:', Finance_data);
-          return [];
-        }
-        return Finance_data.map((fund) => ({
-          id: fund._id,
-          amount: fund.amount,
-          purpose: fund.purpose,
-          source: fund.source,
-          amountUsed: fund.used,
-        }));
-      } catch(error) {
-        console.error('Error finding funds:', error);
-        setError(error.message);
+      if (!Array.isArray(Finance_data)) {
+        console.warn('API response is not an array:', Finance_data);
         return [];
       }
+      return Finance_data.map((fund) => ({
+        id: fund._id,
+        amount: fund.amount,
+        purpose: fund.purpose,
+        source: fund.source,
+        amountUsed: fund.used,
+      }));
+    } catch(error) {
+      console.error('Error finding funds:', error);
+      setError(error.message);
+      return [];
     }
+  }
 
-    const loadFunds = async () => {
-      setIsLoading(true);
-      try {
-        const funds = await fetchFunds();
-        setFunds(funds);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const loadFunds = async () => {
+    setIsLoading(true);
+    try {
+      const funds = await fetchFunds();
+      setFunds(funds);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
+
+    fetchFunds()
     loadFunds();
   }, [Id]);
 
@@ -75,25 +66,15 @@ const Finance = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/Finance/add', {
-        method: 'POST',
-        body: JSON.stringify({
-          amount: Number(newFund.amount),
-          used: 0,
-          userId: Id,
-          source: newFund.source,
-          purpose: newFund.purpose
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add fund');
+      const Data = {
+        amount: Number(newFund.amount),
+        used: 0,
+        userId: Id,
+        source: newFund.source,
+        purpose: newFund.purpose
       }
 
-      const result = await response.json();
+      const result = await createFinance(Data);
 
       setFunds([...funds, {
         id: result._id,
@@ -141,7 +122,7 @@ const Finance = () => {
       const newAmountUsed = fund.amountUsed + actualAddition;
 
       // Update the fund in the database
-      const response = await fetch('/api/Finance/update', {
+      /*const response = await fetch('/api/Finance/update', {
         method: 'POST',
         body: JSON.stringify({
           id: id,
@@ -154,7 +135,12 @@ const Finance = () => {
 
       if (!response.ok) {
         throw new Error('Failed to update fund');
+      }*/
+      const Data = {
+        id: id,
+        used: newAmountUsed
       }
+      await updateFinance(Data);
 
       // Update local state only after successful API call
       setFunds(funds.map(fund => {
