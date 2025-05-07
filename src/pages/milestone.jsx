@@ -1,25 +1,14 @@
 import {useEffect, useState} from 'react';
-import { ArrowLeft, Plus, Check } from 'lucide-react';
+import {ArrowLeft, Check, Plus} from 'lucide-react';
 import './milestone.css'
+import {createMilestone, getMilestone} from '../utils/milestoneUtils';
 
 export default function MilestonesPage({ project, onBack }) {
     const [milestones, setMilestones] = useState([]);
 
     const fetchMilestones = async (Id) => {
         try{
-            const response = await fetch('/api/Milestone/find', {
-                method: 'POST',
-                body: JSON.stringify({
-                    id: Id,
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to find milestones!');
-            }
-            const Milestone_data = await response.json();
+            const Milestone_data = await getMilestone(Id);
 
             if (!Array.isArray(Milestone_data)) {
                 console.warn('API response is not an array:', Milestone_data);
@@ -34,8 +23,6 @@ export default function MilestonesPage({ project, onBack }) {
                 assignedTo: milestone.assignedTo,
                 status: milestone.status,
             }));
-
-
         }
         catch(error) {
             console.error('Error finding milestones:', error);
@@ -75,26 +62,11 @@ export default function MilestonesPage({ project, onBack }) {
 
     const API_CALL_CREATE_MILESTONE = async (Mongo_id) => {
         try{
-            const response = await fetch('/api/Milestone', {
-                method: 'POST',
-                body: JSON.stringify({
-                    projectId: Mongo_id,
-                    ...newMilestone,
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error('Failed to create milestone');
+            const Data = {
+                projectId: Mongo_id,
+                ...newMilestone,
             }
-            else{
-                //setMilestone_id(result._id);
-                return result._id;
-            }
+            return await createMilestone(Data);
         }
         catch(error) {
             console.error('Error creating milestone:', error);

@@ -8,6 +8,7 @@ import ReviewsPage from './viewreview';
 //import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
 import { findProject } from '../utils/projectUtils';
+import { getAllUsers } from '../utils/loginUtils';
 
 const ProjectsPage = () => {
     
@@ -57,7 +58,6 @@ const ProjectsPage = () => {
     }
 
     useEffect(() => {
-
         const Id = localStorage.getItem('Mongo_id');
         //const fullName = localStorage.getItem('fullName');
 
@@ -70,57 +70,42 @@ const ProjectsPage = () => {
         if (allUsers.length > 0) {
             loadProjects();
         }
-
-
-
-
     }, [allUsers]);
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await fetch('/api/login/getAllUsers', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+    const fetchUsers = async () => {
+        try {
+            const data = await getAllUsers();
 
-                if (!res.ok) {
-                    throw new Error('Failed to fetch users!');
-                }
-
-                const data = await res.json();
-
-                // Process users to decode tokens
-                const processUsers = data.map(user => {
-                    try {
-                        if (user.token) {
-                            const decoded = jwtDecode(user.token);
-                            return {
-                                ...user,
-                                name: decoded.name,
-                                email: decoded.email
-                            };
-                        }
-                        return user;
-                    } catch (error) {
-                        console.error('Error decoding user token:', error);
+            // Process users to decode tokens
+            const processUsers = data.map(user => {
+                try {
+                    if (user.token) {
+                        const decoded = jwtDecode(user.token);
                         return {
                             ...user,
-                            name: 'Unknown',
-                            email: 'No email available'
+                            name: decoded.name,
+                            email: decoded.email
                         };
                     }
-                });
+                    return user;
+                } catch (error) {
+                    console.error('Error decoding user token:', error);
+                    return {
+                        ...user,
+                        name: 'Unknown',
+                        email: 'No email available'
+                    };
+                }
+            });
 
-                setAllUsers(processUsers);
+            setAllUsers(processUsers);
 
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
     
