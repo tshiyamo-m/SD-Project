@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './homepage.css';
+import { findProject } from '../utils/projectUtils';
 
 const HomePage = () => {
     const [name, setName] = useState("");
@@ -14,37 +15,27 @@ const HomePage = () => {
         setName(fullName[0]);
     }, []);
 
+    const fetchAllReviews = () => {
+
+    }
+
+    const fetchProjects = async (Id) => {
+        try {
+            const data = await findProject(Id);
+            if (data != null) {
+                setStats(prevStats => ({
+                    ...prevStats,
+                    activeProjects: data.length,
+                }));
+            }
+        } catch(error) {
+            console.error('Error finding projects:', error);
+        }
+    };
+
     useEffect(() => {
         const Id = localStorage.getItem('Mongo_id');
-
-        const fetchProjects = async () => {
-            try {
-                const response = await fetch('/api/Projects/find', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: Id,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find projects!');
-                } else {
-                    const data = await response.json();
-                    if (data != null) {
-                        setStats(prevStats => ({
-                            ...prevStats,
-                            activeProjects: data.length,
-                        }));
-                    }
-                }
-            } catch(error) {
-                console.error('Error finding projects:', error);
-            }
-        };
-
-        fetchProjects();
+        fetchProjects(Id);
     }, []);
 
     return (

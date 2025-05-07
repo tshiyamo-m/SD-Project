@@ -7,6 +7,7 @@ import ViewProjectPage from './viewproject';
 import ReviewsPage from './viewreview';
 //import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
+import { findProject } from '../utils/projectUtils';
 
 const ProjectsPage = () => {
     
@@ -14,66 +15,54 @@ const ProjectsPage = () => {
     const [projects, setProjects] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
 
+    //testable
     const getUserNameById = (userId) => {
         const user = allUsers.find(user => user._id === userId);
         return user ? user.name : 'Unknown';
     };
 
+    //testable
     const getCollaboratorNames = (collaboratorIds) => {
         return collaboratorIds.map(id => getUserNameById(id)).join(", ");
     };
+
+    //testable
+    const fetchProjects = async (Id) => {
+        try{
+            const Project_data = await findProject(Id);
+            if (!Array.isArray(Project_data)) {
+                console.warn('API response is not an array:', Project_data);
+                return [];
+            }
+            //map data since we are making an async call
+            return Project_data.map((project) => ({
+                id: project._id,
+                title: project.title,
+                owner: getUserNameById(project.owner),
+                ownerId: project.owner,
+                status: project.status,
+                collaborators: project.collaborators,
+                collaboratorNames: getCollaboratorNames(project.collaborators),
+                field: project.field,
+                created: project.created,
+                updated: project.updated,
+                skills: project.skills,
+                tags: project.tags
+            }));
+        }
+        catch(error) {
+            console.error('Error finding projects:', error);
+            return [];
+        }
+    }
 
     useEffect(() => {
 
         const Id = localStorage.getItem('Mongo_id');
         //const fullName = localStorage.getItem('fullName');
-        
-        const fetchProjects = async () => {
-            
-            try{
-                const response = await fetch('/api/Projects/get_all_users', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: Id,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json' 
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find projects!');
-                }
-                const Project_data = await response.json();
-
-                if (!Array.isArray(Project_data)) {
-                    console.warn('API response is not an array:', Project_data);
-                    return [];
-                }
-                //map data since we are making an async call
-                return Project_data.map((project) => ({
-                    id: project._id,
-                    title: project.title,
-                    owner: getUserNameById(project.owner),
-                    ownerId: project.owner,
-                    status: project.status,
-                    collaborators: project.collaborators,
-                    collaboratorNames: getCollaboratorNames(project.collaborators),
-                    field: project.field,
-                    created: project.created,
-                    updated: project.updated,
-                    skills: project.skills,
-                    tags: project.tags
-                }));
-
-            }
-            catch(error) {
-                console.error('Error finding projects:', error);
-                return [];
-            }
-        }
 
         const loadProjects = async () => {
-            const projects = await fetchProjects();
+            const projects = await fetchProjects(Id);
             setProjects(projects);
         };
 

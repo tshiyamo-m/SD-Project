@@ -5,60 +5,54 @@ import './milestone.css'
 export default function MilestonesPage({ project, onBack }) {
     const [milestones, setMilestones] = useState([]);
 
-    useEffect(() => {
-
-        const Id = project.id;
-        console.log(project);
-        //const fullName = localStorage.getItem('fullName');
-        const fetchMilestones = async () => {
-
-            try{
-                const response = await fetch('/api/Milestone/find', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: Id,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find milestones!');
+    const fetchMilestones = async (Id) => {
+        try{
+            const response = await fetch('/api/Milestone/find', {
+                method: 'POST',
+                body: JSON.stringify({
+                    id: Id,
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                const Milestone_data = await response.json();
-
-                if (!Array.isArray(Milestone_data)) {
-                    console.warn('API response is not an array:', Milestone_data);
-                    return [];
-                }
-                //map data since we are making an async call
-                return Milestone_data.map((milestone, index) => ({
-                    id: milestone.id,
-                    name: milestone.name,
-                    description: milestone.description,
-                    dueDate: milestone.dueDate,
-                    assignedTo: milestone.assignedTo,
-                    status: milestone.status,
-                }));
-
-
+            });
+            if (!response.ok) {
+                throw new Error('Failed to find milestones!');
             }
-            catch(error) {
-                console.error('Error finding milestones:', error);
-                console.log("hello sir");
+            const Milestone_data = await response.json();
+
+            if (!Array.isArray(Milestone_data)) {
+                console.warn('API response is not an array:', Milestone_data);
                 return [];
             }
+            //map data since we are making an async call
+            return Milestone_data.map((milestone) => ({
+                id: milestone.id,
+                name: milestone.name,
+                description: milestone.description,
+                dueDate: milestone.dueDate,
+                assignedTo: milestone.assignedTo,
+                status: milestone.status,
+            }));
+
+
         }
+        catch(error) {
+            console.error('Error finding milestones:', error);
+            //console.log("hello sir");
+            return [];
+        }
+    }
 
-        const loadMilestones = async () => {
-            const milestones = await fetchMilestones();
-            setMilestones(milestones);
-        };
+    const loadMilestones = async (Id) => {
+        const milestones = await fetchMilestones(Id);
+        setMilestones(milestones);
+    };
 
-        loadMilestones();
-
-
-
+    useEffect(() => {
+        const Id = project.id;
+        //console.log(project);
+        loadMilestones(Id);
     }, [project, project.id]);
 
     const [newMilestone, setNewMilestone] = useState({
@@ -79,41 +73,39 @@ export default function MilestonesPage({ project, onBack }) {
         }));
     };
 
+    const API_CALL_CREATE_MILESTONE = async (Mongo_id) => {
+        try{
+            const response = await fetch('/api/Milestone', {
+                method: 'POST',
+                body: JSON.stringify({
+                    projectId: Mongo_id,
+                    ...newMilestone,
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error('Failed to create milestone');
+            }
+            else{
+                //setMilestone_id(result._id);
+                return result._id;
+            }
+        }
+        catch(error) {
+            console.error('Error creating milestone:', error);
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         //setMilestones([...milestones, milestone]);
         const Mongo_id = project.id;
-
-        const API_CALL_CREATE_MILESTONE = async () => {
-            try{
-                const response = await fetch('/api/Milestone', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        projectId: Mongo_id,
-                        ...newMilestone,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error('Failed to create milestone');
-                }
-                else{
-                    //setMilestone_id(result._id);
-                    return result._id;
-                }
-            }
-            catch(error) {
-                console.error('Error creating milestone:', error);
-            }
-        }
-
-        await API_CALL_CREATE_MILESTONE();
-
+        await API_CALL_CREATE_MILESTONE(Mongo_id);
         setNewMilestone({
             name: '',
             description: '',
@@ -246,7 +238,7 @@ export default function MilestonesPage({ project, onBack }) {
                                             className="status-toggle"
                                             onClick={() => toggleComplete(milestone.id)}
                                         >
-                                            {milestone.completed ? <Check size={20} /> : <span className="checkbox" />}
+                                            {milestone.completed ? <Check size={20} /> : <strong className="checkbox" />}
                                         </button>
                                         {milestone.name}
                                     </h2>

@@ -5,6 +5,7 @@ import './projects.css'
 import './review.css'
 //import { useUser } from "../components/UserContext";
 import { jwtDecode } from 'jwt-decode';
+import { findActiveProject } from '../utils/projectUtils';
 
 const ReviewerPage = () => {
     // User state
@@ -50,18 +51,17 @@ const ReviewerPage = () => {
         }
     };
 
+    const loadUser = async (userId) => {
+        const userEnter = await getUser(userId);
+        if (userEnter) {
+            setUser(userEnter);
+            //console.log("User loaded:", userEnter.name);
+        }
+    };
+
     useEffect(() => {
         if (!userId) return;
-
-        const loadUser = async () => {
-            const userEnter = await getUser(userId);
-            if (userEnter) {
-                setUser(userEnter);
-                //console.log("User loaded:", userEnter.name);
-            }
-        };
-
-        loadUser();
+        loadUser(userId);
     }, [userId]);
 
     //remove this
@@ -92,28 +92,7 @@ const ReviewerPage = () => {
 
     const getAllProjects = async () => {
         try {
-            const response = await fetch('/api/Projects/find_active_projects', {
-                method: 'POST',
-                body: JSON.stringify({ status: "Active" }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to find projects!');
-            }
-
-            const userData = await response.json();
-            if (!Array.isArray(userData) || userData.length === 0) {
-                console.warn('API response is not a valid array:', userData);
-                return null;
-            }
-            //const userData = ud;
-            //console.log('userdata', userData);
-            //console.log("token", userData.token)
-            //const decoded = jwtDecode(userData.token);
-            //console.log('decoded: ', decoded.name);
+            const userData = await findActiveProject();
             return userData.map((project) => ({
                     _id: project._id,
                     owner: project.owner,
@@ -140,8 +119,6 @@ const ReviewerPage = () => {
 
     const fetchFiles = async (ProjectID) => {
         try {
-
-
             if (!ProjectID || typeof ProjectID !== 'string') {
                 throw new Error('Invalid project ID');
             }
