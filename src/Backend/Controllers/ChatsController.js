@@ -1,5 +1,5 @@
 // controllers/chatController.js
-const { users, chats } = require("../stubData/db");
+//const { users, chats } = require("../stubData/db");
 const { v4: uuid } = require("uuid");
 
 const getUserChats = (req, res) => {

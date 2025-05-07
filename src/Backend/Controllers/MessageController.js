@@ -1,5 +1,5 @@
 // controllers/messageController.js
-const { chats, messages } = require("../stubData/db");
+//const { chats, messages } = require("../stubData/db");
 const { v4: uuid } = require("uuid");
 const ConversationModel = require('../models/ConversationModel');
 const { CreativeCommons } = require("lucide-react");
