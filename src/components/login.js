@@ -19,7 +19,7 @@ function Login() {
         localStorage.setItem('fullName', user.name);
         
 
-        const response = await fetch('/api/login', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/login', {
             method: 'POST',
             body: JSON.stringify({
                 token: res.credential,
