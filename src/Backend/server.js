@@ -19,8 +19,7 @@ const { ObjectId } = mongoose.Types;
 
 const LoginRoutes = require('./routes/LoginRoutes');
 const ProjectsRoutes =require('./routes/ProjectsRoutes');
-const InviteRoutes = require('./routes/InviteRoutes');//import the router that tells us how to handle 
-//const BucketRoutes = require('./routes/BucketRoutes');
+const InviteRoutes = require('./routes/InviteRoutes');
 const MilestoneRoutes = require('./routes/MilestoneRoutes');
 const ReviewRoutes = require('./routes/ReviewRoutes');
 

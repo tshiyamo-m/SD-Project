@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './finance.css';
 
-const Finance = () => {
+const Finance = () => {  //WHY ARE THERE DIVS IN THIS CODE??????????????????????????
   const [funds, setFunds] = useState([
     { id: 1, amount: 4200, purpose: 'To monitor and display budget usage', source: 'U-Collab', amountUsed: 2000 }
   ]);

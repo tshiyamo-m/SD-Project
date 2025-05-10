@@ -68,12 +68,7 @@ const ProjectSchema = new Schema({//Layout of schema
     skills: {
         type: [String],
         required: false
-    },
-    Documents: {
-        type: [String],
-        required: false
     }
-
 
 }, { timestamps : true } )
 
