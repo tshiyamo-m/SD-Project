@@ -1,12 +1,42 @@
-/* Homepage CSS */
-.homepage-content {
+/* Homepage Layout */
+.homepage-layout {
     display: flex;
-    flex-direction: column;
-    padding: 2rem;
-    position: relative;
     min-height: 100vh;
+    position: relative;
 }
 
+.main-content {
+    flex: 1;
+    padding: 2rem;
+}
+
+/* Notifications sidebar */
+.notifications-sidebar {
+    width: 300px;
+    background-color: #111827;
+    color: white;
+    padding: 2rem;
+    border-left: 1px solid #374151;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+}
+
+.notifications-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.no-notifications {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+/* Rest of your existing styles... */
 .welcome-header {
     margin-bottom: 2rem;
 }
@@ -17,7 +47,6 @@
     color: #111827;
 }
 
-/* Feature section with call to action */
 .feature-section {
     background-color: #111827;
     border-radius: 1rem;
@@ -71,13 +100,11 @@
     width: 200px;
     height: 200px;
     position: relative;
-    /*background-image: ;*/
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 
-/* Stats section */
 .stats-section {
     display: flex;
     justify-content: space-between;
@@ -118,34 +145,19 @@
     font-weight: normal;
 }
 
-/* Notifications panel */
-.notifications-panel {
-    position: absolute;
-    top: 0;
-    right: 2rem;
-    width: 300px;
-    background-color: #111827;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.notifications-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.no-notifications {
-    text-align: center;
-    color: #9ca3af;
-    font-size: 0.875rem;
-}
-
-/* Responsive adjustments */
 @media (max-width: 768px) {
+    .homepage-layout {
+        flex-direction: column;
+    }
+
+    .notifications-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-left: none;
+        border-top: 1px solid #374151;
+    }
+
     .feature-content {
         max-width: 100%;
     }
@@ -156,12 +168,5 @@
 
     .stats-section {
         flex-direction: column;
-    }
-
-    .notifications-panel {
-        position: relative;
-        width: 100%;
-        right: 0;
-        margin-top: 2rem;
     }
 }

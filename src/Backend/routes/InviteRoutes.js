@@ -1,6 +1,6 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
-const Invite = require('../models/InviteModel'); // Import your Invite model
+const Invite = require('../../../api/invite/InviteModel'); // Import your Invite model
 const router = express.Router();
 const nodemailer = require('nodemailer');
 require('dotenv').config();

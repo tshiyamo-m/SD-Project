@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import './createproject.css'
+import { createProject,addProject } from '../utils/projectUtils';
 
 export default function CreateProjectPage({ onBack, onCreateProject }) {
     const [formData, setFormData] = useState({
@@ -45,7 +46,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         }));
     };
     const fullName = localStorage.getItem('fullName');
-    //const [Project_id, setProject_id] = useState(null);
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         const project = {
@@ -55,83 +56,29 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
             created: new Date().toISOString().split('T')[0],
             updated: new Date().toISOString().split('T')[0],
             tags: formData.tags.split(',').map(tag => tag.trim()),
-            skills: formData.skills.split(',').map(skill => skill.trim())
+            skills: formData.skills.split(',').map(skill => skill.trim()),
+            Documents: []
         };
 
         //API CALL TO SUBMIT PROJECT INTO DB
 
         const Mongo_id = localStorage.getItem('Mongo_id');
-        //Create "Project" object
-        // const Project = {
-        //     owner: Mongo_id, // or any other field
-        //     ...formData,
-           
-        // };
-        //console.log(Project);
-        
-        const API_CALL_CREATE_PROJECT = async () => {
-            try{
-                const response = await fetch('/api/Projects', {  
-                    method: 'POST',
-                    body: JSON.stringify({
-                        owner: Mongo_id,
-                        ...formData,
-                        tags: formData.tags.split(',').map(tag => tag.trim()),
-                        skills: formData.skills.split(',').map(skill => skill.trim())
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json' 
-                    }
-                });
 
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error('Failed to create project');
-                }
-                else{
-                    //setProject_id(result._id);
-                    return result._id;
-                }
-            } 
-            catch(error) {
-                console.error('Error creating project:', error);
-            }
+        const Project_Data = {
+            owner: Mongo_id,
+            ...formData,
+            tags: formData.tags.split(',').map(tag => tag.trim()),
+            skills: formData.skills.split(',').map(skill => skill.trim())
         }
 
-        const newProjectId = await API_CALL_CREATE_PROJECT(); 
-        
-
+        const newProjectId = await createProject(Project_Data);  //returns project Mongo ID
+         
         const Data = {
             user_id: Mongo_id,
             project_id: newProjectId 
         }
-        
-        const API_CALL_ADD_PROJECT = async () => {
 
-            try{
-                const response = await fetch('/api/Projects/addproject', {  
-                    method: 'POST',
-                    body: JSON.stringify(Data),
-                    headers: {
-                        'Content-Type': 'application/json' 
-                    }
-                });
-
-                //const data = await response.json();
-
-                if (!response.ok){
-                    throw new Error("Error with adding project!")
-                }
-                console.log(response);
-
-            }
-            catch(error){
-                console.error('Error adding project:', error);
-            }
-        }
-       
-        await API_CALL_ADD_PROJECT();
+        await addProject(Data);
 
         onCreateProject(project);
         onBack();

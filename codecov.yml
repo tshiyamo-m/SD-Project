@@ -1,0 +1,15 @@
+coverage:
+  status:
+    project: #add everything under here, more options at https://docs.codecov.com/docs/commit-status
+      default:
+        # basic
+        target: auto #default
+        threshold: 0%
+        base: auto 
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+codecov: 
+ token: 70bc1700-7a90-45e8-a1ff-87569e520247

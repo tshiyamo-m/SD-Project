@@ -1,10 +1,34 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 //import { Home, Folder, MessageCircle, DollarSign, Settings, LogOut , ChartBar} from 'lucide-react';
-import { Folder, DollarSign, ChartBar, Home, MessageCircle } from 'lucide-react';
+import { Folder, DollarSign, ChartBar, Home , LogOut, MessageCircle } from 'lucide-react';
+
 
 const Navbar = () => {
+
+    const navigate = useNavigate();
+
+    // Handle logout securely
+    const handleLogout = (e) => {
+        e.preventDefault();
+
+        // Clear any authentication tokens or user data from storage
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('userData');
+
+        // You can add any other session data that needs to be cleared
+
+        // Redirect to root with replace (prevents back button navigation)
+        navigate('./', { replace: true });
+
+        // For additional security, you can also manipulate browser history
+        window.history.pushState(null, '', './');
+
+        // Optional: reload the page to ensure complete reset of app state
+        window.location.reload();
+    };
+
     return (
         <nav className="navbar">
             <header className="navbar-header">
@@ -20,7 +44,7 @@ const Navbar = () => {
                                 className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 <Home size={20}/>
-                                <span>Home</span>
+                                <strong>Home</strong>
                             </NavLink>
                         </li>
                         <li>
@@ -29,7 +53,7 @@ const Navbar = () => {
                                 className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 <Folder size={20}/>
-                                <span>Projects</span>
+                                <strong>Projects</strong>
                             </NavLink>
                         </li>
                         <li>
@@ -38,7 +62,7 @@ const Navbar = () => {
                                 className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 <ChartBar size={20}/>
-                                <span>Reviews</span>
+                                <strong>Reviews</strong>
                             </NavLink>
                         </li>
                         <li>
@@ -57,7 +81,7 @@ const Navbar = () => {
                                 className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 <DollarSign size={20}/>
-                                <span>Finances</span>
+                                <strong>Finances</strong>
                             </NavLink>
                         </li>
                     </ul>
@@ -76,15 +100,17 @@ const Navbar = () => {
                         {/*        <span>Settings</span>*/}
                         {/*    </NavLink>*/}
                         {/*</li>*/}
-                        {/*<li>*/}
-                        {/*    <NavLink*/}
-                        {/*        to="/src/pages/logout"*/}
-                        {/*        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}*/}
-                        {/*    >*/}
-                        {/*        <LogOut size={20} />*/}
-                        {/*        <span>Logout</span>*/}
-                        {/*    </NavLink>*/}
-                        {/*</li>*/}
+                        <li>
+                            {/* Using a proper href with preventDefault in the handler */}
+                            <a
+                                href="./"
+                                onClick={handleLogout}
+                                className="nav-link"
+                            >
+                                <LogOut size={20}/>
+                                <strong>Logout</strong>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </footer>
