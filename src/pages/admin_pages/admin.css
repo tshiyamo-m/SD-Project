@@ -1,0 +1,258 @@
+/* Admin Page Styles */
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    position: relative;
+    min-height: 100vh;
+    background-color: #f9fafb;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    margin-bottom: 2rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+.admin-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.admin-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #111827;
+}
+
+.admin-welcome {
+    font-size: 1.25rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+/* Logout button styles */
+.logout-button {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+    background-color: #dc2626;
+}
+
+.logout-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* Admin sections layout */
+.admin-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.review-requests-section,
+.users-section,
+.admins-section {
+    background-color: #111827;
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+}
+
+.section-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: white;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 0.75rem;
+}
+
+/* Search section styles */
+.search-section {
+    background-color: #111827;
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+.search-form fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.search-form legend {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: white;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 0.75rem;
+    width: 100%;
+}
+
+.search-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #9ca3af;
+}
+
+.search-form input[type="search"] {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #374151;
+    background-color: #1f2937;
+    color: white;
+    font-size: 1rem;
+}
+
+.search-form input[type="search"]::placeholder {
+    color: #6b7280;
+}
+
+.search-form input[type="search"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* List styles */
+.requests-list,
+.users-list,
+.admins-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.request-item,
+.user-item,
+.admin-item {
+    background-color: #1f2937;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.request-card,
+.user-card,
+.admin-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.user-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.user-email {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+/* Button styles */
+.approve-button,
+.admin-button {
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    margin-top: auto;
+    font-size: 0.875rem;
+}
+
+.approve-button {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.approve-button:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.admin-button {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.admin-button:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Empty state messages */
+.no-requests,
+.no-users,
+.no-admins {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    padding: 2rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .requests-list,
+    .users-list,
+    .admins-list {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-page {
+        padding: 1rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .admin-sections,
+    .admin-header {
+        max-width: 100%;
+    }
+
+    .admin-top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .logout-button {
+        align-self: flex-end;
+    }
+}

@@ -1,28 +1,46 @@
-import { useState } from 'react';
-import { ArrowLeft, Plus, Check } from 'lucide-react';
+import {useEffect, useState} from 'react';
+import {ArrowLeft, Check, Plus} from 'lucide-react';
 import './milestone.css'
+import {createMilestone, getMilestone} from '../utils/milestoneUtils';
 
 export default function MilestonesPage({ project, onBack }) {
-    const [milestones, setMilestones] = useState([
-        {
-            id: 1,
-            name: "Literature Review",
-            description: "Complete review of existing research papers",
-            dueDate: "2025-05-15",
-            status: "In Progress",
-            assignedTo: "Alice Lee",
-            completed: false
-        },
-        {
-            id: 2,
-            name: "Prototype Development",
-            description: "Build initial prototype with core features",
-            dueDate: "2025-06-30",
-            status: "Not Started",
-            assignedTo: "John Smith",
-            completed: false
+    const [milestones, setMilestones] = useState([]);
+
+    const fetchMilestones = async (Id) => {
+        try{
+            const Milestone_data = await getMilestone(Id);
+
+            if (!Array.isArray(Milestone_data)) {
+                console.warn('API response is not an array:', Milestone_data);
+                return [];
+            }
+            //map data since we are making an async call
+            return Milestone_data.map((milestone) => ({
+                id: milestone.id,
+                name: milestone.name,
+                description: milestone.description,
+                dueDate: milestone.dueDate,
+                assignedTo: milestone.assignedTo,
+                status: milestone.status,
+            }));
         }
-    ]);
+        catch(error) {
+            console.error('Error finding milestones:', error);
+            //console.log("hello sir");
+            return [];
+        }
+    }
+
+    const loadMilestones = async (Id) => {
+        const milestones = await fetchMilestones(Id);
+        setMilestones(milestones);
+    };
+
+    useEffect(() => {
+        const Id = project.id;
+        //console.log(project);
+        loadMilestones(Id);
+    }, [project, project.id]);
 
     const [newMilestone, setNewMilestone] = useState({
         name: '',
@@ -42,21 +60,33 @@ export default function MilestonesPage({ project, onBack }) {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const API_CALL_CREATE_MILESTONE = async (Mongo_id) => {
+        try{
+            const Data = {
+                projectId: Mongo_id,
+                ...newMilestone,
+            }
+            return await createMilestone(Data);
+        }
+        catch(error) {
+            console.error('Error creating milestone:', error);
+        }
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const milestone = {
-            ...newMilestone,
-            id: Date.now(),
-            completed: false
-        };
-        setMilestones([...milestones, milestone]);
+        //setMilestones([...milestones, milestone]);
+        const Mongo_id = project.id;
+        await API_CALL_CREATE_MILESTONE(Mongo_id);
         setNewMilestone({
             name: '',
             description: '',
             dueDate: '',
             assignedTo: '',
+            projectId: '',
             status: 'Not Started'
         });
+        //setMilestones([...milestones, newMilestone])
         setShowForm(false);
     };
 
@@ -180,7 +210,7 @@ export default function MilestonesPage({ project, onBack }) {
                                             className="status-toggle"
                                             onClick={() => toggleComplete(milestone.id)}
                                         >
-                                            {milestone.completed ? <Check size={20} /> : <span className="checkbox" />}
+                                            {milestone.completed ? <Check size={20} /> : <strong className="checkbox" />}
                                         </button>
                                         {milestone.name}
                                     </h2>
