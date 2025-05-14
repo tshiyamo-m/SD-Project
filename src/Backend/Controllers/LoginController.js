@@ -60,6 +60,7 @@ const get_user = async (req, res) => {
     }
 }
 
+
 const get_all_users = async (req, res) => {
     try {
         const User = await LoginModel.find({});
@@ -132,6 +133,36 @@ const make_admin = async (req, res) => {
     }
 };
 
+// Get list of users
+
+const return_users = async (req, res) => {
+
+    try{
+        const allUsers = await LoginModel.find({});
+        res.status(200).json(allUsers);
+        // if (!allUsers){
+            
+        //     return res.status(404).json({ error: "Users not found" });
+        // }
+        // else {
+        //     const DecodedUsers = [];
+
+        //     for (const user of allUsers) {
+        //         const decoded = jwt.decode(user.token);
+        //         const user_with_id = {_id: user._id, ...decoded}
+        //         DecodedUsers.push(user_with_id);
+        //     }
+
+        //     res.status(200).json(DecodedUsers);
+
+        // }
+    }
+    catch(error){
+        res.status(404).json({error: error.message})
+    }
+}
+
+
 
 module.exports = {
     submit_user,
@@ -139,4 +170,6 @@ module.exports = {
     get_all_users,
     update_is_reviewer,
     make_admin,
+    return_users
+
 }
