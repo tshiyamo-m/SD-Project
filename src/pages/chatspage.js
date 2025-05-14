@@ -9,7 +9,7 @@ const ChatsPage = () => {
     const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState("");
 
-    const Mongo_id = localStorage.getItem("Mongo_id") || currentUserId; // Fallback to stub user if not in localStorage
+    const Mongo_id = localStorage.getItem("Mongo_id"); // Fallback to stub user if not in localStorage
 
     // Stub data for users
     const stubUsers = [
