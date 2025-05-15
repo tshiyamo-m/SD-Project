@@ -29,6 +29,7 @@ const ProjectsPage = () => {
     };
 
     //testable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchProjects = async (Id) => {
         try{
             const Project_data = await getAllProjects(Id);
@@ -71,7 +72,7 @@ const ProjectsPage = () => {
         if (allUsers.length > 0) {
             loadProjects();
         }
-    }, [allUsers]);
+    }, [allUsers, fetchProjects]);
 
     const fetchUsers = async () => {
         try {
