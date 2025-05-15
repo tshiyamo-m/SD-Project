@@ -5,6 +5,8 @@ const {
     get_all_users,
     update_is_reviewer,
     make_admin,
+    return_users
+
 } = require('../Controllers/LoginController')
 
 
@@ -19,5 +21,8 @@ router.post('/getUser', get_user)
 router.post('/getAllUsers', get_all_users)
 router.post('/update_is_reviewer', update_is_reviewer)
 router.post('/makeAdmin', make_admin)
+
+//Return list of users
+router.post('/users', return_users);
 
 module.exports = router
