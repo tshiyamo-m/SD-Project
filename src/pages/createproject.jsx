@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Check, X } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import './createproject.css'
 import { createProject,addProject } from '../utils/projectUtils';
 
@@ -19,7 +19,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         skills: ''
     });
 
-    const [newCollaborator, setNewCollaborator] = useState('');
+    //const [newCollaborator, setNewCollaborator] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,22 +29,22 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         }));
     };
 
-    const handleAddCollaborator = () => {
-        if (newCollaborator.trim() && !formData.collaborators.includes(newCollaborator)) {
-            setFormData(prev => ({
-                ...prev,
-                collaborators: [...prev.collaborators, newCollaborator.trim()]
-            }));
-            setNewCollaborator('');
-        }
-    };
+    // const handleAddCollaborator = () => {
+    //     if (newCollaborator.trim() && !formData.collaborators.includes(newCollaborator)) {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             collaborators: [...prev.collaborators, newCollaborator.trim()]
+    //         }));
+    //         setNewCollaborator('');
+    //     }
+    // };
 
-    const handleRemoveCollaborator = (collaborator) => {
-        setFormData(prev => ({
-            ...prev,
-            collaborators: prev.collaborators.filter(c => c !== collaborator)
-        }));
-    };
+    // const handleRemoveCollaborator = (collaborator) => {
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         collaborators: prev.collaborators.filter(c => c !== collaborator)
+    //     }));
+    // };
     const fullName = localStorage.getItem('fullName');
     
     const handleSubmit = async (e) => {
@@ -146,40 +146,40 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                     />
                 </section>
 
-                <section className="form-group">
-                    <label>Collaborators</label>
-                    <article className="collaborator-input">
-                        <input
-                            type="text"
-                            value={newCollaborator}
-                            onChange={(e) => setNewCollaborator(e.target.value)}
-                            placeholder="Add collaborator email"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleAddCollaborator}
-                            className="add-button"
-                        >
-                            Add
-                        </button>
-                    </article>
-                    {formData.collaborators.length > 0 && (
-                        <ul className="collaborator-list">
-                            {formData.collaborators.map(collab => (
-                                <li key={collab}>
-                                    {collab}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveCollaborator(collab)}
-                                        className="remove-button"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </section>
+                {/*<section className="form-group">*/}
+                {/*    <label>Collaborators</label>*/}
+                {/*    <article className="collaborator-input">*/}
+                {/*        <input*/}
+                {/*            type="text"*/}
+                {/*            value={newCollaborator}*/}
+                {/*            onChange={(e) => setNewCollaborator(e.target.value)}*/}
+                {/*            placeholder="Add collaborator email"*/}
+                {/*        />*/}
+                {/*        <button*/}
+                {/*            type="button"*/}
+                {/*            onClick={handleAddCollaborator}*/}
+                {/*            className="add-button"*/}
+                {/*        >*/}
+                {/*            Add*/}
+                {/*        </button>*/}
+                {/*    </article>*/}
+                {/*    {formData.collaborators.length > 0 && (*/}
+                {/*        <ul className="collaborator-list">*/}
+                {/*            {formData.collaborators.map(collab => (*/}
+                {/*                <li key={collab}>*/}
+                {/*                    {collab}*/}
+                {/*                    <button*/}
+                {/*                        type="button"*/}
+                {/*                        onClick={() => handleRemoveCollaborator(collab)}*/}
+                {/*                        className="remove-button"*/}
+                {/*                    >*/}
+                {/*                        <X size={16} />*/}
+                {/*                    </button>*/}
+                {/*                </li>*/}
+                {/*            ))}*/}
+                {/*        </ul>*/}
+                {/*    )}*/}
+                {/*</section>*/}
 
                 <article className="form-row">
                     <section className="form-group">
@@ -213,7 +213,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                             name="fundingAmount"
                             value={formData.fundingAmount}
                             onChange={handleChange}
-                            placeholder="$"
+                            placeholder="R"
                         />
                     </section>
                     <section className="form-group">
