@@ -71,7 +71,7 @@ const Navbar = () => {
                                 className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 <MessageCircle size={20}/>
-                                <span>Chats</span>
+                                <strong>Chats</strong>
                             </NavLink>
                         </li>
 
