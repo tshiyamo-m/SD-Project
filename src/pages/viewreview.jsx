@@ -3,6 +3,9 @@ import { ArrowLeft, Star, StarOff, Send, XCircle, UserCircle, Calendar } from 'l
 import './projects.css';
 import './viewreview.css';
 import {jwtDecode} from "jwt-decode";
+import { submitReview } from '../utils/reviewUtils';
+import { findReviewer } from '../utils/reviewUtils';
+import { getUser } from '../utils/loginUtils';
 
 const ReviewsPage = ({ project, onBack }) => {
     // Sample reviews data (in a real app, this would be fetched from an API)
@@ -10,59 +13,49 @@ const ReviewsPage = ({ project, onBack }) => {
 
     // Filter reviews for the current project
     //const projectReviews = reviews.filter(review => review.projectId === project.id);
+    const fetchReviews = async (Id) => {
+
+        try{
+
+            const Review_data = await findReviewer(Id);
+
+            if (!Array.isArray(Review_data)) {
+                console.warn('API response is not an array:', Review_data);
+                return [];
+            }
+            //map data since we are making an async call
+            return Review_data.map((review) => ({
+                id: review._id,
+                reviewerId: review.reviewerId,
+                projectId: review.projectId,
+                rating: review.rating,
+                comment: review.comment,
+                date: review.date,
+                type: review.type,
+            }));
+
+
+        }
+        catch(error) {
+            console.error('Error finding reviews:', error);
+            //console.log("hello sir");
+            return [];
+        }
+    }
+
+    const loadReviews = async (Id) => {
+        const reviews = await fetchReviews(Id);
+        setReviews(reviews);
+    };
 
     useEffect(() => {
 
         const Id = project.id;
         //console.log(project);
         //const fullName = localStorage.getItem('fullName');
-        const fetchReviews = async () => {
 
-            try{
-                const response = await fetch('/api/Review/find_research', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: Id,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find reviews!');
-                }
-                const Review_data = await response.json();
-
-                if (!Array.isArray(Review_data)) {
-                    console.warn('API response is not an array:', Review_data);
-                    return [];
-                }
-                //map data since we are making an async call
-                return Review_data.map((review, index) => ({
-                    id: review._id,
-                    reviewerId: review.reviewerId,
-                    projectId: review.projectId,
-                    rating: review.rating,
-                    comment: review.comment,
-                    date: review.date,
-                    type: review.type,
-                }));
-
-
-            }
-            catch(error) {
-                console.error('Error finding reviews:', error);
-                //console.log("hello sir");
-                return [];
-            }
-        }
-
-        const loadReviews = async () => {
-            const reviews = await fetchReviews();
-            setReviews(reviews);
-        };
-
-        loadReviews();
+        fetchReviews(Id)
+        loadReviews(Id);
 
 
 
@@ -76,11 +69,11 @@ const ReviewsPage = ({ project, onBack }) => {
         type: 'Collaborator'
     });
 
-    const getUser = async (findId) => {
+    const getAUser = async (findId) => {
         try {
-            const response = await fetch('/api/login/getUser', {
+            /*const response = await fetch('/api/login/getUser', {
                 method: 'POST',
-                body: JSON.stringify({ id: findId }),
+                body: JSON.stringify({ findId : findId }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -88,9 +81,9 @@ const ReviewsPage = ({ project, onBack }) => {
 
             if (!response.ok) {
                 throw new Error('Failed to find user!');
-            }
+            }*/
 
-            const userData = await response.json();
+            const userData = await getUser(findId);
             // if (!Array.isArray(userData) || userData.length === 0) {
             //     console.warn('API response is not a valid array:', userData);
             //     return null;
@@ -98,8 +91,8 @@ const ReviewsPage = ({ project, onBack }) => {
             //const userData = ud;
             //console.log(userData);
             //console.log("token", userData.token)
+            //console.log('rev: ', findId);
             const decoded = jwtDecode(userData.token);
-            //console.log('decoded: ', decoded.name);
             return {
                 name: decoded.name || '',
                 isReviewer: userData.isReviewer,
@@ -123,7 +116,7 @@ const ReviewsPage = ({ project, onBack }) => {
         }
 
         // Fetch the user data
-        const reviewer = await getUser(reviewerId);
+        const reviewer = await getAUser(reviewerId);
         if (reviewer) {
             // Update the cache
             setReviewerNames(prev => ({
@@ -136,17 +129,17 @@ const ReviewsPage = ({ project, onBack }) => {
         return "Unknown Reviewer";
     };
 
-    useEffect(() => {
-        const loadReviewerNames = async () => {
-            const uniqueReviewerIds = [...new Set(reviews.map(r => r.reviewerId))];
+    const loadReviewerNames = async () => {
+        const uniqueReviewerIds = [...new Set(reviews.map(r => r.reviewerId))];
 
-            for (const reviewerId of uniqueReviewerIds) {
-                if (!reviewerNames[reviewerId]) {
-                    await getReviewerName(reviewerId);
-                }
+        for (const reviewerId of uniqueReviewerIds) {
+            if (!reviewerNames[reviewerId]) {
+                await getReviewerName(reviewerId);
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         if (reviews.length > 0) {
             loadReviewerNames();
         }
@@ -156,6 +149,23 @@ const ReviewsPage = ({ project, onBack }) => {
     const handleRatingChange = (rating) => {
         setNewReview({ ...newReview, rating });
     };
+
+    const API_CALL_CREATE_REVIEW = async (reviewToAdd) => {
+        try{
+            return await submitReview(reviewToAdd)._id;
+
+            // if (!response.ok) {
+            //     throw new Error('Failed to create review');
+            // }
+            // else{
+            //     //setMilestone_id(result._id);
+            //     return result._id;
+            // }
+        }
+        catch(error) {
+            console.error('Error creating review:', error);
+        }
+    }
 
     // Handle form submission
     const handleSubmitReview = async (e) => {
@@ -170,34 +180,7 @@ const ReviewsPage = ({ project, onBack }) => {
             type: newReview.type
         };
 
-        const API_CALL_CREATE_REVIEW = async () => {
-            try{
-                const response = await fetch('/api/Review', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        ...reviewToAdd
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error('Failed to create review');
-                }
-                else{
-                    //setMilestone_id(result._id);
-                    return result._id;
-                }
-            }
-            catch(error) {
-                console.error('Error creating review:', error);
-            }
-        }
-
-        await API_CALL_CREATE_REVIEW();
+        await API_CALL_CREATE_REVIEW(reviewToAdd);
 
         setNewReview({ rating: 0, comment: '', type: 'Collaborator' });
         setReviews([...reviews, reviewToAdd]);

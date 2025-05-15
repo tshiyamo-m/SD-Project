@@ -3,32 +3,23 @@ import {useEffect, useState} from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
 import './projects.css'
 import './review.css'
-import { useUser } from "../components/UserContext";
+//import { useUser } from "../components/UserContext";
 import { jwtDecode } from 'jwt-decode';
+import { findActiveProject } from '../utils/projectUtils';
+import { getUser, updateIsReviewer } from '../utils/loginUtils';
+import { getAllReviews, submitReview } from '../utils/reviewUtils';
+import { downloadFile, fetchFiles } from '../utils/bucketUtils';
 
 const ReviewerPage = () => {
     // User state
-    const { userId } = useUser();
+    const userId  = localStorage.getItem('Mongo_id');
 
     const [user, setUser] = useState({});
 
-    const getUser = async (findId) => {
+    const getAUser = async (findId) => {
         try {
-            const response = await fetch('/api/login/getUser', {
-                method: 'POST',
-                body: JSON.stringify({
-                    findId: findId
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to find user!');
-            }
-
-            const uD = await response.json();
+            const uD = await getUser(findId);
             // if (!Array.isArray(userData) || userData.length === 0) {
             //     console.warn('API response is not a valid array:', userData);
             //     return null;
@@ -37,7 +28,6 @@ const ReviewerPage = () => {
             //console.log(uD);
             //console.log("token", userData.token)
             const decoded = jwtDecode(uD.token);
-            //console.log('decoded: ', decoded.name);
             return {
                 name: decoded.name || '',
                 isReviewer: uD.isReviewer,
@@ -50,18 +40,17 @@ const ReviewerPage = () => {
         }
     };
 
+    const loadUser = async (userId) => {
+        const userEnter = await getAUser(userId);
+        if (userEnter) {
+            setUser(userEnter);
+            //console.log("User loaded:", userEnter.name);
+        }
+    };
+
     useEffect(() => {
         if (!userId) return;
-
-        const loadUser = async () => {
-            const userEnter = await getUser(userId);
-            if (userEnter) {
-                setUser(userEnter);
-                //console.log("User loaded:", userEnter.name);
-            }
-        };
-
-        loadUser();
+        loadUser(userId);
     }, [userId]);
 
     //remove this
@@ -92,28 +81,7 @@ const ReviewerPage = () => {
 
     const getAllProjects = async () => {
         try {
-            const response = await fetch('/api/Projects/find_active_projects', {
-                method: 'POST',
-                body: JSON.stringify({ status: "Active" }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to find projects!');
-            }
-
-            const userData = await response.json();
-            if (!Array.isArray(userData) || userData.length === 0) {
-                console.warn('API response is not a valid array:', userData);
-                return null;
-            }
-            //const userData = ud;
-            //console.log('userdata', userData);
-            //console.log("token", userData.token)
-            //const decoded = jwtDecode(userData.token);
-            //console.log('decoded: ', decoded.name);
+            const userData = await findActiveProject();
             return userData.map((project) => ({
                     _id: project._id,
                     owner: project.owner,
@@ -138,10 +106,9 @@ const ReviewerPage = () => {
     };
 
 
-    const fetchFiles = async (ProjectID) => {
-        try {
-
-
+    const retrieveFiles = async (ProjectID) => {
+        try {/*
+            
             if (!ProjectID || typeof ProjectID !== 'string') {
                 throw new Error('Invalid project ID');
             }
@@ -177,7 +144,8 @@ const ReviewerPage = () => {
             }
             else{
                 return [];
-            }
+            }*/
+            return await fetchFiles(ProjectID)
 
         } catch (error) {
             console.error('Error fetching documents:', error);
@@ -190,7 +158,7 @@ const ReviewerPage = () => {
 
         const loadDocuments = async () => {
             try {
-                const fetchedDocuments = await fetchFiles(activeProject);
+                const fetchedDocuments = await retrieveFiles(activeProject);
                 setDocuments(fetchedDocuments);
             } catch (err) {
                 console.error('Failed to load documents:', err);
@@ -217,87 +185,59 @@ const ReviewerPage = () => {
     // Reviews data
     const [reviews, setReviews] = useState([]);
 
-    useEffect(() => {
+    const fetchAllReviews = async () => {
+        try{
+            const Review_data = await getAllReviews();
 
-        //const fullName = localStorage.getItem('fullName');
-        const fetchAllReviews = async () => {
-
-            try{
-                const response = await fetch('/api/Review/get_all_reviews', {
-                    method: 'POST',
-                    body: JSON.stringify({}),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find reviews!');
-                }
-                const Review_data = await response.json();
-
-                if (!Array.isArray(Review_data)) {
-                    console.warn('API response is not an array:', Review_data);
-                    return [];
-                }
-                //map data since we are making an async call
-                return Review_data.map((review, index) => ({
-                    _id: review._id,
-                    reviewerId: review.reviewerId,
-                    projectId: review.projectId,
-                    rating: review.rating,
-                    comment: review.comment,
-                    date: review.date,
-                    type: review.type,
-                }));
-
-
-            }
-            catch(error) {
-                console.error('Error finding reviews:', error);
-                //console.log("hello sir");
+            if (!Array.isArray(Review_data)) {
+                console.warn('API response is not an array:', Review_data);
                 return [];
             }
+            //map data since we are making an async call
+            return Review_data.map((review) => ({
+                _id: review._id,
+                reviewerId: review.reviewerId,
+                projectId: review.projectId,
+                rating: review.rating,
+                comment: review.comment,
+                date: review.date,
+                type: review.type,
+            }));
         }
+        catch(error) {
+            console.error('Error finding reviews:', error);
+            return [];
+        }
+    }
 
-        const loadReviews = async () => {
-            const reviews = await fetchAllReviews();
-            setReviews(reviews);
-        };
+    const loadReviews = async () => {
+        const reviews = await fetchAllReviews();
+        setReviews(reviews);
+    };
 
+    useEffect(() => {
+        //const fullName = localStorage.getItem('fullName');
         loadReviews();
 
     }, []);
 
+    const UpdateProject = async () => {
+
+        try{
+            const update = {
+                isReviewer: "pending",
+                userId: userId
+            }
+            await updateIsReviewer(update);
+        }
+        catch(error) {
+            console.log('Error updating user:', error);
+        }
+    }
+
     const changeReviewStatus = () => {
         //const Mongo_id = localStorage.getItem("Mongo_id");
-        const UpdateProject = async () => {
-
-            try{
-                const response = await fetch('/api/login/update_is_reviewer', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        isReviewer: "pending",
-                        userId: userId
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    //console.log("mayne");
-                    throw new Error('Failed to update project!');
-                }
-
-
-            }
-            catch(error) {
-                console.log('Error updating project:', error);
-            }
-        }
-
         UpdateProject();
-
-
     }
 
     // Toggle reviewer status
@@ -329,7 +269,7 @@ const ReviewerPage = () => {
         }
 
         // Fetch the user data
-        const reviewer = await getUser(reviewerId);
+        const reviewer = await getAUser(reviewerId);
         if (reviewer) {
             // Update the cache
             setReviewerNames(prev => ({
@@ -401,25 +341,7 @@ const ReviewerPage = () => {
 
         const API_CREATE_REVIEW = async () => {
             try{
-                const response = await fetch('/api/Review', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        ...newReview
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error('Failed to create review');
-                }
-                else{
-                    //setMilestone_id(result._id);
-                    return result;
-                }
+                return await submitReview(newReview);
             }
             catch(error) {
                 console.error('Error creating review:', error);
@@ -439,7 +361,7 @@ const ReviewerPage = () => {
     const handleDownloadDoc = async (docId, docName) => {
 
         const stringDocId = docId.toString();
-        try {
+        try {/*
             const response = await fetch('/Bucket/download', {
                 method: 'POST',
                 headers: {
@@ -461,7 +383,9 @@ const ReviewerPage = () => {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
-            a.remove();
+            a.remove();*/
+
+            downloadFile(stringDocId, docName);
 
         } catch (error) {
             console.error('Download error:', error);
@@ -613,11 +537,11 @@ const ReviewerPage = () => {
                             <dt>Requirements</dt>
                             <dd>{project.requirements}</dd>
 
-                            <dt>Funding Amount</dt>
-                            <dd>${project.fundingAmount}</dd>
+                            {/*<dt>Funding Amount</dt>*/}
+                            {/*<dd>${project.fundingAmount}</dd>*/}
 
-                            <dt>Funding Source</dt>
-                            <dd>{project.fundingSource}</dd>
+                            {/*<dt>Funding Source</dt>*/}
+                            {/*<dd>{project.fundingSource}</dd>*/}
 
                             <dt>Start Date</dt>
                             <dd>{project.startDate}</dd>

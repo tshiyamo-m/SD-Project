@@ -1,72 +1,62 @@
 import {useEffect, useState} from 'react';
-import { ArrowLeft, Plus, Check } from 'lucide-react';
+import {ArrowLeft, Check, Plus} from 'lucide-react';
 import './milestone.css'
+import { createMilestone, getMilestone, updateStatus } from '../utils/milestoneUtils';
 
 export default function MilestonesPage({ project, onBack }) {
     const [milestones, setMilestones] = useState([]);
+    const collaboratorNames = project.collaboratorNames.split(',');
+    //const currentUserId = localStorage.getItem('Mongo_id');
 
-    useEffect(() => {
+    // Combine owner and collaborators, then filter out current user
+    const allAssignableUsers = [
+        { id: project.ownerId, name: project.owner },
+        ...project.collaborators.map((id, index) => ({
+            id,
+            name: collaboratorNames[index]?.trim()
+        }))
+    ]
+    //.filter(user => user.id !== currentUserId);
 
-        const Id = project.id;
-        console.log(project);
-        //const fullName = localStorage.getItem('fullName');
-        const fetchMilestones = async () => {
+    const fetchMilestones = async (Id) => {
+        try{
+            const Milestone_data = await getMilestone(Id);
 
-            try{
-                const response = await fetch('/api/Milestone/find', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: Id,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find milestones!');
-                }
-                const Milestone_data = await response.json();
-
-                if (!Array.isArray(Milestone_data)) {
-                    console.warn('API response is not an array:', Milestone_data);
-                    return [];
-                }
-                //map data since we are making an async call
-                return Milestone_data.map((milestone, index) => ({
-                    id: milestone.id,
-                    name: milestone.name,
-                    description: milestone.description,
-                    dueDate: milestone.dueDate,
-                    assignedTo: milestone.assignedTo,
-                    status: milestone.status,
-                }));
-
-
-            }
-            catch(error) {
-                console.error('Error finding milestones:', error);
-                console.log("hello sir");
+            if (!Array.isArray(Milestone_data)) {
+                console.warn('API response is not an array:', Milestone_data);
                 return [];
             }
+            return Milestone_data.map((milestone) => ({
+                id: milestone._id,
+                name: milestone.name,
+                description: milestone.description,
+                dueDate: milestone.dueDate,
+                assignedTo: milestone.assignedTo,
+                status: milestone.status,
+            }));
         }
+        catch(error) {
+            console.error('Error finding milestones:', error);
+            return [];
+        }
+    }
 
-        const loadMilestones = async () => {
-            const milestones = await fetchMilestones();
-            setMilestones(milestones);
-        };
+    const loadMilestones = async (Id) => {
+        const milestones = await fetchMilestones(Id);
+        setMilestones(milestones);
+    };
 
-        loadMilestones();
-
-
-
-    }, [project, project.id]);
+    useEffect(() => {
+        const projectId = project.id;
+        loadMilestones(projectId);
+    }, [loadMilestones, project, project.id]);
 
     const [newMilestone, setNewMilestone] = useState({
         name: '',
         description: '',
         dueDate: '',
         assignedTo: '',
-        status: 'Not Started'
+        status: 'In Progress'
     });
 
     const [showForm, setShowForm] = useState(false);
@@ -79,41 +69,23 @@ export default function MilestonesPage({ project, onBack }) {
         }));
     };
 
+    const API_CALL_CREATE_MILESTONE = async (projectId) => {
+        try{
+            const Data = {
+                projectId,
+                ...newMilestone,
+            }
+            return await createMilestone(Data);
+        }
+        catch(error) {
+            console.error('Error creating milestone:', error);
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //setMilestones([...milestones, milestone]);
-        const Mongo_id = project.id;
-
-        const API_CALL_CREATE_MILESTONE = async () => {
-            try{
-                const response = await fetch('/api/Milestone', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        projectId: Mongo_id,
-                        ...newMilestone,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error('Failed to create milestone');
-                }
-                else{
-                    //setMilestone_id(result._id);
-                    return result._id;
-                }
-            }
-            catch(error) {
-                console.error('Error creating milestone:', error);
-            }
-        }
-
-        await API_CALL_CREATE_MILESTONE();
-
+        const projectId = project.id;
+        await API_CALL_CREATE_MILESTONE(projectId);
         setNewMilestone({
             name: '',
             description: '',
@@ -122,17 +94,34 @@ export default function MilestonesPage({ project, onBack }) {
             projectId: '',
             status: 'Not Started'
         });
-        //setMilestones([...milestones, newMilestone])
         setShowForm(false);
+        loadMilestones(projectId);
     };
 
-    const toggleComplete = (id) => {
-        setMilestones(milestones.map(milestone =>
-            milestone.id === id
-                ? { ...milestone, completed: !milestone.completed }
-                : milestone
-        ));
+    const toggleComplete = async (id, currentStatus) => {
+        const newStatus = currentStatus === "Complete" ? "In Progress" : "Complete";
+        await changeStatus(id, newStatus);
+        loadMilestones(project.id);
     };
+
+    // Function to get user name by ID
+    const getUserNameById = (userId) => {
+        const user = allAssignableUsers.find(u => u.id === userId);
+        return user ? user.name : 'Unknown';
+    };
+
+    const changeStatus = async (id, stat) => {
+        try {
+            const update = {
+                userId: id,
+                status: stat
+            }
+            await updateStatus(update);
+        }
+        catch(error) {
+            console.log('Error updating user:', error);
+        }
+    }
 
     return (
         <article className="milestones-page">
@@ -197,30 +186,36 @@ export default function MilestonesPage({ project, onBack }) {
                         </section>
                         <section className="form-group">
                             <label htmlFor="assignedTo">Assigned To</label>
-                            <input
-                                type="text"
+                            <select
                                 id="assignedTo"
                                 name="assignedTo"
                                 value={newMilestone.assignedTo}
                                 onChange={handleChange}
                                 required
-                            />
+                            >
+                                <option value="">Select a collaborator</option>
+                                {allAssignableUsers.map(user => (
+                                    <option key={user.id} value={user.id}>
+                                        {user.name}
+                                    </option>
+                                ))}
+                            </select>
                         </section>
                     </article>
 
-                    <section className="form-group">
-                        <label htmlFor="status">Status</label>
-                        <select
-                            id="status"
-                            name="status"
-                            value={newMilestone.status}
-                            onChange={handleChange}
-                        >
-                            <option value="Not Started">Not Started</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Blocked">Blocked</option>
-                        </select>
-                    </section>
+                    {/*<section className="form-group">*/}
+                    {/*    <label htmlFor="status">Status</label>*/}
+                    {/*    <select*/}
+                    {/*        id="status"*/}
+                    {/*        name="status"*/}
+                    {/*        value={newMilestone.status}*/}
+                    {/*        onChange={handleChange}*/}
+                    {/*    >*/}
+                    {/*        <option value="Not Started">Not Started</option>*/}
+                    {/*        <option value="In Progress">In Progress</option>*/}
+                    {/*        <option value="Blocked">Blocked</option>*/}
+                    {/*    </select>*/}
+                    {/*</section>*/}
 
                     <menu className="form-actions">
                         <li>
@@ -239,14 +234,14 @@ export default function MilestonesPage({ project, onBack }) {
                 ) : (
                     <ul>
                         {milestones.map(milestone => (
-                            <li key={milestone.id} className={`milestone-card ${milestone.completed ? 'completed' : ''}`}>
+                            <li key={milestone.id} className={`milestone-card ${milestone.status === "Complete" ? 'completed' : ''}`}>
                                 <header className="milestone-header">
                                     <h2 className="milestone-title">
                                         <button
                                             className="status-toggle"
-                                            onClick={() => toggleComplete(milestone.id)}
+                                            onClick={() => toggleComplete(milestone.id, milestone.status)}
                                         >
-                                            {milestone.completed ? <Check size={20} /> : <span className="checkbox" />}
+                                            {milestone.status === "Complete" ? <Check size={20} /> : <strong className="checkbox" />}
                                         </button>
                                         {milestone.name}
                                     </h2>
@@ -257,7 +252,7 @@ export default function MilestonesPage({ project, onBack }) {
                                     <dt>Due Date:</dt>
                                     <dd>{milestone.dueDate}</dd>
                                     <dt>Assigned To:</dt>
-                                    <dd>{milestone.assignedTo}</dd>
+                                    <dd>{getUserNameById(milestone.assignedTo)}</dd>
                                 </dl>
                             </li>
                         ))}

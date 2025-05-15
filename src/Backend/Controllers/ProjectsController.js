@@ -1,8 +1,8 @@
 const ProjectModel = require('../models/ProjectsModel');
 const LoginModel = require('../models/LoginModel');
-const express = require('express');
+//const express = require('express');
 const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Types;
+// { ObjectId } = mongoose.Types;
 
 //POST Project
 
@@ -67,6 +67,25 @@ const retrieve_projects = async (req, res) => {
 
 }
 
+const get_all_projects = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const projects = await ProjectModel.find({
+            $or: [
+                { owner: id },
+                { collaborators: { $in: [id] } }
+            ]
+        }).sort({ updated: -1 }); // Sort by most recently updated
+
+        res.json(projects);
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+
+}
+
 const retrieve_active_projects = async (req, res) => {
     const { status } = req.body;
 
@@ -110,15 +129,15 @@ const update_project = async (req,res) => {
     
     try {
      
-        const { updates, projectId } = req.body;
+        const { Data } = req.body;
 
       // Prevent updating protected fields
-        const { id, created, ...sanitizedUpdates } = updates;
+        const { id, created, ...sanitizedUpdates } = Data.updates;
         
         const updatedProject = await mongoose.connection.db
             .collection('Projects') // Replace with your actual collection name
             .findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(projectId) },
+            { _id: new mongoose.Types.ObjectId(Data.projectId) },
             { $set: sanitizedUpdates },
             { returnDocument: 'after' } // Returns the updated document
             );
@@ -151,4 +170,5 @@ module.exports = {
     add_project,
     update_project,
     retrieve_active_projects,
+    get_all_projects
 }

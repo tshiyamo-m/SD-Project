@@ -1,75 +1,114 @@
-const axios = require('axios').default;
-const { useState, useEffect } = require('react');
-const { Search, Bell, User, MoreVertical, ArrowLeft } = require('lucide-react');
-require('./projects.css');
-const CreateProjectPage = require("./createproject");
-const MilestonesPage = require('./milestone');
-const ViewProjectPage = require('./viewproject');
-const ReviewsPage = require('./viewreview');
-
+import { useState,useEffect } from 'react';
+//import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
+import './projects.css';
+import CreateProjectPage from "./createproject";
+import MilestonesPage from './milestone';
+import ViewProjectPage from './viewproject';
+import ReviewsPage from './viewreview';
+//import axios from 'axios';
+import {jwtDecode} from "jwt-decode";
+import { getAllProjects } from '../utils/projectUtils';
+import { getAllUsers } from '../utils/loginUtils';
+import PageHeader from "../components/PageHeader";
 
 const ProjectsPage = () => {
     
-    const fullName = localStorage.getItem('fullName');
+    //const fullName = localStorage.getItem('fullName');
     const [projects, setProjects] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
 
-    useEffect(() => {
+    //testable
+    const getUserNameById = (userId) => {
+        const user = allUsers.find(user => user._id === userId);
+        return user ? user.name : 'Unknown';
+    };
 
-        const Id = localStorage.getItem('Mongo_id');
-        const fullName = localStorage.getItem('fullName'); 
-        
-        const fetchProjects = async () => {
-            
-            try{
-                const response = await fetch('/api/Projects/find', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        id: Id,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json' 
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to find projects!');
-                }
-                const Project_data = await response.json();
+    //testable
+    const getCollaboratorNames = (collaboratorIds) => {
+        return collaboratorIds.map(id => getUserNameById(id)).join(", ");
+    };
 
-                if (!Array.isArray(Project_data)) {
-                    console.warn('API response is not an array:', Project_data);
-                    return [];
-                }
-                //map data since we are making an async call
-                return Project_data.map((project, index) => ({
-                    id: project._id,
-                    title: project.title,
-                    owner: fullName,
-                    ownerId: project.owner,
-                    status: project.status,
-                    collaborators: project.collaborators,
-                    field: project.field,
-                    created: project.created,
-                    updated: project.updated,
-                    skills: project.skills,
-                    tags: project.tags
-                }));
-
-            }
-            catch(error) {
-                console.error('Error finding projects:', error);
+    //testable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fetchProjects = async (Id) => {
+        try{
+            const Project_data = await getAllProjects(Id);
+            if (!Array.isArray(Project_data)) {
+                console.warn('API response is not an array:', Project_data);
                 return [];
             }
+            //map data since we are making an async call
+            return Project_data.map((project) => ({
+                id: project._id,
+                title: project.title,
+                owner: getUserNameById(project.owner),
+                ownerId: project.owner,
+                status: project.status,
+                collaborators: project.collaborators,
+                collaboratorNames: getCollaboratorNames(project.collaborators),
+                field: project.field,
+                created: project.created,
+                updated: project.updated,
+                skills: project.skills,
+                tags: project.tags
+            }));
         }
+        catch(error) {
+            console.error('Error finding projects:', error);
+            return [];
+        }
+    }
+
+    useEffect(() => {
+        const Id = localStorage.getItem('Mongo_id');
+        //const fullName = localStorage.getItem('fullName');
 
         const loadProjects = async () => {
-            const projects = await fetchProjects();
+            const projects = await fetchProjects(Id);
             setProjects(projects);
         };
-    
-        loadProjects();
-        
 
+        // Only load projects if allUsers is populated
+        if (allUsers.length > 0) {
+            loadProjects();
+        }
+    }, [allUsers, fetchProjects]);
 
+    const fetchUsers = async () => {
+        try {
+            const data = await getAllUsers();
+
+            // Process users to decode tokens
+            const processUsers = data.map(user => {
+                try {
+                    if (user.token) {
+                        const decoded = jwtDecode(user.token);
+                        return {
+                            ...user,
+                            name: decoded.name,
+                            email: decoded.email
+                        };
+                    }
+                    return user;
+                } catch (error) {
+                    console.error('Error decoding user token:', error);
+                    return {
+                        ...user,
+                        name: 'Unknown',
+                        email: 'No email available'
+                    };
+                }
+            });
+
+            setAllUsers(processUsers);
+
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
     }, []);
     
 
@@ -77,17 +116,17 @@ const ProjectsPage = () => {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [viewingProject, setViewingProject] = useState(null);
     const [viewingReviews, setViewingReviews] = useState(null); // New state for viewing reviews
-    const [showInviteModal, setShowInviteModal] = useState(false);
-    const [inviteEmail, setInviteEmail] = useState('');
-    const [invitingProjectId, setInvitingProjectId] = useState(null);
-    const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
-    const [name, setName] = useState("");
+    // const [showInviteModal, setShowInviteModal] = useState(false);
+    // const [inviteEmail, setInviteEmail] = useState('');
+    // const [invitingProjectId, setInvitingProjectId] = useState(null);
+    // const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
+    //const [name, setName] = useState("");
 
-    useEffect(() => {
-        // This will only run when the component mounts
-        const fullName = localStorage.getItem('fullName');
-        setName(fullName);
-    }, []);
+    // useEffect(() => {
+    //     // This will only run when the component mounts
+    //     const fullName = localStorage.getItem('fullName');
+    //     setName(fullName);
+    // }, []);
 
     // Handle view transitions
     if (viewingProject) {
@@ -124,49 +163,15 @@ const ProjectsPage = () => {
         />;
     }
     
-    const handleSendInvite = async (e) => {
-        e.preventDefault();
-        await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
-        setShowInviteModal(false);
-    };
+    // const handleSendInvite = async (e) => {
+    //     e.preventDefault();
+    //     await axios.post('https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite', { email: inviteEmail, projectId: invitingProjectId, projectTitle: invitingProjectTitle });
+    //     setShowInviteModal(false);
+    // };
 
     return (
         <article className="project-page-content">
-            <header className="flex justify-between items-center mb-8">
-                <header className="header">
-                    <hgroup className="header-title-group">
-                        <figure className="back-arrow">
-                            <ArrowLeft />
-                        </figure>
-                        <h1 className="page-title">Projects</h1>
-                    </hgroup>
-                    <menu className="header-menu">
-                        <li>
-                            <button className="icon-button">
-                                <Search size={20} />
-                            </button>
-                        </li>
-                        <li>
-                            <button className="icon-button">
-                                <Bell size={20} />
-                            </button>
-                        </li>
-                        <li>
-                            <button className="user-button">
-                                <figure className="user-icon">
-                                    <User size={20} />
-                                </figure>
-                                <mark className="user-name">{name}</mark>
-                            </button>
-                        </li>
-                        <li>
-                            <button className="menu-button">
-                                <MoreVertical size={20} />
-                            </button>
-                        </li>
-                    </menu>
-                </header>
-            </header>
+            <PageHeader heading="Projects" backButton={false} />
 
             <section className="create-project-section">
                 <button
@@ -183,14 +188,14 @@ const ProjectsPage = () => {
                         <header className="project-header">
                             <h2 className="project-title">{project.title}</h2>
                             <hgroup className="project-info-group">
-                                <p><strong>Owner:</strong> {fullName}</p>
+                                <p><strong>Owner:</strong> {project.owner} </p>
                                 <p><strong>Status:</strong> {project.status}</p>
                             </hgroup>
                         </header>
                         <p className="project-description">{project.description}</p>
                         <dl className="project-meta">
                             <dt>Collaborators:</dt>
-                            <dd>{project.collaborators.join(", ")}.</dd>
+                            <dd>{project.collaboratorNames || getCollaboratorNames(project.collaborators)}</dd>
 
                             <dt>Field:</dt>
                             <dd>{project.field}.</dd>
@@ -226,43 +231,43 @@ const ProjectsPage = () => {
                             <button
                                 className="view-button"
                                 onClick={() => {
-                                    setViewingProject({...project, owner: fullName})}}
+                                    setViewingProject({...project, owner: project.owner})}}
                             >
                                 View
                             </button>
-                            <button className="invite-button"
-                                    onClick={() =>{
-                                        setInvitingProjectId(project.id);
-                                        setInvitingProjectTitle(project.title);
-                                        setShowInviteModal(true); }}
-                            >Invite Collaborator</button>
-                            {showInviteModal && (
-                                <section className="modal-overlay" aria-modal="true" role="dialog">
-                                    <article className="modal-content">
-                                        <header>
-                                            <h2>Invite Collaborator</h2>
-                                        </header>
+                            {/*<button className="invite-button"*/}
+                            {/*        onClick={() =>{*/}
+                            {/*            setInvitingProjectId(project.id);*/}
+                            {/*            setInvitingProjectTitle(project.title);*/}
+                            {/*            setShowInviteModal(true); }}*/}
+                            {/*>Invite Collaborator</button>*/}
+                            {/*{showInviteModal && (*/}
+                            {/*    <section className="modal-overlay" aria-modal="true" role="dialog">*/}
+                            {/*        <article className="modal-content">*/}
+                            {/*            <header>*/}
+                            {/*                <h2>Invite Collaborator</h2>*/}
+                            {/*            </header>*/}
 
-                                        <form onSubmit={handleSendInvite}>
-                                            <label htmlFor="inviteEmail">Collaborator's Email:</label>
-                                            <input
-                                                type="email"
-                                                id="inviteEmail"
-                                                name="inviteEmail"
-                                                value={inviteEmail}
-                                                onChange={(e) => setInviteEmail(e.target.value)}
-                                                placeholder="Enter email address"
-                                                required
-                                            />
+                            {/*            <form onSubmit={handleSendInvite}>*/}
+                            {/*                <label htmlFor="inviteEmail">Collaborator's Email:</label>*/}
+                            {/*                <input*/}
+                            {/*                    type="email"*/}
+                            {/*                    id="inviteEmail"*/}
+                            {/*                    name="inviteEmail"*/}
+                            {/*                    value={inviteEmail}*/}
+                            {/*                    onChange={(e) => setInviteEmail(e.target.value)}*/}
+                            {/*                    placeholder="Enter email address"*/}
+                            {/*                    required*/}
+                            {/*                />*/}
 
-                                            <footer>
-                                                <button type="submit">Send Invite</button>
-                                                <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>
-                                            </footer>
-                                        </form>
-                                    </article>
-                                </section>
-                            )}
+                            {/*                <footer>*/}
+                            {/*                    <button type="submit">Send Invite</button>*/}
+                            {/*                    <button type="button" onClick={() => setShowInviteModal(false)}>Cancel</button>*/}
+                            {/*                </footer>*/}
+                            {/*            </form>*/}
+                            {/*        </article>*/}
+                            {/*    </section>*/}
+                            {/*)}*/}
                         </footer>
                     </article>
                 ))}

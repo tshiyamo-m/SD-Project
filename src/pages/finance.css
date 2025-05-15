@@ -1,90 +1,309 @@
+/* Finance Page Styles */
 .finance-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+/* Headers */
+.finance-page h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.finance-page h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+
+/* Buttons */
+.toggle-form {
+  background: #4a6fa5;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-form:hover {
+  background: #3a5a80;
+}
+
+/* Form Styles */
+.fund-form {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fund-form fieldset {
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.fund-form legend {
+  font-weight: bold;
+  padding: 0 1rem;
+  color: #2c3e50;
+}
+
+.fund-form label {
+  display: block;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.fund-form input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.fund-form input:focus {
+  border-color: #4a6fa5;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+}
+
+.fund-form button[type="submit"] {
+  background: #4a6fa5;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+  width: 100%;
+}
+
+.fund-form button[type="submit"]:hover {
+  background: #3a5a80;
+}
+
+.fund-form button[type="submit"]:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Budget Summary */
+.budget-summary {
+  background: #e9ecef;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.budget-summary p {
+  margin: 0.75rem 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+}
+
+.budget-summary strong {
+  color: #2c3e50;
+}
+
+/* Tabs */
+.fund-tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.fund-tabs button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  position: relative;
+  margin-right: 0.5rem;
+  color: #7f8c8d;
+  transition: color 0.2s ease;
+}
+
+.fund-tabs button:hover {
+  color: #4a6fa5;
+}
+
+.fund-tabs button.active {
+  font-weight: bold;
+  color: #4a6fa5;
+}
+
+.fund-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #4a6fa5;
+}
+
+/* Fund Cards */
+.funds-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.fund-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fund-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.fund-card.exhausted {
+  opacity: 0.7;
+  background: #f8f8f8;
+}
+
+.fund-card.exhausted:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.fund-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 1rem;
+}
+
+.fund-header h4 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.fund-header p {
+  margin: 0;
+  font-weight: bold;
+  color: #4a6fa5;
+}
+
+.fund-card p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.fund-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.fund-usage p {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.fund-usage form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.fund-usage label {
+  flex-grow: 1;
+  margin-bottom: 0;
+}
+
+.fund-usage input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.fund-usage button {
+  background: #4a6fa5;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.fund-usage button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.fund-usage button:hover:not(:disabled) {
+  background: #3a5a80;
+}
+
+/* Status Messages */
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #f5c6cb;
+}
+
+/* Loading State */
+.finance-page > p {
+  text-align: center;
+  color: #4a6fa5;
+  margin: 1rem 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .finance-page {
+    padding: 1rem;
   }
-  
-  .toggle-form {
-    background: #4a6fa5;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    font-size: 1rem;
-  }
-  
-  .toggle-form:hover {
-    background: #3a5a80;
-  }
-  
-  .fund-form {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .budget-summary {
-    background: #e9ecef;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .summary-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-  
-  .funds-list {
-    display: grid;
-    gap: 15px;
-  }
-  
-  .fund-card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
+
   .fund-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
-  
-  .fund-header h3 {
-    margin: 0;
-    color: #2c3e50;
+
+  .fund-usage form {
+    flex-direction: column;
+    align-items: stretch;
   }
-  
-  .fund-usage {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #7f8c8d;
+
+  .fund-usage button {
+    width: 100%;
   }
+}

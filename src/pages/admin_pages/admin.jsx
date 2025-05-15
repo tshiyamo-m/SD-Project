@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import './admin.css';
+import {getAllUsers, updateIsReviewer, makeAdmin} from "../../utils/loginUtils";
 
 const AdminPage = () => {
     //const [adminName, setAdminName] = useState("");
@@ -15,6 +16,54 @@ const AdminPage = () => {
         admins: []
     });
     const navigate = useNavigate();
+
+    const fetchUsers = async () => {
+        try {
+            const data = await getAllUsers();
+
+            // Process users to decode tokens
+            const processedUsers = data.map(user => {
+                try {
+                    if (user.token) {
+                        const decoded = jwtDecode(user.token);
+                        return {
+                            ...user,
+                            name: decoded.name,
+                            email: decoded.email
+                        };
+                    }
+                    return user;
+                } catch (error) {
+                    console.error('Error decoding user token:', error);
+                    return {
+                        ...user,
+                        name: 'Unknown',
+                        email: 'No email available'
+                    };
+                }
+            });
+            processedUsers()
+
+            // Filter users based on their roles
+            const reviewerRequests = processedUsers.filter(user => user.isReviewer === 'pending');
+            const adminList = processedUsers.filter(user => user.isAdmin === true);
+            const regularUsers = processedUsers.filter(user => !user.isAdmin);
+
+            setReviewRequests(reviewerRequests);
+            setAdmins(adminList);
+            setUsers(regularUsers);
+
+            // Initialize search results with all users
+            setSearchResults({
+                reviewRequests: reviewerRequests,
+                users: regularUsers,
+                admins: adminList
+            });
+
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
 
     useEffect(() => {
         // Get admin name from local storage
@@ -32,64 +81,6 @@ const AdminPage = () => {
         // }
 
         // Fetch all users
-        const fetchUsers = async () => {
-            try {
-                const response = await fetch('/api/login/getAllUsers', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users!');
-                }
-
-                const data = await response.json();
-
-                // Process users to decode tokens
-                const processedUsers = data.map(user => {
-                    try {
-                        if (user.token) {
-                            const decoded = jwtDecode(user.token);
-                            return {
-                                ...user,
-                                name: decoded.name,
-                                email: decoded.email
-                            };
-                        }
-                        return user;
-                    } catch (error) {
-                        console.error('Error decoding user token:', error);
-                        return {
-                            ...user,
-                            name: 'Unknown',
-                            email: 'No email available'
-                        };
-                    }
-                });
-
-                // Filter users based on their roles
-                const reviewerRequests = processedUsers.filter(user => user.isReviewer === 'pending');
-                const adminList = processedUsers.filter(user => user.isAdmin === true);
-                const regularUsers = processedUsers.filter(user => !user.isAdmin);
-
-                setReviewRequests(reviewerRequests);
-                setAdmins(adminList);
-                setUsers(regularUsers);
-
-                // Initialize search results with all users
-                setSearchResults({
-                    reviewRequests: reviewerRequests,
-                    users: regularUsers,
-                    admins: adminList
-                });
-
-            } catch (error) {
-                console.error('Error fetching users:', error);
-            }
-        };
-
         fetchUsers();
     }, [navigate]);
 
@@ -125,7 +116,7 @@ const AdminPage = () => {
 
     const approveReviewer = async (userId) => {
         try {
-            const response = await fetch('/api/login/update_is_reviewer', {
+            /*const response = await fetch('/api/login/update_is_reviewer', {
                 method: 'POST',
                 body: JSON.stringify({
                     isReviewer: "true",
@@ -138,7 +129,8 @@ const AdminPage = () => {
 
             if (!response.ok) {
                 throw new Error('Failed to approve reviewer!');
-            }
+            }*/
+            await updateIsReviewer(userId)
 
             // Update local state to reflect the change
             setReviewRequests(prevRequests =>
@@ -150,21 +142,11 @@ const AdminPage = () => {
         }
     };
 
-    const makeAdmin = async (userId) => {
-        try {
-            const response = await fetch('/api/login/makeAdmin', {
-                method: 'POST',
-                body: JSON.stringify({
-                    userId: userId,
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to make user an admin!');
-            }
+    const makeUserAdmin = async (userId) => {
+        try {
+
+            await makeAdmin(userId);
 
             // Update local state to reflect the change
             const updatedUser = users.find(user => user._id === userId);
@@ -257,7 +239,7 @@ const AdminPage = () => {
                                         <p className="user-email">{user.email}</p>
                                         <button
                                             className="admin-button"
-                                            onClick={() => makeAdmin(user._id)}
+                                            onClick={() => makeUserAdmin(user._id)}
                                         >
                                             Make Admin
                                         </button>
