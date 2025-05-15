@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import { findActiveProject } from '../utils/projectUtils';
 import { getUser, updateIsReviewer } from '../utils/loginUtils';
 import { getAllReviews, submitReview } from '../utils/reviewUtils';
+import { downloadFile, fetchFiles } from '../utils/bucketUtils';
 
 const ReviewerPage = () => {
     // User state
@@ -105,8 +106,9 @@ const ReviewerPage = () => {
     };
 
 
-    const fetchFiles = async (ProjectID) => {
-        try {
+    const retrieveFiles = async (ProjectID) => {
+        try {/*
+            
             if (!ProjectID || typeof ProjectID !== 'string') {
                 throw new Error('Invalid project ID');
             }
@@ -142,7 +144,8 @@ const ReviewerPage = () => {
             }
             else{
                 return [];
-            }
+            }*/
+            return await fetchFiles(ProjectID)
 
         } catch (error) {
             console.error('Error fetching documents:', error);
@@ -155,7 +158,7 @@ const ReviewerPage = () => {
 
         const loadDocuments = async () => {
             try {
-                const fetchedDocuments = await fetchFiles(activeProject);
+                const fetchedDocuments = await retrieveFiles(activeProject);
                 setDocuments(fetchedDocuments);
             } catch (err) {
                 console.error('Failed to load documents:', err);
@@ -358,7 +361,7 @@ const ReviewerPage = () => {
     const handleDownloadDoc = async (docId, docName) => {
 
         const stringDocId = docId.toString();
-        try {
+        try {/*
             const response = await fetch('/Bucket/download', {
                 method: 'POST',
                 headers: {
@@ -380,7 +383,9 @@ const ReviewerPage = () => {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
-            a.remove();
+            a.remove();*/
+
+            downloadFile(stringDocId, docName);
 
         } catch (error) {
             console.error('Download error:', error);

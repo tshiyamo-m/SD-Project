@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { ArrowLeft, Check, X } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import './createproject.css'
+import { createProject,addProject } from '../utils/projectUtils';
 
 export default function CreateProjectPage({ onBack, onCreateProject }) {
     const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         skills: ''
     });
 
-    const [newCollaborator, setNewCollaborator] = useState('');
+    //const [newCollaborator, setNewCollaborator] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,24 +29,24 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         }));
     };
 
-    const handleAddCollaborator = () => {
-        if (newCollaborator.trim() && !formData.collaborators.includes(newCollaborator)) {
-            setFormData(prev => ({
-                ...prev,
-                collaborators: [...prev.collaborators, newCollaborator.trim()]
-            }));
-            setNewCollaborator('');
-        }
-    };
+    // const handleAddCollaborator = () => {
+    //     if (newCollaborator.trim() && !formData.collaborators.includes(newCollaborator)) {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             collaborators: [...prev.collaborators, newCollaborator.trim()]
+    //         }));
+    //         setNewCollaborator('');
+    //     }
+    // };
 
-    const handleRemoveCollaborator = (collaborator) => {
-        setFormData(prev => ({
-            ...prev,
-            collaborators: prev.collaborators.filter(c => c !== collaborator)
-        }));
-    };
+    // const handleRemoveCollaborator = (collaborator) => {
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         collaborators: prev.collaborators.filter(c => c !== collaborator)
+    //     }));
+    // };
     const fullName = localStorage.getItem('fullName');
-    //const [Project_id, setProject_id] = useState(null);
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         const project = {
@@ -62,70 +63,22 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
         //API CALL TO SUBMIT PROJECT INTO DB
 
         const Mongo_id = localStorage.getItem('Mongo_id');
-        
-        const API_CALL_CREATE_PROJECT = async () => {
-            try{
-                const response = await fetch('/api/Projects', {  
-                    method: 'POST',
-                    body: JSON.stringify({
-                        owner: Mongo_id,
-                        ...formData,
-                        tags: formData.tags.split(',').map(tag => tag.trim()),
-                        skills: formData.skills.split(',').map(skill => skill.trim())
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json' 
-                    }
-                });
 
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error('Failed to create project');
-                }
-                else{
-                    //setProject_id(result._id);
-                    return result._id;
-                }
-            } 
-            catch(error) {
-                console.error('Error creating project:', error);
-            }
+        const Project_Data = {
+            owner: Mongo_id,
+            ...formData,
+            tags: formData.tags.split(',').map(tag => tag.trim()),
+            skills: formData.skills.split(',').map(skill => skill.trim())
         }
 
-        const newProjectId = await API_CALL_CREATE_PROJECT(); 
-        
-
+        const newProjectId = await createProject(Project_Data);  //returns project Mongo ID
+         
         const Data = {
             user_id: Mongo_id,
             project_id: newProjectId 
         }
-        
-        const API_CALL_ADD_PROJECT = async () => {
 
-            try{
-                const response = await fetch('/api/Projects/addproject', {  
-                    method: 'POST',
-                    body: JSON.stringify(Data),
-                    headers: {
-                        'Content-Type': 'application/json' 
-                    }
-                });
-
-                //const data = await response.json();
-
-                if (!response.ok){
-                    throw new Error("Error with adding project!")
-                }
-                console.log(response);
-
-            }
-            catch(error){
-                console.error('Error adding project:', error);
-            }
-        }
-       
-        await API_CALL_ADD_PROJECT();
+        await addProject(Data);
 
         onCreateProject(project);
         onBack();
@@ -193,40 +146,40 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                     />
                 </section>
 
-                <section className="form-group">
-                    <label>Collaborators</label>
-                    <article className="collaborator-input">
-                        <input
-                            type="text"
-                            value={newCollaborator}
-                            onChange={(e) => setNewCollaborator(e.target.value)}
-                            placeholder="Add collaborator email"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleAddCollaborator}
-                            className="add-button"
-                        >
-                            Add
-                        </button>
-                    </article>
-                    {formData.collaborators.length > 0 && (
-                        <ul className="collaborator-list">
-                            {formData.collaborators.map(collab => (
-                                <li key={collab}>
-                                    {collab}
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveCollaborator(collab)}
-                                        className="remove-button"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </section>
+                {/*<section className="form-group">*/}
+                {/*    <label>Collaborators</label>*/}
+                {/*    <article className="collaborator-input">*/}
+                {/*        <input*/}
+                {/*            type="text"*/}
+                {/*            value={newCollaborator}*/}
+                {/*            onChange={(e) => setNewCollaborator(e.target.value)}*/}
+                {/*            placeholder="Add collaborator email"*/}
+                {/*        />*/}
+                {/*        <button*/}
+                {/*            type="button"*/}
+                {/*            onClick={handleAddCollaborator}*/}
+                {/*            className="add-button"*/}
+                {/*        >*/}
+                {/*            Add*/}
+                {/*        </button>*/}
+                {/*    </article>*/}
+                {/*    {formData.collaborators.length > 0 && (*/}
+                {/*        <ul className="collaborator-list">*/}
+                {/*            {formData.collaborators.map(collab => (*/}
+                {/*                <li key={collab}>*/}
+                {/*                    {collab}*/}
+                {/*                    <button*/}
+                {/*                        type="button"*/}
+                {/*                        onClick={() => handleRemoveCollaborator(collab)}*/}
+                {/*                        className="remove-button"*/}
+                {/*                    >*/}
+                {/*                        <X size={16} />*/}
+                {/*                    </button>*/}
+                {/*                </li>*/}
+                {/*            ))}*/}
+                {/*        </ul>*/}
+                {/*    )}*/}
+                {/*</section>*/}
 
                 <article className="form-row">
                     <section className="form-group">
@@ -260,7 +213,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                             name="fundingAmount"
                             value={formData.fundingAmount}
                             onChange={handleChange}
-                            placeholder="$"
+                            placeholder="R"
                         />
                     </section>
                     <section className="form-group">

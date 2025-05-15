@@ -3,6 +3,9 @@ import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download
 import './projects.css';
 import './viewproject.css';
 import { jwtDecode } from "jwt-decode";
+import { getAllUsers,getUser } from '../utils/loginUtils';
+import { updateProject } from '../utils/projectUtils';
+import { fetchFiles, uploadFiles, deleteFile, downloadFile } from '../utils/bucketUtils';
 
 const ViewProjectPage = ({ project: initialProject, onBack }) => {
     // State for project data with edit mode
@@ -32,7 +35,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                 const namesObj = {};
                 for (const collabId of initialProject.collaborators) {
                     if (!reviewerNames[collabId]) {
-                        const user = await getUser(collabId);
+                        const user = await getuser(collabId);
                         if (user) {
                             namesObj[collabId] = user.name;
                         } else {
@@ -58,21 +61,12 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     }, [initialProject.collaborators]);
 
     // Fetch all users when component mounts
+    
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('/api/login/getAllUsers', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch users!');
-                }
-
-                const data = await response.json();
+                const data = await getAllUsers();
 
                 // Process users to decode tokens
                 const processedUsers = data.map(user => {
@@ -135,23 +129,9 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     }, [searchTerm, allUsers, editData.collaborators, loggedInUserId, projectOwnerId]);
 
     // Get user data - modified to be non-async in rendering context
-    const getUser = async (findId) => {
+    const getuser = async (findId) => {
         try {
-            const response = await fetch('/api/login/getUser', {
-                method: 'POST',
-                body: JSON.stringify({
-                    findId: findId
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to find user!');
-            }
-
-            const uD = await response.json();
+            const uD = await getUser(findId);
             const decoded = jwtDecode(uD.token);
             return {
                 name: decoded.name || '',
@@ -198,49 +178,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         }));
     };
 
-    const fetchFiles = async (ProjectID) => {
-        try {
-            if (!ProjectID || typeof ProjectID !== 'string') {
-                throw new Error('Invalid project ID');
-            }
-
-            const response = await fetch('/Bucket/retrievedocs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({projectID: ProjectID})
-            });
-
-            if (!response.ok) {
-                const errorData = await response.text();
-                console.error('Download failed with status:', response.status, errorData);
-                throw new Error('Failed to download file');
-            }
-
-            const fileData = await response.json();
-
-            if (!(fileData == null)){
-                return fileData.map(file => ({
-                    id: file._id.toString(),
-                    name: file.filename,
-                    type: file.filename.split('.').pop().toUpperCase(),
-                    uploadedBy: file.uploadedBy,
-                    uploadDate: new Date(file.uploadDate).toLocaleDateString(),
-                    size: `${(file.length / 1024).toFixed(1)} KB`,
-                    metadata: file.metadata
-                }));
-            }
-            else{
-                return [];
-            }
-
-        } catch (error) {
-            console.error('Error fetching documents:', error);
-            throw error;
-        }
-    };
-
+    //Load personal docs from DB
     useEffect(() => {
         const loadDocuments = async () => {
             try {
@@ -293,22 +231,11 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
             formData.append('ProjectID', projectId);
             formData.append('uploadedBy', uploadedDoc.uploadedBy);
 
-            try {
-                const response = await fetch('/Bucket/submitdoc', {
-                    method: 'POST',
-                    body: formData
-                });
+            await uploadFiles(formData);
 
-                const data = await response.json();
-                console.log('Upload successful:', data);
-
-                // Refresh documents list after upload
-                const fetchedDocuments = await fetchFiles(projectId);
-                setDocuments(fetchedDocuments);
-
-            } catch (error) {
-                console.error('Upload error:', error);
-            }
+            // Refresh documents list after upload
+            const fetchedDocuments = await fetchFiles(projectId);
+            setDocuments(fetchedDocuments);
 
             setShowUploadForm(false);
             setNewDocument({ name: "", file: null });
@@ -319,56 +246,18 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const handleDeleteDocument = async (docId) => {
         const strDocId = docId.toString();
 
-        try {
-            const response = await fetch('/Bucket/delete', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({fileId: strDocId})
-            });
+        await deleteFile(strDocId);
 
-            if (!response.ok) {
-                throw new Error('Failed to delete file');
-            }
-
-            // Update UI after successful deletion
-            setDocuments(documents.filter(doc => doc.id !== docId));
-            console.log('File deleted successfully');
-
-        } catch (error) {
-            console.error('Delete error:', error);
-        }
+        // Update UI after successful deletion
+        setDocuments(documents.filter(doc => doc.id !== docId));
+        console.log('File deleted successfully');
     };
 
     const handleDownloadDocument = async (docId, docName) => {
         const strDocId = docId.toString();
-        try {
-            const response = await fetch('/Bucket/download', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({fileId: strDocId})
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to download file');
-            }
+        await downloadFile(strDocId,docName);
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = docName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            a.remove();
-
-        } catch (error) {
-            console.error('Download error:', error);
-        }
     };
 
     // Enable edit mode
@@ -383,35 +272,17 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     };
 
     // Save project changes
-    const saveProjectChanges = () => {
+    const saveProjectChanges = async () => {
         const Mongo_id = localStorage.getItem("Mongo_id");
         const Updated_Project = {...editData, owner: Mongo_id, updated: new Date().toISOString().split('T')[0]};
         setProject({...editData, updated: new Date().toISOString().split('T')[0]});
         setIsEditing(false);
 
-        const UpdateProject = async () => {
-            try {
-                const response = await fetch('/api/Projects/updateproject', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        updates: Updated_Project,
-                        projectId: projectId
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to update project!');
-                }
-            }
-            catch(error) {
-                console.error('Error updating project:', error);
-            }
-        };
-
-        UpdateProject();
+        const Data = {
+            updates: Updated_Project,
+            projectId: projectId
+        }
+        await updateProject(Data);
     };
 
     // Handle form input changes

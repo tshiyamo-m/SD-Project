@@ -115,3 +115,24 @@ export const updateProject = async (Data) => {
         console.error('Error updating project:', error);
     }
 }
+
+export const getAllProjects = async (Data) => {
+    try {
+        const response = await fetch('/api/Projects/get_all_users', {
+            method: 'POST',
+            body: JSON.stringify({
+                id: Data,
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to find projects!');
+        } else {
+            return await response.json();
+        }
+    } catch(error) {
+        console.error('Error finding projects:', error);
+    }
+}

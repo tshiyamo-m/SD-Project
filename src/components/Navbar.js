@@ -2,7 +2,8 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 //import { Home, Folder, MessageCircle, DollarSign, Settings, LogOut , ChartBar} from 'lucide-react';
-import { Folder, DollarSign, ChartBar, Home , LogOut } from 'lucide-react';
+import { Folder, DollarSign, ChartBar, Home , LogOut, MessageCircle } from 'lucide-react';
+
 
 const Navbar = () => {
 
@@ -64,15 +65,16 @@ const Navbar = () => {
                                 <strong>Reviews</strong>
                             </NavLink>
                         </li>
-                        {/*<li>*/}
-                        {/*    <NavLink*/}
-                        {/*        to="/src/pages/chats"*/}
-                        {/*        className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}*/}
-                        {/*    >*/}
-                        {/*        <MessageCircle size={20}/>*/}
-                        {/*        <span>Chats</span>*/}
-                        {/*    </NavLink>*/}
-                        {/*</li>*/}
+                        <li>
+                            <NavLink
+                                to="/src/pages/chatspage"
+                                className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
+                            >
+                                <MessageCircle size={20}/>
+                                <span>Chats</span>
+                            </NavLink>
+                        </li>
+
                         <li>
                             <NavLink
                                 to="/src/pages/finance"

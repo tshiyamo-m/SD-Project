@@ -129,15 +129,15 @@ const update_project = async (req,res) => {
     
     try {
      
-        const { updates, projectId } = req.body;
+        const { Data } = req.body;
 
       // Prevent updating protected fields
-        const { id, created, ...sanitizedUpdates } = updates;
+        const { id, created, ...sanitizedUpdates } = Data.updates;
         
         const updatedProject = await mongoose.connection.db
             .collection('Projects') // Replace with your actual collection name
             .findOneAndUpdate(
-            { _id: new mongoose.Types.ObjectId(projectId) },
+            { _id: new mongoose.Types.ObjectId(Data.projectId) },
             { $set: sanitizedUpdates },
             { returnDocument: 'after' } // Returns the updated document
             );
