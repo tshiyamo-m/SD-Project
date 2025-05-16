@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import {ArrowLeft, Check, Plus} from 'lucide-react';
 import './milestone.css'
 import { createMilestone, getMilestone, updateStatus } from '../utils/milestoneUtils';
+import { Toaster, toast } from "sonner";
 
 export default function MilestonesPage({ project, onBack }) {
     const [milestones, setMilestones] = useState([]);
@@ -102,6 +103,9 @@ export default function MilestonesPage({ project, onBack }) {
         const newStatus = currentStatus === "Complete" ? "In Progress" : "Complete";
         await changeStatus(id, newStatus);
         loadMilestones(project.id);
+        toast.success("Login successful", {
+            style: { backgroundColor: "green", color: "white" },
+        });
     };
 
     // Function to get user name by ID
@@ -259,6 +263,7 @@ export default function MilestonesPage({ project, onBack }) {
                     </ul>
                 )}
             </section>
+            <Toaster position="bottom-right" />
         </article>
     );
 }

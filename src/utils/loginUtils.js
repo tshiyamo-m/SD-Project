@@ -91,12 +91,13 @@ export const updateIsReviewer = async (update) => {
     }
 }
 
-export const makeAdmin = async (id) => {
+export const makeAdmin = async (id, isAdmin) => {
     try {
         const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/makeAdmin', {
             method: 'POST',
             body: JSON.stringify({
                 userId: id,
+                isAdmin: isAdmin
             }),
             headers: {
                 'Content-Type': 'application/json'
