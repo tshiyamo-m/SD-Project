@@ -222,7 +222,7 @@ const ChatsPage = () => {
     };
 
     return (
-        <main>
+        <main className="chats-page">
             {!selectedChat ? (
                 <section>
                     <header>
