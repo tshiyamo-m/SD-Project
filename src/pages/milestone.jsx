@@ -76,6 +76,9 @@ export default function MilestonesPage({ project, onBack }) {
                 projectId,
                 ...newMilestone,
             }
+            toast.success("Milestone successfully created", {
+                style: { backgroundColor: "green", color: "white" },
+            });
             return await createMilestone(Data);
         }
         catch(error) {
@@ -103,9 +106,6 @@ export default function MilestonesPage({ project, onBack }) {
         const newStatus = currentStatus === "Complete" ? "In Progress" : "Complete";
         await changeStatus(id, newStatus);
         loadMilestones(project.id);
-        toast.success("Login successful", {
-            style: { backgroundColor: "green", color: "white" },
-        });
     };
 
     // Function to get user name by ID
