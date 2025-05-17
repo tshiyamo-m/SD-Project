@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import {ArrowLeft, Check, Plus} from 'lucide-react';
 import './milestone.css'
 import { createMilestone, getMilestone, updateStatus } from '../utils/milestoneUtils';
