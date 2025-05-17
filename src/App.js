@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './components/AppLayout'; // Adjust path as needed
 import LandingPage from './pages/landingpage';
-import HomePage from './pages/homepage';
+import Dashboard from './pages/dashboard';
 import ProjectsPage from './pages/projects';
 import ReviewsPage from './pages/review';
 import ChatsPage from './pages/chatspage';
@@ -36,8 +36,9 @@ function App() {
               <AppLayout>
                   <Routes>
                       <Route path="/" element={<LandingPage />} />
-                      <Route path="/src/pages/homepage" element={<HomePage />} />
+                     {/* <Route path="/src/pages/homepage" element={<HomePage />} />*/}
                       <Route path="/src/pages/projects" element={<ProjectsPage />} />
+                      <Route path="/src/pages/dashboard" element={<Dashboard />} />
                       <Route path="/src/pages/review" element={<ReviewsPage />} />
                       <Route path="/src/pages/chatspage" element={<ChatsPage />} />
                       {<Route path="/src/pages/finance" element={<FinancesPage />} />}

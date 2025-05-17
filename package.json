@@ -15,6 +15,7 @@
     "dotenv": "^16.5.0",
     "fs": "^0.0.1-security",
     "gapi-script": "^1.2.0",
+    "html2pdf.js": "^0.10.3",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.488.0",
@@ -37,7 +38,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "serve -s build -l 8080",
+    "start": "serve -s build -l 3000",
     "build": "react-scripts build",
     "dev": "react-scripts start",
     "server": "cd src/Backend && npm run dev",
