@@ -84,3 +84,18 @@ button:hover {
     align-self: flex-start;
     background: #f1f1f1;
 }
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4e73df;
+    box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.25);
+}

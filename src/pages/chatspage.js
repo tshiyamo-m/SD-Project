@@ -8,6 +8,7 @@ const ChatsPage = () => {
     const [chats, setChats] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);
     const [messageText, setMessageText] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
     //const [ConvoID, setConvoID] = useState(null);
 
 
@@ -262,6 +263,31 @@ const ChatsPage = () => {
 
                     <nav>
                         <h2>Available users</h2>
+                        <input
+                            type="text"
+                            placeholder="Search users..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="search-input"
+                        />
+
+                        <ul className="user-list">
+                            {getAvailableUsers()
+                                .filter(user => 
+                                    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+                                )
+                                .map(user => (
+                                <li key={user._id} className="user-item">
+                                    <button
+                                        onClick={() => startNewChat(user._id)}
+                                        className="user-btn"
+                                    >
+                                        {user.name} <small>({user.email})</small>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>                        
                         <ul className="user-list">
                             {getAvailableUsers().map(user => (
                                 <li key={user._id} className="user-item">
