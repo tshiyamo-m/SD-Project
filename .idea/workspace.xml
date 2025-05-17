@@ -5,14 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b8255ecc-d0b0-4fd4-8a7c-d07a5cda1627" name="Changes" comment="almost done with milestones">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Backend/Controllers/MilestoneController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Backend/Controllers/MilestoneController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Backend/routes/MilestoneRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Backend/routes/MilestoneRoutes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Navbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/chatspage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/chatspage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/createproject.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/createproject.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/milestone.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/milestone.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/review.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/review.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/bucketUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/bucketUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/financeUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/financeUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/loginUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/loginUtils.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/milestoneUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/milestoneUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/projectUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/projectUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/reviewUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/reviewUtils.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,6 +112,15 @@
       <workItem from="1746308122639" duration="6857000" />
       <workItem from="1746449223165" duration="864000" />
     </task>
+    <task id="LOCAL-00001" summary="almost done with milestones">
+      <option name="closed" value="true" />
+      <created>1747331624479</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1747331624479</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

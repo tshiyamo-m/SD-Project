@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import './admin.css';
-import {getAllUsers, updateIsReviewer, makeAdmin} from "../../utils/loginUtils";
+import { getAllUsers, updateIsReviewer, makeAdmin } from "../../utils/loginUtils";
+import { Toaster, toast } from "sonner";
 
 const AdminPage = () => {
-    //const [adminName, setAdminName] = useState("");
     const [users, setUsers] = useState([]);
     const [reviewRequests, setReviewRequests] = useState([]);
     const [admins, setAdmins] = useState([]);
@@ -21,7 +21,6 @@ const AdminPage = () => {
         try {
             const data = await getAllUsers();
 
-            // Process users to decode tokens
             const processedUsers = data.map(user => {
                 try {
                     if (user.token) {
@@ -42,9 +41,7 @@ const AdminPage = () => {
                     };
                 }
             });
-            processedUsers()
 
-            // Filter users based on their roles
             const reviewerRequests = processedUsers.filter(user => user.isReviewer === 'pending');
             const adminList = processedUsers.filter(user => user.isAdmin === true);
             const regularUsers = processedUsers.filter(user => !user.isAdmin);
@@ -53,7 +50,6 @@ const AdminPage = () => {
             setAdmins(adminList);
             setUsers(regularUsers);
 
-            // Initialize search results with all users
             setSearchResults({
                 reviewRequests: reviewerRequests,
                 users: regularUsers,
@@ -66,35 +62,17 @@ const AdminPage = () => {
     };
 
     useEffect(() => {
-        // Get admin name from local storage
-        // const token = localStorage.getItem('token');
-        // if (token) {
-        //     try {
-        //         const decoded = jwtDecode(token);
-        //         setAdminName(decoded.name.split(" ")[0]); // Get first name
-        //     } catch (error) {
-        //         console.error('Error decoding token:', error);
-        //     }
-        // } else {
-        //     // Redirect to landing page if no token exists
-        //     navigate('/landingpage', { replace: true });
-        // }
-
-        // Fetch all users
         fetchUsers();
     }, [navigate]);
 
-    // Search functionality
     useEffect(() => {
         if (searchTerm.trim() === "") {
-            // If search is empty, show all users
             setSearchResults({
                 reviewRequests: reviewRequests,
                 users: users,
                 admins: admins
             });
         } else {
-            // Filter based on search term
             const term = searchTerm.toLowerCase();
 
             setSearchResults({
@@ -116,39 +94,44 @@ const AdminPage = () => {
 
     const approveReviewer = async (userId) => {
         try {
-            /*const response = await fetch('/api/login/update_is_reviewer', {
-                method: 'POST',
-                body: JSON.stringify({
-                    isReviewer: "true",
-                    userId: userId
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to approve reviewer!');
-            }*/
-            await updateIsReviewer(userId)
-
-            // Update local state to reflect the change
+            const update = {
+                userId: userId,
+                isReviewer: "true",
+            }
+            await updateIsReviewer(update);
             setReviewRequests(prevRequests =>
                 prevRequests.filter(request => request._id !== userId)
             );
-
+            toast.success("User successfully approved", {
+                style: { backgroundColor: "green", color: "white" },
+            });
         } catch (error) {
             console.error('Error approving reviewer:', error);
         }
     };
 
+    const denyReviewer = async (userId) => {
+        try {
+            const update = {
+                userId: userId,
+                isReviewer: "false",
+            }
+            await updateIsReviewer(update);
+            setReviewRequests(prevRequests =>
+                prevRequests.filter(request => request._id !== userId)
+            );
+            toast.error("User successfully denied reviewer", {
+                style: { backgroundColor: "red", color: "white" },
+            });
+        } catch (error) {
+            console.error('Error denying reviewer:', error);
+        }
+    };
 
     const makeUserAdmin = async (userId) => {
         try {
-
-            await makeAdmin(userId);
-
-            // Update local state to reflect the change
+            const isAdmin = true;
+            await makeAdmin(userId, isAdmin);
             const updatedUser = users.find(user => user._id === userId);
             if (updatedUser) {
                 setUsers(prevUsers =>
@@ -156,17 +139,35 @@ const AdminPage = () => {
                 );
                 setAdmins(prevAdmins => [...prevAdmins, {...updatedUser, isAdmin: true}]);
             }
-
+            toast.success("User made admin", {
+                style: { backgroundColor: "green", color: "white" },
+            });
         } catch (error) {
             console.error('Error making user admin:', error);
         }
     };
 
-    const handleLogout = () => {
-        // Clear authentication token and any other user data
-        localStorage.removeItem('token');
+    const removeAdmin = async (userId) => {
+        try {
+            const isAdmin = false;
+            await makeAdmin(userId, isAdmin);
+            const updatedAdmin = admins.find(admin => admin._id === userId);
+            if (updatedAdmin) {
+                setAdmins(prevAdmins =>
+                    prevAdmins.filter(admin => admin._id !== userId)
+                );
+                setUsers(prevUsers => [...prevUsers, {...updatedAdmin, isAdmin: false}]);
+            }
+            toast.error("User removed as admin", {
+                style: { backgroundColor: "red", color: "white" },
+            });
+        } catch (error) {
+            console.error('Error removing admin:', error);
+        }
+    };
 
-        // Navigate to landing page with replace:true to prevent back navigation
+    const handleLogout = () => {
+        localStorage.removeItem('token');
         navigate('../', { replace: true });
     };
 
@@ -213,12 +214,24 @@ const AdminPage = () => {
                                     <article className="request-card">
                                         <h3 className="user-name">{request.name}</h3>
                                         <p className="user-email">{request.email}</p>
-                                        <button
-                                            className="approve-button"
-                                            onClick={() => approveReviewer(request._id)}
-                                        >
-                                            Approve as Reviewer
-                                        </button>
+                                        <menu className="request-actions">
+                                            <li>
+                                                <button
+                                                    className="approve-button"
+                                                    onClick={() => approveReviewer(request._id)}
+                                                >
+                                                    Approve as Reviewer
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button
+                                                    className="deny-button"
+                                                    onClick={() => denyReviewer(request._id)}
+                                                >
+                                                    Deny Request
+                                                </button>
+                                            </li>
+                                        </menu>
                                     </article>
                                 </li>
                             ))}
@@ -261,6 +274,12 @@ const AdminPage = () => {
                                     <article className="admin-card">
                                         <h3 className="user-name">{admin.name}</h3>
                                         <p className="user-email">{admin.email}</p>
+                                        <button
+                                            className="remove-admin-button"
+                                            onClick={() => removeAdmin(admin._id)}
+                                        >
+                                            Remove Admin Rights
+                                        </button>
                                     </article>
                                 </li>
                             ))}
@@ -270,6 +289,7 @@ const AdminPage = () => {
                     )}
                 </section>
             </section>
+            <Toaster position="bottom-right" />
         </main>
     );
 };

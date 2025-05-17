@@ -1,6 +1,6 @@
 export const findProject = async (Id) => {
     try {
-        const response = await fetch('/api/Projects/find', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/find', {
             method: 'POST',
             body: JSON.stringify({
                 id: Id,
@@ -21,7 +21,7 @@ export const findProject = async (Id) => {
 
 export const findActiveProject = async () => {
     try {
-        const response = await fetch('/api/Projects/find_active_projects', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/find_active_projects', {
             method: 'POST',
             body: JSON.stringify({ status: "Active" }),
             headers: {
@@ -47,7 +47,7 @@ export const findActiveProject = async () => {
 
 export const createProject = async (Project) => {
     try{
-        const response = await fetch('/api/Projects', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects', {
             method: 'POST',
             body: JSON.stringify({
                 ...Project
@@ -74,7 +74,7 @@ export const createProject = async (Project) => {
 
 export const addProject = async (Data) => {
     try{
-        const response = await fetch('/api/Projects/addproject', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/addproject', {
             method: 'POST',
             body: JSON.stringify(Data),
             headers: {
@@ -97,7 +97,7 @@ export const addProject = async (Data) => {
 
 export const updateProject = async (Data) => {
     try {
-        const response = await fetch('/api/Projects/updateproject', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/updateproject', {
             method: 'POST',
             body: JSON.stringify({
                 Data
@@ -118,7 +118,7 @@ export const updateProject = async (Data) => {
 
 export const getAllProjects = async (Data) => {
     try {
-        const response = await fetch('/api/Projects/get_all_users', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Projects/get_all_users', {
             method: 'POST',
             body: JSON.stringify({
                 id: Data,

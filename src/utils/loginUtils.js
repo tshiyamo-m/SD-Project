@@ -1,6 +1,6 @@
 export const submitUser = async (user) => {
     try{
-        const response = await fetch('/api/login', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/login', {
             method: 'POST',
             body: JSON.stringify({
                 ...user
@@ -26,7 +26,7 @@ export const submitUser = async (user) => {
 
 export const getUser = async (id) => {
     try {
-        const response = await fetch('/api/login/getUser', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getUser', {
             method: 'POST',
             body: JSON.stringify({
                 findId: id
@@ -50,7 +50,7 @@ export const getUser = async (id) => {
 
 export const getAllUsers = async () => {
     try {
-        const response = await fetch('/api/login/getAllUsers', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/getAllUsers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -70,7 +70,7 @@ export const getAllUsers = async () => {
 
 export const updateIsReviewer = async (update) => {
     try{
-        const response = await fetch('/api/login/update_is_reviewer', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/update_is_reviewer', {
             method: 'POST',
             body: JSON.stringify({
                 ...update
@@ -91,12 +91,13 @@ export const updateIsReviewer = async (update) => {
     }
 }
 
-export const makeAdmin = async (id) => {
+export const makeAdmin = async (id, isAdmin) => {
     try {
-        const response = await fetch('/api/login/makeAdmin', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/login/makeAdmin', {
             method: 'POST',
             body: JSON.stringify({
                 userId: id,
+                isAdmin: isAdmin
             }),
             headers: {
                 'Content-Type': 'application/json'

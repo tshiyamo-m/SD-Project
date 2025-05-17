@@ -204,30 +204,30 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                     </section>
                 </article>
 
-                <article className="form-row">
-                    <section className="form-group">
-                        <label htmlFor="fundingAmount">Funding Amount</label>
-                        <input
-                            type="number"
-                            id="fundingAmount"
-                            name="fundingAmount"
-                            value={formData.fundingAmount}
-                            onChange={handleChange}
-                            placeholder="R"
-                        />
-                    </section>
-                    <section className="form-group">
-                        <label htmlFor="fundingSource">Funding Source</label>
-                        <input
-                            type="text"
-                            id="fundingSource"
-                            name="fundingSource"
-                            value={formData.fundingSource}
-                            onChange={handleChange}
-                            placeholder="e.g., University Grant, NSF"
-                        />
-                    </section>
-                </article>
+                {/*<article className="form-row">*/}
+                {/*    <section className="form-group">*/}
+                {/*        <label htmlFor="fundingAmount">Funding Amount</label>*/}
+                {/*        <input*/}
+                {/*            type="number"*/}
+                {/*            id="fundingAmount"*/}
+                {/*            name="fundingAmount"*/}
+                {/*            value={formData.fundingAmount}*/}
+                {/*            onChange={handleChange}*/}
+                {/*            placeholder="R"*/}
+                {/*        />*/}
+                {/*    </section>*/}
+                {/*    <section className="form-group">*/}
+                {/*        <label htmlFor="fundingSource">Funding Source</label>*/}
+                {/*        <input*/}
+                {/*            type="text"*/}
+                {/*            id="fundingSource"*/}
+                {/*            name="fundingSource"*/}
+                {/*            value={formData.fundingSource}*/}
+                {/*            onChange={handleChange}*/}
+                {/*            placeholder="e.g., University Grant, NSF"*/}
+                {/*        />*/}
+                {/*    </section>*/}
+                {/*</article>*/}
 
                 <section className="form-group">
                     <label htmlFor="status">Status</label>
