@@ -1,6 +1,6 @@
 # U-Collab
 
-[![codecov](https://codecov.io/gh/tshiyamo-m/SD-Project/graph/badge.svg?token=7DOD57YZ6T)](https://codecov.io/gh/tshiyamo-m/SD-Project)
+[![codecov](https://codecov.io/gh/tshiyamo-m/SD-Project/branch/testing/graph/badge.svg?token=7DOD57YZ6T)](https://codecov.io/gh/tshiyamo-m/SD-Project)
 
 A MERN stack university research collaboration platform...
 # Getting Started with Create React App
