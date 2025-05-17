@@ -59,7 +59,7 @@ const ReviewsPage = ({ project, onBack }) => {
 
 
 
-    }, [project.id]);
+    }, [project.id, loadReviews]);
 
     // State for new review form
     const [showReviewForm, setShowReviewForm] = useState(false);
@@ -143,7 +143,7 @@ const ReviewsPage = ({ project, onBack }) => {
         if (reviews.length > 0) {
             loadReviewerNames();
         }
-    }, [getReviewerName, reviewerNames, reviews]);
+    }, [getReviewerName, reviewerNames, reviews, loadReviewerNames]);
 
     // Handle star rating
     const handleRatingChange = (rating) => {

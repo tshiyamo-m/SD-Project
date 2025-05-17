@@ -41,10 +41,10 @@ export default function MilestonesPage({ project, onBack }) {
         }
     }
 
-    const loadMilestones = async (Id) => {
+    const loadMilestones = useCallback(async (Id) => {
         const milestones = await fetchMilestones(Id);
         setMilestones(milestones);
-    };
+    }, [fetchMilestones, setMilestones]);
 
     useEffect(() => {
         const projectId = project.id;

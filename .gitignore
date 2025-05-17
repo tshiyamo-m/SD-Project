@@ -12,8 +12,8 @@
 /build
 
 #Backend
-src/Backend/.env
-src/Backend/node_modules/
+Backend/.env
+Backend/node_modules/
 
 # misc
 .DS_Store

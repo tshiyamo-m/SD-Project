@@ -15,9 +15,9 @@ const HomePage = () => {
         setName(fullName[0]);
     }, []);
 
-    const fetchAllReviews = () => {
+    // const fetchAllReviews = () => {
 
-    }
+    // }commented this out cause Linter was complaining about unused function
 
     const fetchProjects = async (Id) => {
         try {

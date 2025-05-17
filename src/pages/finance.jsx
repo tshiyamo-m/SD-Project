@@ -90,7 +90,7 @@ const Finance = () => {
   useEffect(() => {
     loadFunds();
     loadProjects();
-  }, [Id]);
+  }, [Id, loadFunds, loadProjects]);
 
   const handleAddFund = async (e) => {
     e.preventDefault();
