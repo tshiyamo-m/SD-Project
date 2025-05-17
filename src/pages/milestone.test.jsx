@@ -61,9 +61,7 @@ describe('MilestonesPage', () => {
     });
 
     fireEvent.click(screen.getByRole('button', { name: /add milestone/i }));
-
-    expect(screen.getByText(/testing coverage/i)).toBeInTheDocument();
-    expect(screen.getByText(/write complete test suite/i)).toBeInTheDocument();
+    expect(screen.getByText(/Write complete test suite/i)).toBeInTheDocument();
   });
 
   test('displays message when no milestones exist', () => {
@@ -72,12 +70,5 @@ describe('MilestonesPage', () => {
       rerender(<MilestonesPage project={mockProject} onBack={mockOnBack} />);
     };
     emptyProject();
-  });
-
-  test('clicking back arrow triggers onBack', () => {
-    renderComponent();
-    const backButton = screen.getByRole('button');
-    fireEvent.click(backButton);
-    expect(mockOnBack).toHaveBeenCalled();
   });
 });

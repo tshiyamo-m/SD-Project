@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema //function to create a new schema
 
-const milestoneSchema = new Schema({  //Layout of schema
+const milestoneSchema = new Schema({
     name: {
         type: String,
         required: true

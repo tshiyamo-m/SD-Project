@@ -1,49 +1,165 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import ProjectsPage from './projects';
+/* eslint-disable testing-library/no-wait-for-multiple-assertions */
+const { render, screen, fireEvent } = require('@testing-library/react');
+const React = require('react');
+const ProjectsPage = require('./projects').default;
 
-const mockOnBack = jest.fn();
+jest.mock('lucide-react', () => ({
+  Search: () => <div data-testid="search-icon" />,
+  Bell: () => <div data-testid="bell-icon" />,
+  User: () => <div data-testid="user-icon" />,
+  MoreVertical: () => <div data-testid="more-icon" />,
+  ArrowLeft: () => <div data-testid="arrow-left-icon" />
+}));
 
-const renderComponent = () => render(<ProjectsPage />);
+jest.mock('./createproject', () => () => <div>Create Project Form</div>);
+jest.mock('./viewproject', () => ({ project, onBack }) => (
+  <div>
+    <div>Viewing Project: {project.title}</div>
+    <button onClick={onBack}>Back</button>
+  </div>
+));
+jest.mock('./milestone', () => ({ project, onBack }) => (
+  <div>
+    <div>Milestones for: {project.title}</div>
+    <button onClick={onBack}>Back</button>
+  </div>
+));
+jest.mock('./viewreview', () => ({ project, onBack }) => (
+  <div>
+    <div>Reviews for: {project.title}</div>
+    <button onClick={onBack}>Back</button>
+  </div>
+));
+
 
 describe('ProjectsPage', () => {
-  test('renders page title', () => {
-    renderComponent();
-    expect(screen.getByRole('heading', { name: /projects/i })).toBeInTheDocument();
+  beforeEach(() => {
+    global.fetch = jest.fn((url) => {
+      if (url === '/api/Projects/find') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([{
+            _id: '123',
+            title: 'Test Project',
+            owner: '456',
+            status: 'In Progress',
+            collaborators: ['Jane Smith', 'Bob Johnson'],
+            field: 'Computer Science',
+            created: '2023-01-01',
+            updated: '2023-01-15',
+            skills: ['React', 'JavaScript'],
+            tags: ['Web', 'Frontend']
+          }])
+        });
+      }
+
+      if (url === 'https://wonderful-hill-03610c21e.6.azurestaticapps.net/api/invite') {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({ success: true })
+        });
+      }
+
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({})
+      });
+    });
+
+    Storage.prototype.getItem = jest.fn((key) => {
+      if (key === 'fullName') return 'John Doe';
+      if (key === 'Mongo_id') return '456';
+      return null;
+    });
   });
 
-  test('renders create new project button', () => {
-    renderComponent();
-    expect(screen.getByRole('button', { name: /create new project/i })).toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  test('renders project cards', () => {
-    renderComponent();
-    expect(screen.getAllByRole('article')).toHaveLength(3);
+
+
+  test('renders create project button', () => {
+    render(<ProjectsPage />);
+    expect(screen.getByText('Create new project')).toBeInTheDocument();
   });
 
-  test('opens create project form', () => {
-    renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /create new project/i }));
-    expect(screen.getByRole('form')).toBeInTheDocument();
+  test('renders user name from localStorage', async () => {
+    render(<ProjectsPage />);
+    expect(await screen.findByText('John Doe')).toBeInTheDocument();
   });
 
-  test('opens milestones section', () => {
-    renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /milestones/i }));
-    expect(screen.getByRole('heading', { name: /milestones/i })).toBeInTheDocument();
+  test('fetches and displays projects', async () => {
+    render(<ProjectsPage />);
+    expect(await screen.findByText('Test Project')).toBeInTheDocument();
+    expect(screen.getByText('Status:')).toBeInTheDocument();
+    expect(screen.getByText('In Progress')).toBeInTheDocument();
   });
 
-  test('opens project details section', () => {
-    renderComponent();
-    fireEvent.click(screen.getByRole('button', { name: /view/i }));
-    expect(screen.getByRole('heading', { name: /project details/i })).toBeInTheDocument();
+  test('clicking create project button shows create project form', async () => {
+    render(<ProjectsPage />);
+    fireEvent.click(screen.getByText('Create new project'));
+    expect(await screen.findByText('Create Project Form')).toBeInTheDocument();
   });
 
-  test('renders icons in the header menu', () => {
-    renderComponent();
-    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /bell/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /user/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /more/i })).toBeInTheDocument();
+  test('clicking view button shows project details', async () => {
+    render(<ProjectsPage />);
+    fireEvent.click(await screen.findByText('View'));
+    expect(await screen.findByText('Viewing Project: Test Project')).toBeInTheDocument();
+  });
+
+  test('clicking milestones button shows milestones page', async () => {
+    render(<ProjectsPage />);
+    fireEvent.click(await screen.findByText('Milestones'));
+    expect(await screen.findByText('Milestones for: Test Project')).toBeInTheDocument();
+  });
+
+  test('clicking reviews button shows reviews page', async () => {
+    render(<ProjectsPage />);
+    fireEvent.click(await screen.findByText('Reviews'));
+    expect(await screen.findByText('Reviews for: Test Project')).toBeInTheDocument();
+  });
+
+  test('submitting invite form calls API and closes modal', async () => {
+    render(<ProjectsPage />);
+    fireEvent.click(await screen.findByText('Invite Collaborator'));
+
+    const emailInput = screen.getByLabelText("Collaborator's Email:");
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+
+    fireEvent.click(screen.getByText('Send Invite'));
+  });
+
+  test('closing invite modal hides it', async () => {
+    render(<ProjectsPage />);
+    fireEvent.click(await screen.findByText('Invite Collaborator'));
+
+    expect(screen.getByText('Send Invite')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(screen.queryByText('Send Invite')).not.toBeInTheDocument();
+  });
+
+  test('renders header icons', () => {
+    render(<ProjectsPage />);
+    expect(screen.getByTestId('search-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('bell-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('user-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('more-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('arrow-left-icon')).toBeInTheDocument();
+  });
+
+  test('renders project metadata correctly', async () => {
+    render(<ProjectsPage />);
+    expect(await screen.findByText('Test Project')).toBeInTheDocument();
+    expect(screen.getByText('Field:')).toBeInTheDocument();
+    expect(screen.getByText('Computer Science.')).toBeInTheDocument();
+    expect(screen.getByText('Required skills:')).toBeInTheDocument();
+    expect(screen.getByText('React, JavaScript.')).toBeInTheDocument();
+    expect(screen.getByText('Tags:')).toBeInTheDocument();
+    expect(screen.getByText('Web, Frontend.')).toBeInTheDocument();
+    expect(screen.getByText('Created:')).toBeInTheDocument();
+    expect(screen.getByText('2023-01-01.')).toBeInTheDocument();
+    expect(screen.getByText('Last updated:')).toBeInTheDocument();
+    expect(screen.getByText('2023-01-15.')).toBeInTheDocument();
   });
 });

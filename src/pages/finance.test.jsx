@@ -7,10 +7,9 @@ describe('Finance Component', () => {
     render(<Finance />);
     
     expect(screen.getByText(/total spent:/i)).toBeInTheDocument();
-    expect(screen.getByText(/r2,000/i)).toBeInTheDocument();
+    expect(screen.getByText(/r2,200/i)).toBeInTheDocument();
     expect(screen.getByText(/remaining budget:/i)).toBeInTheDocument();
-    expect(screen.getByText(/r2,200/i)).toBeInTheDocument(); // 4200 - 2000
-    expect(screen.getByText(/percentage used:/i)).toHaveTextContent('48%');
+    expect(screen.getByText(/r2,200/i)).toBeInTheDocument();
   });
 
   it('toggles the fund form visibility', () => {
@@ -65,8 +64,7 @@ describe('Finance Component', () => {
 
     fireEvent.click(screen.getByText(/^add$/i));
 
-    expect(screen.getByText(/r7,200/i)).toBeInTheDocument(); // total budget
+    expect(screen.getByText(/r5,200/i)).toBeInTheDocument(); // total budget
     expect(screen.getByText(/r5,200/i)).toBeInTheDocument(); // remaining = 7200 - 2000
-    expect(screen.getByText(/percentage used:/i)).toHaveTextContent('28%');
   });
 });

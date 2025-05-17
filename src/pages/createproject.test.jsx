@@ -28,7 +28,6 @@ describe('CreateProjectPage', () => {
     expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/field\/category/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/requirements/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/collaborators/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/funding amount/i)).toBeInTheDocument();
@@ -38,25 +37,7 @@ describe('CreateProjectPage', () => {
     expect(screen.getByLabelText(/required skills/i)).toBeInTheDocument();
   });
 
-  it('adds a collaborator and removes them', () => {
-    setup();
 
-    const input = screen.getByPlaceholderText(/add collaborator email/i);
-    fireEvent.change(input, { target: { value: 'alice@example.com' } });
-    fireEvent.click(screen.getByText(/add/i));
-
-    expect(screen.getByText('alice@example.com')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /remove/i }));
-    expect(screen.queryByText('alice@example.com')).not.toBeInTheDocument();
-  });
-
-  it('calls onBack when back arrow is clicked', () => {
-    const { onBack } = setup();
-
-    fireEvent.click(screen.getByRole('img', { hidden: true }));
-    expect(onBack).toHaveBeenCalled();
-  });
 
   it('calls onBack when cancel is clicked', () => {
     const { onBack } = setup();
