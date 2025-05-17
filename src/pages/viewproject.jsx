@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import { getAllUsers,getUser } from '../utils/loginUtils';
 import { updateProject } from '../utils/projectUtils';
 import { fetchFiles, uploadFiles, deleteFile, downloadFile } from '../utils/bucketUtils';
+import { toast } from "sonner";
 
 const ViewProjectPage = ({ project: initialProject, onBack }) => {
     // State for project data with edit mode
@@ -17,6 +18,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [reviewerNames, setReviewerNames] = useState({});
+    const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
     //const [isLoadingNames, setIsLoadingNames] = useState(false);
 
     const projectId = initialProject.id;
@@ -180,17 +182,32 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
 
     //Load personal docs from DB
     useEffect(() => {
+        let isMounted = true;
         const loadDocuments = async () => {
+            setIsLoadingDocuments(true);
             try {
                 const fetchedDocuments = await fetchFiles(initialProject.id);
+
+                if (!fetchedDocuments){
+                    throw new Error;
+                }
                 setDocuments(fetchedDocuments);
-            } catch (err) {
-                console.error('Failed to load documents:', err);
+            } catch (error) {
+                console.error('Failed to load documents:', error);
+                if (isMounted) toast.error("Could not load documents", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
+            }
+            finally {
+                setIsLoadingDocuments(false);  // End loading
             }
         };
 
         if (initialProject.id) {
+
             loadDocuments();
+            return () => { isMounted = false; };
+
         }
     }, [initialProject.id]);
 
@@ -217,6 +234,8 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const handleUpload = async (e) => {
         e.preventDefault();
         if (newDocument.file) {
+            setIsLoadingDocuments(true); 
+           
             const uploadedDoc = {
                 id: documents.length + 1,
                 name: newDocument.name,
@@ -231,11 +250,21 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
             formData.append('ProjectID', projectId);
             formData.append('uploadedBy', uploadedDoc.uploadedBy);
 
-            await uploadFiles(formData);
+            try{
+                await uploadFiles(formData);
+
+            }
+            catch(error){
+                
+                console.error(error);
+
+            }
 
             // Refresh documents list after upload
             const fetchedDocuments = await fetchFiles(projectId);
             setDocuments(fetchedDocuments);
+
+            setIsLoadingDocuments(false); 
 
             setShowUploadForm(false);
             setNewDocument({ name: "", file: null });
@@ -354,7 +383,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                     aria-label="Edit project details"
                                 >
                                     <Edit size={16} />
-                                    <span>Edit</span>
+                                    <strong>Edit</strong>
                                 </button>
                             </>
                         ) : (
@@ -431,10 +460,10 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                     <dt>Collaborators:</dt>
                                     <dd>
                                         {project.collaborators.map((collabId, index) => (
-                                            <span key={collabId}>
+                                            <strong key={collabId}>
                                                 {displayReviewerName(collabId)}
                                                 {index < project.collaborators.length - 1 ? ', ' : ''}
-                                            </span>
+                                            </strong>
                                         ))}
                                     </dd>
                                 </dl>
@@ -482,7 +511,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                     <section className="collaborator-input-container">
                                         <section className="selected-collaborators">
                                             {editData.collaborators.map(collabId => (
-                                                <span key={collabId} className="collaborator-tag">
+                                                <strong key={collabId} className="collaborator-tag">
                                                     {displayReviewerName(collabId)}
                                                     <button
                                                         type="button"
@@ -491,7 +520,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                                     >
                                                         <X size={12}/>
                                                     </button>
-                                                </span>
+                                                </strong>
                                             ))}
                                         </section>
                                         <section className="user-dropdown-container">
@@ -500,7 +529,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                                 className="dropdown-toggle"
                                                 onClick={() => setShowUserDropdown(!showUserDropdown)}
                                             >
-                                                <span>Add collaborator</span>
+                                                <strong>Add collaborator</strong>
                                                 <ChevronDown size={16}/>
                                             </button>
                                             {showUserDropdown && (
@@ -572,7 +601,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                         onClick={cancelEditMode}
                                     >
                                         <X size={16} />
-                                        <span>Cancel</span>
+                                        <strong>Cancel</strong>
                                     </button>
                                     <button
                                         type="button"
@@ -580,7 +609,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                         onClick={saveProjectChanges}
                                     >
                                         <Save size={16} />
-                                        <span>Save Changes</span>
+                                        <strong>Save Changes</strong>
                                     </button>
                                 </section>
                             </fieldset>
@@ -589,7 +618,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                 </article>
             </section>
 
-            <section className="documents-section">
+            <section className="documents-section" >
                 <header className="section-header">
                     <h2 className="section-title">Project Documents</h2>
                     <button
@@ -597,7 +626,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                         onClick={() => setShowUploadForm(true)}
                     >
                         <Upload size={16} />
-                        <span>Upload Document</span>
+                        <strong>Upload Document</strong>
                     </button>
                 </header>
 
@@ -638,7 +667,15 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                     </form>
                 )}
 
-                {documents.length > 0 ? (
+                {isLoadingDocuments ? (
+                    <figure className="loading-documents" role="status" aria-busy="true">
+                        <svg className="loading-spinner" viewBox="0 0 50 50" aria-hidden="true">
+                            <circle cx="25" cy="25" r="20" fill="none" strokeWidth="5"></circle>
+                        </svg>
+                        <figcaption>Loading documents...</figcaption>
+                    </figure>                
+
+                ) : documents.length > 0 ? (
                     <table className="documents-table">
                         <thead>
                         <tr>
@@ -693,6 +730,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                     <p className="no-documents-message">No documents have been uploaded for this project.</p>
                 )}
             </section>
+            
         </article>
     );
 };

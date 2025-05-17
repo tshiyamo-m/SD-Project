@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export const submitReview = async (review) => {
     try{
         const response = await fetch('/api/Review', {
@@ -14,10 +16,17 @@ export const submitReview = async (review) => {
             throw new Error('Failed to create review');
         }
 
+        toast.success("Review posted successfully", {
+                        style: { backgroundColor: "green", color: "white" },
+                        });
         return await response.json();
+        
     }
     catch(error) {
         console.error('Error creating review:', error);
+        toast.error("Failed to post review", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
     }
 }
 

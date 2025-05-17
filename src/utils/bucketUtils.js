@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export const fetchFiles = async (ProjectID) => {
     try {
         if (!ProjectID || typeof ProjectID !== 'string') {
@@ -9,7 +11,7 @@ export const fetchFiles = async (ProjectID) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({projectID: ProjectID})
+            body: JSON.stringify({projectID: ProjectID}) ///////
         });
 
         if (!response.ok) {
@@ -37,6 +39,9 @@ export const fetchFiles = async (ProjectID) => {
 
     } catch (error) {
         console.error('Error fetching documents:', error);
+        toast.error("Could not get documents", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
         throw error;
     }
 };
@@ -50,10 +55,16 @@ export const uploadFiles = async (formData) => {
         });
 
         const data = await response.json();
+        toast.success("Document uploaded successfully", {
+                        style: { backgroundColor: "green", color: "white" },
+                        });
         console.log('Upload successful:', data);
 
     } catch (error) {
         console.error('Upload error:', error);
+        toast.error("Could not upload document", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
     }
 }
 
@@ -70,11 +81,18 @@ export const deleteFile = async (strDocId) => {
 
         if (!response.ok) {
             throw new Error('Failed to delete file');
-        } 
+        }
+
+        toast.success("Document deleted successfully", {
+                        style: { backgroundColor: "green", color: "white" },
+                        });
 
     } 
     catch (error) {
         console.error('Delete error:', error);
+        toast.error("Could not delete document", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
     }
 }
 
@@ -103,7 +121,14 @@ export const downloadFile = async (strDocId, docName) => {
         window.URL.revokeObjectURL(url);
         a.remove();
 
+        toast.success("Document downloaded successfully", {
+                        style: { backgroundColor: "green", color: "white" },
+                        });
+
     } catch (error) {
         console.error('Download error:', error);
+        toast.error("Could not download document", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
     }
 }

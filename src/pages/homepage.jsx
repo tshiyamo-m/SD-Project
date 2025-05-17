@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './homepage.css';
 import { findProject } from '../utils/projectUtils';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
     const [name, setName] = useState("");
@@ -15,9 +16,11 @@ const HomePage = () => {
         setName(fullName[0]);
     }, []);
 
-    const fetchAllReviews = () => {
+    //const fetchAllReviews = () => {
 
-    }
+    //}
+
+    const navigate = useNavigate();
 
     const fetchProjects = async (Id) => {
         try {
@@ -52,7 +55,9 @@ const HomePage = () => {
                             The best place for you to create amazing projects with the best people.
                         </p>
                         <p className="feature-cta">START YOUR DREAM PROJECT NOW</p>
-                        <button className="view-projects-button">
+                        <button 
+                            className="view-projects-button"
+                            onClick={() => navigate('/src/pages/projects')}>                        
                             View Projects Page
                         </button>
                     </section>

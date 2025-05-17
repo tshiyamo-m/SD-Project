@@ -2,7 +2,8 @@ const ProjectModel = require('../models/ProjectsModel');
 const LoginModel = require('../models/LoginModel');
 //const express = require('express');
 const mongoose = require('mongoose');
-// { ObjectId } = mongoose.Types;
+const jwt = require('jsonwebtoken');
+const { Types: { ObjectId } } = require('mongoose');
 
 //POST Project
 
@@ -91,8 +92,23 @@ const retrieve_active_projects = async (req, res) => {
 
     try {
 
-        const AllProjects = await ProjectModel.find({ status: status });  //Find the projects
-        res.status(200).json(AllProjects)
+        const AllProjects = await ProjectModel.find({ status: status });//Find the projects
+
+        if (AllProjects && AllProjects.length != 0){
+            for (const project of AllProjects){
+                const user = await LoginModel.findOne({ 
+                    _id: new mongoose.Types.ObjectId(project.owner) });
+                
+                const decoded = jwt.decode(user.token);
+
+                //console.log(decoded);
+
+                project.owner = decoded.name;
+            }
+            
+        }
+
+        res.status(200).json(AllProjects);
 
     }
     catch(error) {

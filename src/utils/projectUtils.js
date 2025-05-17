@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export const findProject = async (Id) => {
     try {
         const response = await fetch('/api/Projects/find', {
@@ -87,7 +89,7 @@ export const addProject = async (Data) => {
         if (!response.ok){
             throw new Error("Error with adding project!")
         }
-        console.log(response);
+        //console.log(response);
 
     }
     catch(error){
@@ -110,8 +112,16 @@ export const updateProject = async (Data) => {
         if (!response.ok) {
             throw new Error('Failed to update project!');
         }
+
+        toast.success("Project updated successfully", {
+                        style: { backgroundColor: "green", color: "white" },
+                        });
     }
     catch(error) {
+        toast.error("Could not update project", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
         console.error('Error updating project:', error);
+        
     }
 }

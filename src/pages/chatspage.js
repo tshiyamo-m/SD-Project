@@ -1,235 +1,228 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import './chatspage.css';
+import { getChatters, createConvo, sendmesssage, retrieveConvos } from "../utils/chatsUtils";
 
 const ChatsPage = () => {
-    const currentUserId = "1";
-    const [users, setUsers] = useState([]);
+    const currentUserId = localStorage.getItem("Mongo_id");
+    const [users, setUsers] = useState({});
     const [chats, setChats] = useState([]);
     const [selectedChat, setSelectedChat] = useState(null);
-    const [messages, setMessages] = useState([]);
     const [messageText, setMessageText] = useState("");
+    //const [ConvoID, setConvoID] = useState(null);
 
-    const Mongo_id = localStorage.getItem("Mongo_id"); // Fallback to stub user if not in localStorage
 
-    // Stub data for users
-    const stubUsers = [
-        { _id: "1", name: "Current User", email: "current@example.com" },
-        { _id: "2", name: "John Doe", email: "john@example.com" },
-        { _id: "3", name: "Jane Smith", email: "jane@example.com" }
-    ];
+    const fetchUsers = async () => {
+        try {
+            const response = await getChatters(currentUserId);
+            //console.log(response);
+            const filteredUsers = { ...response }; // create copy first
+            delete filteredUsers[currentUserId];
+            //console.log(filteredUsers);
 
-    useEffect(() => {
-            const fetchUsers = async () => {
-                try {
-                    const response = await fetch('/api/login/users', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-    
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch users');
-                    }
-    
-                    const result = await response.json();
-                    console.log("res". result)
-    
-                    const formattedUsers = result.map(user => ({
-                        _id: user._id, 
-                        name: user.name || `${user.firstName} ${user.lastName}`,
-                        email: user.email
-                    }));
-                    //console.log("Successfully found users: ", formattedUsers);
-                    
-                    setUsers(formattedUsers);
-                } catch (error) {
-                    console.error('Error fetching users:', error);
-                    // Optionally set some error state here
-                }
-            };
-    
-            fetchUsers();
-        }, 
-    []);
-
-    // Stub data for chats
-    const stubChats = [
-        {
-            _id: "chat1",
-            members: ["1", "2"],
-            messages: [
-                { text: "Hey, how are you?", sender: "2", timestamp: new Date().toISOString() }
-            ]
-        },
-        {
-            _id: "chat2",
-            members: ["1", "3"],
-            messages: [
-                { text: "Can we meet tomorrow?", sender: "3", timestamp: new Date().toISOString() }
-            ]
+            const usersObj = Array.isArray(filteredUsers)
+                ? Object.fromEntries(response.map(user => [user._id, user]))
+                : response || {};
+           
+            setUsers(usersObj);
+            return usersObj;
+        } catch (error) {
+            console.error("Error:", error);
+            //setUsers(mockUsers); // Fallback to mock data
+            //return mockUsers;
         }
-    ];
-
-    // Stub data for messages in a selected chat
-    const stubMessages = {
-        "chat1": [
-            { _id: "m1", text: "Hey, how are you?", sender: "2", timestamp: new Date(Date.now() - 60000).toISOString() },
-            { _id: "m2", text: "I'm good, thanks! How about you?", sender: "1", timestamp: new Date().toISOString() }
-        ],
-        "chat2": [
-            { _id: "m3", text: "Can we meet tomorrow?", sender: "3", timestamp: new Date(Date.now() - 120000).toISOString() },
-            { _id: "m4", text: "Sure, what time works for you?", sender: "1", timestamp: new Date(Date.now() - 60000).toISOString() },
-            { _id: "m5", text: "How about 2pm?", sender: "3", timestamp: new Date().toISOString() }
-        ]
     };
 
-    // API Call to return list of available users - using stub data
+    const fetchConvos = async (userID) => {
+
+        try {
+            return await retrieveConvos(currentUserId)
+
+        }
+        catch (error){
+            console.error("Error:", error);
+        }
+    }
+
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                // In a real app, you would make the API call here
-                // const response = await fetch('/api/login/users', {...});
-                // const result = await response.json();
-                
-                // Using stub data instead
-                setUsers(stubUsers);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                // Fallback to stub data
-                setUsers(stubUsers);
+        const loadData = async () => {
+            const fetchedUsers = await fetchUsers();
+            const fetchedConvos = await fetchConvos();
+
+            const FormattedConvos = fetchedConvos.map(chat => ({ 
+                _id: chat._id,
+                members: [chat.userID_1, chat.userID_2],
+                messages: Array.isArray(chat.Messages) && chat.Messages.length > 0
+                    ? chat.Messages.map(message => ({
+                        _id: message._id,
+                        text: message.text,
+                        sender: message.sender,
+                        timestamp: message.timestamp
+                    }))
+                    : []
+            }));
+
+            //console.log(fetchedConvos);
+            initializeChats(fetchedUsers, FormattedConvos);
+        };
+        
+        loadData();
+    }, [currentUserId]);
+
+    const initializeChats = (usersData, userChats) => {
+
+        if (userChats){
+            const setUserChats = userChats.map(chat => ({
+            ...chat,
+            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
+            }));
+            setChats(setUserChats);
+        }
+        else{
+        const initialChats = [
+            {
+                _id: "chat1",
+                members: [currentUserId, "2"],
+                messages: [
+                    { _id: "m1", text: "Hey, how are you?", sender: "2", timestamp: new Date(Date.now() - 3600000).toISOString() },
+                    { _id: "m2", text: "I'm good, thanks!", sender: currentUserId, timestamp: new Date(Date.now() - 1800000).toISOString() }
+                ]
+            },
+            {
+                _id: "chat2",
+                members: [currentUserId, "3"],
+                messages: [
+                    { _id: "m3", text: "Can we meet tomorrow?", sender: "3", timestamp: new Date(Date.now() - 7200000).toISOString() },
+                    { _id: "m4", text: "Sure, what time?", sender: currentUserId, timestamp: new Date(Date.now() - 3600000).toISOString() }
+                ]
             }
+        ].map(chat => ({
+            ...chat,
+            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
+        }));
+
+        setChats(initialChats);}
+    };
+ 
+    const getAvailableUsers = () => {
+        return Object.values(users).filter(user => user._id !== currentUserId);
+        
+    };
+
+    const CreateConvo = async (id_1, id_2) => {
+        try {
+            const response = await createConvo(id_1, id_2);
+        } catch (error) {
+            console.error("Error:", error);
+        }       
+    };
+
+
+    const startNewChat = async (userId) => {
+        const existingChat = chats.find(chat => //find chats
+            chat.members.includes(currentUserId) && chat.members.includes(userId)
+        );
+        
+        if (existingChat) {
+            setSelectedChat(existingChat);
+            return;
+        }
+        
+
+        const newChat = {
+            _id: `chat-${Date.now()}`,
+            members: [currentUserId, userId],
+            messages: [],
+            partner: users[userId] || { name: "Unknown User" }
         };
 
-        fetchUsers();
-    }, []);
+        try{
+            await CreateConvo(currentUserId, userId);
 
-    // useEffect to show conversations upon opening chats page - using stub data
-    useEffect(() => {
-        const FindChats = async () => {
-            try {
-                // In a real app, you would make the API call here
-                // const response = await fetch('/api/message/getConvos', {...});
-                // const conversations = await response.json();
-                
-                // Using stub data instead
-                setChats(stubChats);
-            } catch (error) {
-                console.error('Error finding conversations:', error);
-                // Fallback to stub data
-                setChats(stubChats);
-            }
-        };
-
-        FindChats();
-    }, [Mongo_id]);
-
-    // Load messages when a chat is selected - using stub data
-    const selectChat = async (chat) => {
-        try {
-            setSelectedChat(chat);
-            
-            // In a real app, you would make the API call here
-            // const response = await fetch('/api/message/getmessages', {...});
-            // const messages = await response.json();
-            
-            // Using stub data instead
-            setMessages(stubMessages[chat._id] || []);
-        } catch (error) {
-            console.error('Error loading messages:', error);
-            // Fallback to stub data
-            setMessages(stubMessages[chat._id] || []);
         }
+        catch (error) {
+        console.error('Error creating conversation:', error);
+        }
+
+
+        
+        //console.log(userId);
+        setChats([...chats, newChat]);
+        setSelectedChat(newChat);
     };
 
-    const startNewChat = async (recipientId) => {
+    const Send_Message_To_DB = async (text, sender, partnerID) => {
+
         try {
-            if (!Mongo_id || !recipientId) {
-                console.error("Missing user IDs");
-                return;
-            }
+            await sendmesssage(text, sender, partnerID);
 
-            // In a real app, you would make the API call here
-            // const response = await fetch('/api/message/CreateConvo', {...});
-            // const newConversation = await response.json();
-            
-            // Using stub data instead
-            const newChatId = `chat-${Date.now()}`;
-            const newChat = {
-                _id: newChatId,
-                members: [Mongo_id, recipientId],
-                messages: []
-            };
-            
-            // Update chats list
-            setChats(prev => [...prev, newChat]);
-            setSelectedChat(newChat);
-            setMessages([]);
-
-            // Update stubMessages for the new chat
-            stubMessages[newChatId] = [];
-
-            return newChat;
-        } catch (error) {
-            console.error('Error starting new chat:', error);
-            throw error;
         }
-    };
+        catch (error){
+            console.error("Error:", error);
+        }
+    }
 
-    const sendNewMessage = async (e) => {
+
+    const sendMessage = async (e) => {
+        let sender;/* = selectedChat.members[0];*/
+        let partnerID; /*= selectedChat.members[1];*/
+
         e.preventDefault();
         if (!messageText.trim() || !selectedChat) return;
 
         const newMessage = {
             _id: `msg-${Date.now()}`,
             text: messageText,
-            sender: Mongo_id,
+            sender: currentUserId,
             timestamp: new Date().toISOString()
         };
 
-        try {
-            // In a real app, you would make the API call here
-            // const response = await fetch('/api/message/sendmessage', {...});
-            
-            // Using stub data instead
-            setMessages(prev => [...prev, newMessage]);
-            
-            // Update the chat's messages in the chats array
-            setChats(prev => prev.map(chat => 
-                chat._id === selectedChat._id 
-                    ? { ...chat, messages: [...chat.messages, newMessage] } 
-                    : chat
-            ));
-            
-            // Update stub data
-            if (!stubMessages[selectedChat._id]) {
-                stubMessages[selectedChat._id] = [];
-            }
-            stubMessages[selectedChat._id].push(newMessage);
-            
-            setMessageText("");
-        } catch(error) {
-            console.error('Error sending new message: ', error);
-            throw error; 
-        }
-    };
 
-    const getChatPartner = (chat) => {
-        if (!chat || !chat.members) return null;
-        const partnerId = chat.members.find(memberId => memberId !== Mongo_id);
-        if (!partnerId) return null;
-        return users.find(user => user._id === partnerId);
+        if (selectedChat.members[0] == currentUserId){
+            sender = selectedChat.members[0];
+            partnerID = selectedChat.members[1];
+        }
+        else{
+            sender = selectedChat.members[1];
+            partnerID = selectedChat.members[0];
+        }
+
+        try{
+            await Send_Message_To_DB(messageText, sender, partnerID);
+        }
+        catch (error){
+            console.error("Error sending message:", error);
+        }
+
+        setChats(prevChats => prevChats.map(chat => 
+        chat._id === selectedChat._id
+            ? { ...chat, messages: [...chat.messages, newMessage] }
+            : chat
+        ));      
+        // After updating chats, also update selectedChat
+        setSelectedChat(prevSelected => ({
+        ...prevSelected,
+        messages: [...prevSelected.messages, newMessage]
+        }));  
+/*
+        setChats(chats.map(chat => 
+            chat._id === selectedChat._id
+                ? { ...chat, messages: [...chat.messages, newMessage] }
+                : chat
+        ));*/
+        
+        setMessageText("");
+        //console.log(chats)
+        
     };
 
     return (
-        <main>
+        <main className="chat-container">
             {!selectedChat ? (
-                <section>
-                    <header>
+                <section className="chat-list-section">
+                    <header className="chat-header">
                         <h1>Your Chats</h1>
                         <button
                             onClick={() => setSelectedChat({ new: true })}
-                            aria-label="Start new chat"
                             className="new-chat-btn"
                         >
                             + New Chat
@@ -239,33 +232,28 @@ const ChatsPage = () => {
                     <nav>
                         <h2>Existing chats</h2>
                         <ul className="chat-list">
-                            {chats.map(chat => {
-                                const partner = getChatPartner(chat);
-                                return (
-                                    <li key={chat._id} className="chat-item">
-                                        <button
-                                            onClick={() => selectChat(chat)}
-                                            aria-label={`Chat with ${partner?.name || "user"}`}
-                                            className="chat-btn"
-                                        >
-                                            <strong>{partner?.name || "Unknown User"}</strong>
-                                            {chat.messages.length > 0 && (
-                                                <em> - {chat.messages[chat.messages.length - 1].text}</em>
-                                            )}
-                                        </button>
-                                    </li>
-                                );
-                            })}
+                            {chats.map(chat => (
+                                <li key={chat._id} className="chat-item">
+                                    <button
+                                        onClick={() => setSelectedChat(chat)}
+                                        className="chat-btn"
+                                    >
+                                        <strong>{chat.partner.name}</strong>
+                                        {chat.messages.length > 0 && (
+                                            <em> - {chat.messages[chat.messages.length - 1].text}</em>
+                                        )}
+                                    </button>
+                                </li>
+                            ))}
                         </ul>
                     </nav>
                 </section>
             ) : selectedChat.new ? (
-                <section>
-                    <header>
+                <section className="new-chat-section">
+                    <header className="chat-header">
                         <h1>Start New Chat</h1>
                         <button
                             onClick={() => setSelectedChat(null)}
-                            aria-label="Back to chats"
                             className="back-btn"
                         >
                             ← Back
@@ -275,71 +263,64 @@ const ChatsPage = () => {
                     <nav>
                         <h2>Available users</h2>
                         <ul className="user-list">
-                            {users
-                                .filter(user => user._id !== Mongo_id)
-                                .map(user => (
-                                    <li key={user._id}>
-                                        <button
-                                            onClick={() => startNewChat(user._id)}
-                                            aria-label={`Chat with ${user.name}`}
-                                            className="user-btn"
-                                        >
-                                            {user.name} <small>({user.email})</small>
-                                        </button>
-                                    </li>
-                                ))}
+                            {getAvailableUsers().map(user => (
+                                <li key={user._id} className="user-item">
+                                    <button
+                                        onClick={() => startNewChat(user._id)}
+                                        className="user-btn"
+                                    >
+                                        {user.name} <small>({user.email})</small>
+                                    </button>
+                                </li>
+                            ))}
                         </ul>
                     </nav>
                 </section>
             ) : (
-                <article>
-                    <header>
+                <article className="active-chat">
+                    <header className="chat-header">
                         <button
                             onClick={() => setSelectedChat(null)}
-                            aria-label="Back to chats"
                             className="back-btn"
                         >
                             ← Back
                         </button>
                         <h2>
-                            Chat with {getChatPartner(selectedChat)?.name || "Unknown User"}
+                            Chat with {selectedChat.partner?.name || "Unknown User"}
                         </h2>
                     </header>
 
-                    <section>
-                        {messages.length === 0 ? (
-                            <p>No messages yet. Start the conversation!</p>
+                    <section className="message-area">
+                        {selectedChat.messages.length === 0 ? (
+                            <p className="no-messages">No messages yet. Start the conversation!</p>
                         ) : (
                             <ul className="message-list">
-                                {messages.map((msg, i) => (
-                                    <li key={i} className={`message ${msg.sender === Mongo_id ? 'sent' : 'received'}`}>
-                                        <figure>
-                                            <blockquote cite={`#msg-${i}`}>
-                                                <p>{msg.text}</p>
-                                            </blockquote>
-                                            <figcaption>
-                                                <time dateTime={msg.timestamp}>
-                                                    {new Date(msg.timestamp).toLocaleTimeString()}
-                                                </time>
-                                            </figcaption>
-                                        </figure>
+                                {selectedChat.messages.map((msg) => (
+                                    <li 
+                                        key={msg._id} 
+                                        className={`message ${msg.sender === currentUserId ? 'sent' : 'received'}`}
+                                    >
+                                        <article className="message-content">
+                                            <p>{msg.text}</p>
+                                            <time className="message-time">
+                                                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            </time>
+                                        </article>
                                     </li>
                                 ))}
                             </ul>
                         )}
                     </section>
 
-                    <form onSubmit={sendNewMessage} className="message-form">
-                        <label htmlFor="messageInput" className="sr-only">Your message:</label>
+                    <form onSubmit={sendMessage} className="message-form">
                         <input
-                            id="messageInput"
                             type="text"
                             value={messageText}
                             onChange={(e) => setMessageText(e.target.value)}
                             placeholder="Type your message..."
                             required
                         />
-                        <button type="submit">Send</button>  
+                        <button type="submit">Send</button>
                     </form>
                 </article>
             )}

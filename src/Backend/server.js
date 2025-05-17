@@ -173,7 +173,7 @@ app.post('/Bucket/retrievedocs', async (req, res) => {
 app.post('/Bucket/download', async (req, res) => {
 
   const { fileId } = req.body;
-  console.log('Received download request for fileId:', fileId);
+  //console.log('Received download request for fileId:', fileId);
 
   if (!fileId) {
     return res.status(400).json({ error: "fileId is required" });
@@ -186,7 +186,7 @@ app.post('/Bucket/download', async (req, res) => {
     .collection('User_Files.files')
     .findOne({ _id: objectId });
 
-    console.log(fileInfo);
+    //console.log(fileInfo);
     
     if (!fileInfo) {
       console.log("File not found");
@@ -219,7 +219,7 @@ app.post('/Bucket/download', async (req, res) => {
 app.post('/Bucket/delete', async (req, res) => {
 
   const { fileId } = req.body;
-  console.log('Received delete request for fileId:', fileId);
+  //console.log('Received delete request for fileId:', fileId);
 
   if (!fileId) {
     return res.status(400).json({ error: "fileId is required" });

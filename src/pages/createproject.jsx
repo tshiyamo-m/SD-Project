@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import './createproject.css'
 import { createProject,addProject } from '../utils/projectUtils';
+import { Toaster, toast } from "sonner";
 
 export default function CreateProjectPage({ onBack, onCreateProject }) {
     const [formData, setFormData] = useState({
@@ -71,17 +72,37 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
             skills: formData.skills.split(',').map(skill => skill.trim())
         }
 
-        const newProjectId = await createProject(Project_Data);  //returns project Mongo ID
-         
-        const Data = {
-            user_id: Mongo_id,
-            project_id: newProjectId 
+        try{
+
+            const newProjectId = await createProject(Project_Data);  //returns project Mongo ID
+            
+            const Data = {
+                user_id: Mongo_id,
+                project_id: newProjectId 
+            }
+
+            await addProject(Data);
+
+            onCreateProject(project);
+
+            
+            toast.success("Project created", {
+                    style: { backgroundColor: "green", color: "white" },
+                });
+
+
+            onBack();
+
+
         }
+        catch(error){
 
-        await addProject(Data);
+            toast.error("Could not create project", {
+                style: { backgroundColor: "red", color: "white" },
+            });
 
-        onCreateProject(project);
-        onBack();
+            console.error("Could Not Create Project on create project page")
+        }
     };
 
     return (
@@ -282,6 +303,8 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                     </li>
                 </menu>
             </form>
+            <Toaster position="bottom-right" />       
         </article>
+        
     );
 }

@@ -9,6 +9,7 @@ import { findActiveProject } from '../utils/projectUtils';
 import { getUser, updateIsReviewer } from '../utils/loginUtils';
 import { getAllReviews, submitReview } from '../utils/reviewUtils';
 import { downloadFile, fetchFiles } from '../utils/bucketUtils';
+import { toast } from "sonner";
 
 const ReviewerPage = () => {
     // User state
@@ -80,8 +81,13 @@ const ReviewerPage = () => {
     const [documents, setDocuments] = useState([]);
 
     const getAllProjects = async () => {
+        
         try {
             const userData = await findActiveProject();
+            if (!userData){
+                throw new Error;
+            }
+            
             return userData.map((project) => ({
                     _id: project._id,
                     owner: project.owner,
@@ -100,7 +106,7 @@ const ReviewerPage = () => {
             }))
 
         } catch (error) {
-            console.error('Error finding projects:', error);
+            //console.error('Error finding projects:', error);
             return null;
         }
     };
@@ -155,10 +161,18 @@ const ReviewerPage = () => {
 
     useEffect(() => {
         if (!activeProject) return;
+        let isMounted = true;
 
         const loadDocuments = async () => {
             try {
                 const fetchedDocuments = await retrieveFiles(activeProject);
+                if (!isMounted) return;
+                if (!fetchedDocuments) {
+                    toast.error("Could not load documents", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
+                    throw new Error();
+                }
                 setDocuments(fetchedDocuments);
             } catch (err) {
                 console.error('Failed to load documents:', err);
@@ -167,32 +181,54 @@ const ReviewerPage = () => {
         };
 
         loadDocuments();
+        return () => { isMounted = false; };
     }, [activeProject]);
 
     useEffect(() => {
+        let isMounted = true;
 
         const loadProjects = async () => {
-            const userEnter = await getAllProjects();
-            if (userEnter) {
-                setProjects(userEnter);
-                //console.log("User loaded:", userEnter.name);
+            try{
+                const userEnter = await getAllProjects();
+                if (userEnter) {
+                    setProjects(userEnter);
+                    //console.log("User loaded:", userEnter.name);
+                }
+                if (!isMounted) return;
+                if (!userEnter) {                  
+                    throw new Error();
+                }
+                
+            }
+            catch(error){
+                toast.error("Could not load projects", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
+                console.error(error);
             }
         };
 
         loadProjects();
+        return () => { isMounted = false; };
     }, [userId]);
 
     // Reviews data
     const [reviews, setReviews] = useState([]);
 
     const fetchAllReviews = async () => {
+        let isMounted = true;
         try{
+            
             const Review_data = await getAllReviews();
+            if (!Review_data){
+                throw new Error;
+            }
 
             if (!Array.isArray(Review_data)) {
                 console.warn('API response is not an array:', Review_data);
                 return [];
             }
+            isMounted = true;
             //map data since we are making an async call
             return Review_data.map((review) => ({
                 _id: review._id,
@@ -206,6 +242,9 @@ const ReviewerPage = () => {
         }
         catch(error) {
             console.error('Error finding reviews:', error);
+            toast.error("Failed to find reviews", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
             return [];
         }
     }
@@ -216,8 +255,12 @@ const ReviewerPage = () => {
     };
 
     useEffect(() => {
-        //const fullName = localStorage.getItem('fullName');
-        loadReviews();
+        
+        try{
+            loadReviews();
+        }
+        catch(error){
+        }
 
     }, []);
 

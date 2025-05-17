@@ -12,6 +12,7 @@ import FinancesPage from './pages/finance';
 import './App.css';
 import { UserProvider } from "./components/UserContext";
 import AdminPage from "./pages/admin_pages/admin";
+import { Toaster } from "sonner";
 
 function App() {
     // To fix the refreshing issue
@@ -29,24 +30,7 @@ function App() {
             </main>
         );
     }
-
-    return (
-        <BrowserRouter>
-            <AppLayout>
-                <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/src/pages/homepage" element={<HomePage />} />
-                    <Route path="/src/pages/projects" element={<ProjectsPage />} />
-                    <Route path="/src/pages/review" element={<ReviewsPage />} />
-                    <Route path="/src/pages/chatspage" element={<ChatsPage />} />
-                    <Route path="/src/pages/finance" element={<FinancesPage />} />
-                    {/* <Route path="/settings" element={<SettingsPage />} /> */}
-                    {/* <Route path="/logout" element={<LogoutPage />} /> */}
-                </Routes>
-            </AppLayout>
-        </BrowserRouter>
-    );
-  }
+  
 
   return (
       <UserProvider>
@@ -57,7 +41,7 @@ function App() {
                       <Route path="/src/pages/homepage" element={<HomePage />} />
                       <Route path="/src/pages/projects" element={<ProjectsPage />} />
                       <Route path="/src/pages/review" element={<ReviewsPage />} />
-                      {/*<Route path="/src/pages/chats" element={<ChatsPage />} />*/}
+                      {<Route path="/src/pages/chatspage" element={<ChatsPage />} />}
                       {<Route path="/src/pages/finance" element={<FinancesPage />} />}
                       {/*<Route path="/src/pages/settings" element={<SettingsPage />} />*/}
                       {/*<Route path="/src/pages/logout" element={<LogoutPage />} />*/}
@@ -65,6 +49,7 @@ function App() {
                   </Routes>
               </AppLayout>
           </BrowserRouter>
+         <Toaster position="bottom-right" /> 
       </UserProvider>
 
   );
