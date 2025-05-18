@@ -14,6 +14,7 @@ import { toast } from "sonner";
 const ReviewerPage = () => {
     // User state
     const userId  = localStorage.getItem('Mongo_id');
+    const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
     const [user, setUser] = useState({});
 
@@ -147,7 +148,7 @@ const loadUser = useCallback(async (userId) => {
             else{
                 return [];
             }*/
-            return await fetchFiles(ProjectID)
+            return await fetchFiles(ProjectID);
 
         } catch (error) {
             console.error('Error fetching documents:', error);
@@ -170,6 +171,7 @@ const loadUser = useCallback(async (userId) => {
                     throw new Error();
                 }
                 setDocuments(fetchedDocuments);
+                
             } catch (err) {
                 console.error('Failed to load documents:', err);
                 setDocuments([]);
@@ -194,6 +196,7 @@ const loadUser = useCallback(async (userId) => {
                 if (!userEnter) {                  
                     throw new Error();
                 }
+                setIsLoadingProjects(false);
                 
             }
             catch(error){
@@ -744,7 +747,27 @@ const fetchAllReviews = useCallback(async () => {
             </nav>
 
             <section aria-labelledby="available-tab" hidden={activeTab !== 'available'}>
-                {filteredProjects().length === 0 ? (
+                {isLoadingProjects ? (
+                    <figure className="loading-projects" role="status" aria-busy="true">
+                    <svg 
+                        className="loading-spinner" 
+                        viewBox="0 0 50 50" 
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <circle 
+                        cx="25" 
+                        cy="25" 
+                        r="20" 
+                        fill="none" 
+                        stroke="currentColor"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                        />
+                    </svg>
+                    <figcaption className="visually-hidden">Loading projects...</figcaption>
+                    </figure>
+                ) : filteredProjects().length === 0 ? (
                     <p>No available projects match your search.</p>
                 ) : (
                     filteredProjects().map(project => (

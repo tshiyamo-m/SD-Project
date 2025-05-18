@@ -16,7 +16,7 @@ const ProjectsPage = () => {
     //const fullName = localStorage.getItem('fullName');
     const [projects, setProjects] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
-    const [isLoadingProjects, setIsLoadingProjects] = useState(false);
+    const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
     //testable
     const getUserNameById = (userId) => {
@@ -62,7 +62,7 @@ const ProjectsPage = () => {
 
     useEffect(() => {
         const Id = localStorage.getItem('Mongo_id');
-        setIsLoadingProjects(true);
+        //setIsLoadingProjects(true);
 
         const loadProjects = async () => {
 
@@ -84,7 +84,7 @@ const ProjectsPage = () => {
         if (allUsers.length > 0) {
             loadProjects();
         }
-    }, [allUsers]);
+    }, [allUsers, fetchProjects]);
 
     const fetchUsers = async () => {
         try {

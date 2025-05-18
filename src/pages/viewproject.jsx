@@ -60,7 +60,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         if (initialProject.collaborators.length > 0) {
             fetchCollaboratorNames();
         }
-    }, [initialProject.collaborators]);
+    }, [initialProject.collaborators, reviewerNames]);
 
     // Fetch all users when component mounts
     
