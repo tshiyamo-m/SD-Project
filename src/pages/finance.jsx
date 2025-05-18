@@ -42,7 +42,7 @@ const fetchProjects = useCallback(async (Id) => {
         console.error('Error fetching projects:', error);
         return []; // Consistent return type
     }
-}, [getAllProjects]); // Dependency: getAllProjects
+}, [/*getAllProjects*/]); // Dependency: getAllProjects
 
 const fetchFunds = useCallback(async () => {
     try {
@@ -69,7 +69,7 @@ const fetchFunds = useCallback(async () => {
         setError(error.message);
         return []; // Consistent fallback
     }
-}, [Id, getFinance, setError]); // All dependencies included
+}, [Id, /*getFinance,*/ setError]); // All dependencies included
 
 const loadFunds = useCallback(async () => {
   setIsLoading(true);

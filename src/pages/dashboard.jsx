@@ -71,7 +71,7 @@ const fetchData = useCallback(async () => {
   } finally {
     setIsLoading(false);
   }
-}, [userId, /*getAllProjects,*/ getFinance, setProjects, setFunds, setIsLoading, setError]);
+}, [userId, /*getAllProjects, getFinance,*/ setProjects, setFunds, setIsLoading, setError]);
 
   useEffect(() => {
     fetchData();
