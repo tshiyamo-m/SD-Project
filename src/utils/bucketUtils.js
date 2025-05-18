@@ -58,7 +58,7 @@ export const uploadFiles = async (formData) => {
         toast.success("Document uploaded successfully", {
                         style: { backgroundColor: "green", color: "white" },
                         });
-        console.log('Upload successful:', data);
+        //console.log('Upload successful:', data);
 
     } catch (error) {
         console.error('Upload error:', error);

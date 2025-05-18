@@ -393,8 +393,8 @@ const ReviewerPage = () => {
 
         const recId = await API_CREATE_REVIEW();
         const addR = recId.review_model;
-        console.log(recId);
-        console.log("mod", recId.review_model.projectId);
+        //console.log(recId);
+        //console.log("mod", recId.review_model.projectId);
 
         setReviews([...reviews, addR]);
         setActiveProject(null);
