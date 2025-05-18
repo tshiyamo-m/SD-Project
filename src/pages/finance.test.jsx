@@ -1,70 +1,79 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import Finance from './finance';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import Finance from '../pages/finance';
+import * as financeUtils from '../utils/financeUtils';
+import * as projectUtils from '../utils/projectUtils';
 
-describe('Finance Component', () => {
-  it('renders initial budget summary correctly', () => {
+// Mock localStorage
+beforeAll(() => {
+  Storage.prototype.getItem = jest.fn(() => 'mock-user-id');
+});
+
+// Mock utility functions
+jest.mock('../utils/financeUtils');
+jest.mock('../utils/projectUtils');
+
+const mockProjects = [
+  { _id: 'proj1', title: 'Project A' },
+  { _id: 'proj2', title: 'Project B' }
+];
+
+const mockFunds = [
+  {
+    _id: 'fund1',
+    amount: 10000,
+    purpose: 'proj1', // ID of Project A
+    source: 'Sponsor X',
+    used: 3000
+  },
+  {
+    _id: 'fund2',
+    amount: 5000,
+    purpose: 'proj2',
+    source: 'Sponsor Y',
+    used: 5000
+  }
+];
+
+describe('Finance Page', () => {
+  beforeEach(async () => {
+    projectUtils.getAllProjects.mockResolvedValue(mockProjects);
+    financeUtils.getFinance.mockResolvedValue(mockFunds);
+
     render(<Finance />);
-    
-    expect(screen.getByText(/total spent:/i)).toBeInTheDocument();
-    expect(screen.getByText(/r2,200/i)).toBeInTheDocument();
-    expect(screen.getByText(/remaining budget:/i)).toBeInTheDocument();
-    expect(screen.getByText(/r2,200/i)).toBeInTheDocument();
+
+    // Wait for data to be loaded
+    await waitFor(() => {
+      expect(screen.getByText(/Finances/i)).toBeInTheDocument();
+    });
   });
 
-  it('toggles the fund form visibility', () => {
-    render(<Finance />);
-
-    const toggleButton = screen.getByText(/add fund/i);
-    fireEvent.click(toggleButton);
-    expect(screen.getByText(/amount:/i)).toBeInTheDocument();
-
-    const cancelButton = screen.getByText(/cancel/i);
-    fireEvent.click(cancelButton);
-    expect(screen.queryByText(/amount:/i)).not.toBeInTheDocument();
+  it('renders static headings and tabs', () => {
+    expect(screen.getByText('Finances')).toBeInTheDocument();
+    expect(screen.getByText('Budget Summary')).toBeInTheDocument();
+    expect(screen.getByText(/Active Funds/i)).toBeInTheDocument();
+    expect(screen.getByText(/Exhausted Funds/i)).toBeInTheDocument();
   });
 
-  it('fills out the form and adds a new fund', () => {
-    render(<Finance />);
-    
-    fireEvent.click(screen.getByText(/add fund/i));
-
-    fireEvent.change(screen.getByPlaceholderText(/r4200/i), {
-      target: { value: '3000' }
-    });
-    fireEvent.change(screen.getByPlaceholderText(/to monitor budget usage/i), {
-      target: { value: 'New sensors' }
-    });
-    fireEvent.change(screen.getByPlaceholderText(/organization\/person/i), {
-      target: { value: 'TechFund' }
-    });
-
-    fireEvent.click(screen.getByText(/^add$/i)); // submit button
-
-    // Check that new fund is added and displayed
-    expect(screen.getByText('TechFund')).toBeInTheDocument();
-    expect(screen.getByText(/r3,000/i)).toBeInTheDocument();
-    expect(screen.getByText(/new sensors/i)).toBeInTheDocument();
-    expect(screen.getByText(/used: r0/i)).toBeInTheDocument();
+  it('displays non-empty active fund information', () => {
+    expect(screen.getByText(/For: Project A/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sponsor X/i)).toBeInTheDocument();
+    expect(screen.getByText(/Used:/i)).toBeInTheDocument();
   });
 
-  it('updates summary after adding a fund', () => {
-    render(<Finance />);
-    
-    fireEvent.click(screen.getByText(/add fund/i));
-    fireEvent.change(screen.getByPlaceholderText(/r4200/i), {
-      target: { value: '3000' }
+  it('displays non-empty exhausted fund information when tab is clicked', async () => {
+    fireEvent.click(screen.getByText(/Exhausted Funds/i));
+    await waitFor(() => {
+      expect(screen.getByText(/Sponsor Y/i)).toBeInTheDocument();
+      expect(screen.getByText(/Fully utilized/i)).toBeInTheDocument();
     });
-    fireEvent.change(screen.getByPlaceholderText(/to monitor budget usage/i), {
-      target: { value: 'AI Analysis' }
-    });
-    fireEvent.change(screen.getByPlaceholderText(/organization\/person/i), {
-      target: { value: 'AI Foundation' }
-    });
+  });
 
-    fireEvent.click(screen.getByText(/^add$/i));
+  it('shows fund form when "Add Fund" button is clicked', () => {
+    fireEvent.click(screen.getByText(/Add Fund/i));
 
-    expect(screen.getByText(/r5,200/i)).toBeInTheDocument(); // total budget
-    expect(screen.getByText(/r5,200/i)).toBeInTheDocument(); // remaining = 7200 - 2000
+    expect(screen.getByPlaceholderText('R4200')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Organization/Person')).toBeInTheDocument();
+    expect(screen.getByText(/Select a project/i)).toBeInTheDocument();
   });
 });

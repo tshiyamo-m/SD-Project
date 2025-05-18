@@ -2,6 +2,7 @@ import {useEffect, useState, useCallback} from 'react';
 import {ArrowLeft, Check, Plus} from 'lucide-react';
 import './milestone.css'
 import { createMilestone, getMilestone, updateStatus } from '../utils/milestoneUtils';
+import { Toaster, toast } from "sonner";
 
 export default function MilestonesPage({ project, onBack }) {
     const [milestones, setMilestones] = useState([]);
@@ -75,6 +76,9 @@ export default function MilestonesPage({ project, onBack }) {
                 projectId,
                 ...newMilestone,
             }
+            toast.success("Milestone successfully created", {
+                style: { backgroundColor: "green", color: "white" },
+            });
             return await createMilestone(Data);
         }
         catch(error) {
@@ -259,6 +263,7 @@ export default function MilestonesPage({ project, onBack }) {
                     </ul>
                 )}
             </section>
+            <Toaster position="bottom-right" />
         </article>
     );
 }
