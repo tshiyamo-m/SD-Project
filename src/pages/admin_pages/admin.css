@@ -1,258 +1,203 @@
-/* Admin Page Styles */
+/* Admin Page - Cohesive Dark Theme */
 .admin-page {
     display: flex;
     flex-direction: column;
     padding: 2rem;
-    position: relative;
     min-height: 100vh;
-    background-color: #f9fafb;
+    background-color: #111827; /* Dark background like other pages */
     max-width: 1200px;
     margin: 0 auto;
+    color: white;
+    left: -240px; /* Counteract the sidebar padding */
+    width: calc(100% + 240px);
 }
 
 .admin-header {
     margin-bottom: 2rem;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem;
+    background-color: #1e293b; /* Darker header */
+    border-radius: 0.5rem;
+    border: 1px solid #60a5fa; /* Blue border like other pages */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .admin-top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 0.5rem;
 }
 
 .admin-title {
-    font-size: 2.5rem;
+    font-size: 1.875rem; /* Matches h1 size from other pages */
     font-weight: bold;
-    color: #111827;
+    color: white; /* White text like other pages */
+    margin-bottom: 0.5rem;
 }
 
 .admin-welcome {
-    font-size: 1.25rem;
-    color: #4b5563;
+    font-size: 1rem;
+    color: #d1d5db; /* Light gray like other pages */
     margin: 0;
 }
 
-/* Logout button styles */
+/* Logout button - matches button styles */
 .logout-button {
     background-color: #ef4444;
     color: white;
     border: none;
-    border-radius: 0.375rem;
+    border-radius: 0.25rem; /* Matches button radius */
     padding: 0.5rem 1rem;
-    font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
-}
-
-.logout-button:hover {
-    background-color: #dc2626;
-}
-
-.logout-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-}
-
-/* Admin sections layout */
-.admin-sections {
     display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Admin sections - matches card styling */
+.admin-sections {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem; /* Consistent spacing */
     width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
 }
 
 .review-requests-section,
 .users-section,
-.admins-section {
-    background-color: #111827;
-    border-radius: 1rem;
-    padding: 2rem;
-    color: white;
+.admins-section,
+.search-section {
+    background-color: #1e293b;
+    border-radius: 0.5rem; /* Matches card radius */
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #60a5fa; /* Blue border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Same shadow */
 }
 
 .section-title {
-    font-size: 1.75rem;
-    font-weight: bold;
-    margin-bottom: 1.5rem;
-    color: white;
-    border-bottom: 1px solid #374151;
-    padding-bottom: 0.75rem;
-}
-
-/* Search section styles */
-.search-section {
-    background-color: #111827;
-    border-radius: 1rem;
-    padding: 2rem;
-    color: white;
-    margin-bottom: 2rem;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-}
-
-.search-form fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-.search-form legend {
-    font-size: 1.75rem;
-    font-weight: bold;
+    font-size: 1.25rem; /* Matches h2 size */
+    font-weight: 600;
     margin-bottom: 1rem;
     color: white;
-    border-bottom: 1px solid #374151;
     padding-bottom: 0.75rem;
-    width: 100%;
+    border-bottom: 1px solid #374151;
 }
-
-.search-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #9ca3af;
-}
-
-.search-form input[type="search"] {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid #374151;
-    background-color: #1f2937;
+.search-form legend {
+    font-size: 1.25rem; /* Matches section-title */
+    font-weight: 600;
     color: white;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #374151;
+    width: 100%;
+}
+
+/* Search form - dark theme */
+.search-form input[type="search"] {
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    width: 100%; /* Full width for usability */
     font-size: 1rem;
+
 }
 
-.search-form input[type="search"]::placeholder {
-    color: #6b7280;
-}
-
-.search-form input[type="search"]:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-/* List styles */
+/* Lists - match card styling */
 .requests-list,
 .users-list,
 .admins-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
     padding: 0;
-    list-style: none;
-}
+    list-style: none;}
 
 .request-item,
 .user-item,
 .admin-item {
-    background-color: #1f2937;
+    background-color: #111827;
     border-radius: 0.5rem;
-    overflow: hidden;
+    border: 1px solid #60a5fa;
+    padding: 1rem;
 }
 
-.request-card,
-.user-card,
-.admin-card {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.user-name {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: white;
-}
-
-.user-email {
-    font-size: 0.875rem;
-    color: #9ca3af;
-    margin-bottom: 1rem;
-}
-
-/* Button styles */
+/* Buttons - consistent styling */
 .approve-button,
 .admin-button {
-    background-color: transparent;
-    border: 1px solid #d1d5db;
-    border-radius: 0.25rem;
     padding: 0.5rem 1rem;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-    margin-top: auto;
-    font-size: 0.875rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
 }
 
 .approve-button {
-    border-color: #10b981;
-    color: #10b981;
-}
-
-.approve-button:hover {
-    background-color: rgba(16, 185, 129, 0.1);
+    background-color: #10b981;
+    color: white;
+    border: none;
 }
 
 .admin-button {
-    border-color: #3b82f6;
-    color: #3b82f6;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+}
+.deny-button {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.admin-button:hover {
-    background-color: rgba(59, 130, 246, 0.1);
+.deny-button:hover {
+    background-color: #dc2626;
 }
-
-/* Empty state messages */
-.no-requests,
-.no-users,
-.no-admins {
+.button-group,
+.request-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+.approve-button,
+.deny-button {
+    min-width: 180px;
     text-align: center;
-    color: #9ca3af;
-    font-size: 0.875rem;
-    padding: 2rem 0;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .requests-list,
-    .users-list,
-    .admins-list {
-        grid-template-columns: 1fr;
-    }
-
     .admin-page {
         padding: 1rem;
     }
 
-    .section-title {
-        font-size: 1.5rem;
-    }
-
-    .admin-sections,
-    .admin-header {
-        max-width: 100%;
-    }
-
-    .admin-top-bar {
-        flex-direction: column;
-        align-items: flex-start;
+    .requests-list,
+    .users-list,
+    .admins-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 1rem;
-    }
-
-    .logout-button {
-        align-self: flex-end;
+        padding: 0;
+        list-style: none; /* Removes bullet points */
     }
 }

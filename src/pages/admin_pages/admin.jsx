@@ -190,7 +190,7 @@ const AdminPage = () => {
             <section className="search-section">
                 <form className="search-form" onSubmit={(e) => e.preventDefault()}>
                     <fieldset>
-                        <legend className="search-title">Find Users</legend>
+                        <legend className="section-title">Find Users</legend>  {/* Changed from search-title */}
                         <label htmlFor="user-search">Search by name or email:</label>
                         <input
                             type="search"
@@ -214,24 +214,14 @@ const AdminPage = () => {
                                     <article className="request-card">
                                         <h3 className="user-name">{request.name}</h3>
                                         <p className="user-email">{request.email}</p>
-                                        <menu className="request-actions">
-                                            <li>
-                                                <button
-                                                    className="approve-button"
-                                                    onClick={() => approveReviewer(request._id)}
-                                                >
-                                                    Approve as Reviewer
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <button
-                                                    className="deny-button"
-                                                    onClick={() => denyReviewer(request._id)}
-                                                >
-                                                    Deny Request
-                                                </button>
-                                            </li>
-                                        </menu>
+                                        <fieldset className="button-group">
+                                            <button className="approve-button" onClick={() => approveReviewer(request._id)}>
+                                                Approve as Reviewer
+                                            </button>
+                                            <button className="deny-button" onClick={() => denyReviewer(request._id)}>
+                                                Deny Request
+                                            </button>
+                                        </fieldset>
                                     </article>
                                 </li>
                             ))}
@@ -274,12 +264,14 @@ const AdminPage = () => {
                                     <article className="admin-card">
                                         <h3 className="user-name">{admin.name}</h3>
                                         <p className="user-email">{admin.email}</p>
-                                        <button
-                                            className="remove-admin-button"
-                                            onClick={() => removeAdmin(admin._id)}
-                                        >
-                                            Remove Admin Rights
-                                        </button>
+                                        <fieldset className="button-group">
+                                            <button
+                                                className="deny-button"
+                                                onClick={() => removeAdmin(admin._id)}
+                                            >
+                                                Remove Admin Rights
+                                            </button>
+                                        </fieldset>
                                     </article>
                                 </li>
                             ))}
