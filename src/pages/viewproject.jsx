@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
+import { Search, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
+//import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
 import './projects.css';
 import './viewproject.css';
 import { jwtDecode } from "jwt-decode";
