@@ -4,15 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8255ecc-d0b0-4fd4-8a7c-d07a5cda1627" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/project_main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/qodana.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Backend/Controllers/ChatsController.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Backend/Controllers/MessageController.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Backend/Middleware/authMiddleware.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Backend/StubData/db.js" beforeDir="false" />
+    <list default="true" id="b8255ecc-d0b0-4fd4-8a7c-d07a5cda1627" name="Changes" comment="almost done with milestones">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Backend/Controllers/MilestoneController.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Backend/Controllers/MilestoneController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Backend/routes/MilestoneRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Backend/routes/MilestoneRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/chatspage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/chatspage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/createproject.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/createproject.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/milestone.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/milestone.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/review.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/review.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/bucketUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/bucketUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/financeUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/financeUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/loginUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/loginUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/milestoneUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/milestoneUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/projectUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/projectUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/reviewUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/reviewUtils.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +79,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "messages",
+    "git-widget-placeholder": "feature/research-postings",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/mthim/Downloads/some",
     "node.js.detected.package.eslint": "true",
@@ -82,15 +87,10 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\WebStorm 2024.3.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\WebStorm 2024.2\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="QodanaReportsService">
-    <option name="descriptions">
-      <ReportDescription localRun="true" path="C:\Users\mthim\AppData\Local\Temp\qodana_output\qodana.sarif.json" reportGuid="eaf35da5-2279-4a29-97dd-676f32aada87" reportId="project_main/qodana/2025-05-03" />
-    </option>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -112,9 +112,23 @@
       <workItem from="1746308122639" duration="6857000" />
       <workItem from="1746449223165" duration="864000" />
     </task>
+    <task id="LOCAL-00001" summary="almost done with milestones">
+      <option name="closed" value="true" />
+      <created>1747331624479</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1747331624479</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add .idea" />
+    <MESSAGE value="almost done with milestones" />
+    <option name="LAST_COMMIT_MESSAGE" value="almost done with milestones" />
   </component>
 </project>

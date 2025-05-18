@@ -19,7 +19,6 @@ const ChatsPage = () => {
             const filteredUsers = { ...response }; // create copy first
             delete filteredUsers[currentUserId];
             //console.log(filteredUsers);
-
             const usersObj = Array.isArray(filteredUsers)
                 ? Object.fromEntries(response.map(user => [user._id, user]))
                 : response || {};
@@ -30,6 +29,7 @@ const ChatsPage = () => {
             console.error("Error:", error);
             //setUsers(mockUsers); // Fallback to mock data
             //return mockUsers;
+
         }
     };
 
@@ -71,6 +71,7 @@ const ChatsPage = () => {
 
     const initializeChats = (usersData, userChats) => {
 
+
         if (userChats){
             const setUserChats = userChats.map(chat => ({
             ...chat,
@@ -100,6 +101,7 @@ const ChatsPage = () => {
             ...chat,
             partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
         }));
+
 
         setChats(initialChats);}
     };

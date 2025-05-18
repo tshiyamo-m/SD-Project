@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import './finance.css';
 import {createFinance, getFinance, updateFinance} from '../utils/financeUtils'
+import { getAllProjects } from '../utils/projectUtils';
+import {toast, Toaster} from "sonner";
 
 const Finance = () => {
   const Id = localStorage.getItem('Mongo_id');
@@ -11,6 +13,8 @@ const Finance = () => {
   const [activeTab, setActiveTab] = useState('active');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
 
   const totalSpent = funds.reduce((sum, fund) => sum + fund.amountUsed, 0);
   const totalBudget = funds.reduce((sum, fund) => sum + fund.amount, 0);
@@ -19,6 +23,24 @@ const Finance = () => {
 
   const activeFunds = funds.filter(fund => fund.amountUsed < fund.amount);
   const exhaustedFunds = funds.filter(fund => fund.amountUsed >= fund.amount);
+
+  const fetchProjects = async (Id) => {
+    try{
+      const Project_data = await getAllProjects(Id);
+      if (!Array.isArray(Project_data)) {
+        console.warn('API response is not an array:', Project_data);
+        return [];
+      }
+      return Project_data.map((project) => ({
+        id: project._id,
+        title: project.title,
+      }));
+    }
+    catch(error) {
+      console.error('Error finding projects:', error);
+      return [];
+    }
+  }
 
   const fetchFunds = async () => {
     try {
@@ -31,7 +53,7 @@ const Finance = () => {
       return Finance_data.map((fund) => ({
         id: fund._id,
         amount: fund.amount,
-        purpose: fund.purpose,
+        purpose: fund.purpose, // This is now the project ID
         source: fund.source,
         amountUsed: fund.used,
       }));
@@ -54,11 +76,22 @@ const Finance = () => {
     }
   };
 
-  useEffect(() => {
+  const loadProjects = async () => {
+    setIsLoading(true);
+    try {
+      const projects = await fetchProjects(Id);
+      setProjects(projects);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchFunds()
+  useEffect(() => {
     loadFunds();
-  }, [Id]);
+    loadProjects();
+  }, [Id, loadFunds, loadProjects]);
 
   const handleAddFund = async (e) => {
     e.preventDefault();
@@ -66,12 +99,17 @@ const Finance = () => {
     setError(null);
 
     try {
+      const selectedProject = projects.find(project => project.id === selectedProjectId);
+      if (!selectedProject) {
+        throw new Error('Please select a valid project');
+      }
+
       const Data = {
         amount: Number(newFund.amount),
         used: 0,
         userId: Id,
         source: newFund.source,
-        purpose: newFund.purpose
+        purpose: selectedProjectId // Store project ID as purpose
       }
 
       const result = await createFinance(Data);
@@ -79,12 +117,16 @@ const Finance = () => {
       setFunds([...funds, {
         id: result._id,
         amount: Number(newFund.amount),
-        purpose: newFund.purpose,
+        purpose: selectedProjectId, // Store project ID
         source: newFund.source,
         amountUsed: 0
       }]);
+      toast.success("New fund added successfully.", {
+        style: { backgroundColor: "green", color: "white" },
+      });
 
-      setNewFund({ amount: '', purpose: '', source: '' });
+      setNewFund({ amount: '', source: '' });
+      setSelectedProjectId('');
       setShowForm(false);
     } catch (error) {
       setError(error.message);
@@ -96,6 +138,10 @@ const Finance = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewFund(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleProjectChange = (e) => {
+    setSelectedProjectId(e.target.value);
   };
 
   const handleAddAmountChange = (id, value) => {
@@ -113,7 +159,6 @@ const Finance = () => {
     setError(null);
 
     try {
-      // Find the fund to get current amountUsed
       const fund = funds.find(f => f.id === id);
       if (!fund) return;
 
@@ -121,28 +166,16 @@ const Finance = () => {
       const actualAddition = Math.min(amountToAdd, available);
       const newAmountUsed = fund.amountUsed + actualAddition;
 
-      // Update the fund in the database
-      /*const response = await fetch('/api/Finance/update', {
-        method: 'POST',
-        body: JSON.stringify({
-          id: id,
-          used: newAmountUsed
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update fund');
-      }*/
       const Data = {
         id: id,
         used: newAmountUsed
       }
       await updateFinance(Data);
 
-      // Update local state only after successful API call
+      toast.success("Increased amount used", {
+        style: { backgroundColor: "green", color: "white" },
+      });
+
       setFunds(funds.map(fund => {
         if (fund.id === id) {
           return {
@@ -162,6 +195,12 @@ const Finance = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Helper function to get project title by ID
+  const getProjectTitle = (projectId) => {
+    const project = projects.find(p => p.id === projectId);
+    return project ? project.title : 'Unknown Project';
   };
 
   return (
@@ -192,15 +231,19 @@ const Finance = () => {
                   />
                 </label>
                 <label>
-                  Purpose:
-                  <input
-                      type="text"
-                      name="purpose"
-                      value={newFund.purpose}
-                      onChange={handleInputChange}
-                      placeholder="To monitor budget usage"
+                  Project:
+                  <select
+                      value={selectedProjectId}
+                      onChange={handleProjectChange}
                       required
-                  />
+                  >
+                    <option value="">Select a project</option>
+                    {projects.map(project => (
+                        <option key={project.id} value={project.id}>
+                          {project.title}
+                        </option>
+                    ))}
+                  </select>
                 </label>
                 <label>
                   Source:
@@ -263,10 +306,10 @@ const Finance = () => {
                       return (
                           <article key={fund.id} className="fund-card">
                             <header className="fund-header">
-                              <h4>{fund.source}</h4>
+                              <h4>For: {getProjectTitle(fund.purpose)}</h4>
                               <p>R{fund.amount.toLocaleString()}</p>
                             </header>
-                            <p>{fund.purpose}</p>
+                            <p>Source: {fund.source}</p>
                             <footer className="fund-usage">
                               <p>Used: R{fund.amountUsed.toLocaleString()} ({percentageUsed}%)</p>
                               <p>Available: R{available.toLocaleString()}</p>
@@ -310,7 +353,7 @@ const Finance = () => {
                               <h4>{fund.source}</h4>
                               <p>R{fund.amount.toLocaleString()}</p>
                             </header>
-                            <p>{fund.purpose}</p>
+                            <p>{getProjectTitle(fund.purpose)}</p>
                             <footer className="fund-usage">
                               <p>Fully utilized: R{fund.amountUsed.toLocaleString()} ({percentageUsed}%)</p>
                             </footer>
@@ -323,6 +366,7 @@ const Finance = () => {
               </>
           )}
         </section>
+        <Toaster position="bottom-right" />
       </main>
   );
 };

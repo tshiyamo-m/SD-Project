@@ -1,5 +1,5 @@
 import { useState,useEffect } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
+//import { Search, Bell, User, MoreVertical, ArrowLeft } from 'lucide-react';
 import './projects.css';
 import CreateProjectPage from "./createproject";
 import MilestonesPage from './milestone';
@@ -7,8 +7,9 @@ import ViewProjectPage from './viewproject';
 import ReviewsPage from './viewreview';
 //import axios from 'axios';
 import {jwtDecode} from "jwt-decode";
-import { findProject } from '../utils/projectUtils';
+import { getAllProjects } from '../utils/projectUtils';
 import { getAllUsers } from '../utils/loginUtils';
+import PageHeader from "../components/PageHeader";
 
 const ProjectsPage = () => {
     
@@ -29,9 +30,10 @@ const ProjectsPage = () => {
     };
 
     //testable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchProjects = async (Id) => {
         try{
-            const Project_data = await findProject(Id);
+            const Project_data = await getAllProjects(Id);
             if (!Array.isArray(Project_data)) {
                 console.warn('API response is not an array:', Project_data);
                 return [];
@@ -81,7 +83,7 @@ const ProjectsPage = () => {
         if (allUsers.length > 0) {
             loadProjects();
         }
-    }, [allUsers]);
+    }, [allUsers, fetchProjects]);
 
     const fetchUsers = async () => {
         try {
@@ -129,13 +131,13 @@ const ProjectsPage = () => {
     // const [inviteEmail, setInviteEmail] = useState('');
     // const [invitingProjectId, setInvitingProjectId] = useState(null);
     // const [invitingProjectTitle, setInvitingProjectTitle] = useState('');
-    const [name, setName] = useState("");
+    //const [name, setName] = useState("");
 
-    useEffect(() => {
-        // This will only run when the component mounts
-        const fullName = localStorage.getItem('fullName');
-        setName(fullName);
-    }, []);
+    // useEffect(() => {
+    //     // This will only run when the component mounts
+    //     const fullName = localStorage.getItem('fullName');
+    //     setName(fullName);
+    // }, []);
 
     // Handle view transitions
     if (viewingProject) {
@@ -180,41 +182,7 @@ const ProjectsPage = () => {
 
     return (
         <article className="project-page-content">
-            <header className="flex justify-between items-center mb-8">
-                <header className="header">
-                    <hgroup className="header-title-group">
-                        <figure className="back-arrow">
-                            <ArrowLeft />
-                        </figure>
-                        <h1 className="page-title">Projects</h1>
-                    </hgroup>
-                    <menu className="header-menu">
-                        <li>
-                            <button className="icon-button">
-                                <Search size={20} />
-                            </button>
-                        </li>
-                        <li>
-                            <button className="icon-button">
-                                <Bell size={20} />
-                            </button>
-                        </li>
-                        <li>
-                            <button className="user-button">
-                                <figure className="user-icon">
-                                    <User size={20} />
-                                </figure>
-                                <mark className="user-name">{name}</mark>
-                            </button>
-                        </li>
-                        <li>
-                            <button className="menu-button">
-                                <MoreVertical size={20} />
-                            </button>
-                        </li>
-                    </menu>
-                </header>
-            </header>
+            <PageHeader heading="Projects" backButton={false} />
 
             <section className="create-project-section">
                 <button

@@ -22,6 +22,7 @@ const HomePage = () => {
 
     const navigate = useNavigate();
 
+
     const fetchProjects = async (Id) => {
         try {
             const data = await findProject(Id);

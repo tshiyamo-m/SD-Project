@@ -30,7 +30,6 @@ function App() {
             </main>
         );
     }
-  
 
   return (
       <UserProvider>
@@ -45,7 +44,7 @@ function App() {
                       {<Route path="/src/pages/finance" element={<FinancesPage />} />}
                       {/*<Route path="/src/pages/settings" element={<SettingsPage />} />*/}
                       {/*<Route path="/src/pages/logout" element={<LogoutPage />} />*/}
-                      {<Route path="/src/pages/admin_pages/admin" element={<AdminPage />} />}
+                      <Route path="/src/pages/admin_pages/admin" element={<AdminPage />} />
                   </Routes>
               </AppLayout>
           </BrowserRouter>

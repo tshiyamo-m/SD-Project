@@ -6,7 +6,7 @@ export const fetchFiles = async (ProjectID) => {
             throw new Error('Invalid project ID');
         }
 
-        const response = await fetch('/Bucket/retrievedocs', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/retrievedocs', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -49,7 +49,7 @@ export const fetchFiles = async (ProjectID) => {
 export const uploadFiles = async (formData) => {
 
     try {
-        const response = await fetch('/Bucket/submitdoc', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/submitdoc', {
             method: 'POST',
             body: formData
         });
@@ -71,7 +71,7 @@ export const uploadFiles = async (formData) => {
 export const deleteFile = async (strDocId) => {
 
     try {
-        const response = await fetch('/Bucket/delete', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ export const deleteFile = async (strDocId) => {
 export const downloadFile = async (strDocId, docName) => {
 
     try {
-        const response = await fetch('/Bucket/download', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/download', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

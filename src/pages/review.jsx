@@ -52,7 +52,7 @@ const ReviewerPage = () => {
     useEffect(() => {
         if (!userId) return;
         loadUser(userId);
-    }, [userId]);
+    }, [userId, loadUser]);
 
     //remove this
     // useEffect(() => {
@@ -262,7 +262,7 @@ const ReviewerPage = () => {
         catch(error){
         }
 
-    }, []);
+    }, [loadReviews]);
 
     const UpdateProject = async () => {
 
@@ -580,11 +580,11 @@ const ReviewerPage = () => {
                             <dt>Requirements</dt>
                             <dd>{project.requirements}</dd>
 
-                            <dt>Funding Amount</dt>
-                            <dd>${project.fundingAmount}</dd>
+                            {/*<dt>Funding Amount</dt>*/}
+                            {/*<dd>${project.fundingAmount}</dd>*/}
 
-                            <dt>Funding Source</dt>
-                            <dd>{project.fundingSource}</dd>
+                            {/*<dt>Funding Source</dt>*/}
+                            {/*<dd>{project.fundingSource}</dd>*/}
 
                             <dt>Start Date</dt>
                             <dd>{project.startDate}</dd>

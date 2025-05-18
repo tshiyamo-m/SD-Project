@@ -1,6 +1,6 @@
 export const createMilestone = async (milestone) => {
     try{
-        const response = await fetch('/api/Milestone', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Milestone', {
             method: 'POST',
             body: JSON.stringify({
                 ...milestone
@@ -26,7 +26,7 @@ export const createMilestone = async (milestone) => {
 
 export const getMilestone = async (id) => {
     try{
-        const response = await fetch('/api/Milestone/find', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Milestone/find', {
             method: 'POST',
             body: JSON.stringify({
                 id: id,
@@ -44,5 +44,28 @@ export const getMilestone = async (id) => {
     catch(error) {
         console.error('Error finding milestones:', error);
         return [];
+    }
+}
+
+export const updateStatus = async (update) => {
+    try{
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Milestone/update', {
+            method: 'POST',
+            body: JSON.stringify({
+                ...update
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            //console.log("mayne");
+            throw new Error('Failed to update milestone!');
+        }
+
+        return await response.json();
+    }
+    catch(error) {
+        console.log('Error updating milestone:', error);
     }
 }

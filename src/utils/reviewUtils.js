@@ -2,7 +2,7 @@ import { toast } from "sonner";
 
 export const submitReview = async (review) => {
     try{
-        const response = await fetch('/api/Review', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review', {
             method: 'POST',
             body: JSON.stringify({
                 ...review
@@ -32,7 +32,7 @@ export const submitReview = async (review) => {
 
 export const findReviewer = async (id) => {
     try{
-        const response = await fetch('/api/Review/find_research', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review/find_research', {
             method: 'POST',
             body: JSON.stringify({
                 id: id
@@ -55,7 +55,7 @@ export const findReviewer = async (id) => {
 
 export const getAllReviews = async () => {
     try{
-        const response = await fetch('/api/Review/get_all_reviews', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/Review/get_all_reviews', {
             method: 'POST',
             body: JSON.stringify({}),
             headers: {
