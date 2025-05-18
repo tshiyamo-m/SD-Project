@@ -44,7 +44,7 @@
     "dev": "react-scripts start",
     "server": "cd src/Backend && npm run dev",
     "start:both": "concurrently \"npm run dev\" \"npm run server\"",
-    "test": "react-scripts test --coverage --watchAll=false",
+    "test": "jest",
     "coverage": "jest --coverage",
     "test:coverage": "jest --coverage",
     "eject": "react-scripts eject",
