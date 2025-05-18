@@ -23,5 +23,5 @@ const Submit_Document = async (req, res) => {
 
 
 module.exports = {
-    //Submit_Document
+    Submit_Document
 };

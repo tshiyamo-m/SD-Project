@@ -44,6 +44,7 @@
     "server": "cd src/Backend && npm run dev",
     "start:both": "concurrently \"npm run dev\" \"npm run server\"",
     "test": "react-scripts test --coverage --watchAll=false",
+    "pages": "react-scripts test --coverage --watchAll=false --collectCoverageFrom='src/pages/**/*.{js,jsx,ts,tsx}' --collectCoverageFrom='!src/pages/**/*.test.{js,jsx,ts,tsx}' src/pages",
     "coverage": "npm test -- --coverage",
     "test:coverage": "jest --coverage",
     "eject": "react-scripts eject",
@@ -68,8 +69,9 @@
     ]
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.23.2",
-    "@babel/preset-react": "^7.22.15",
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
     "babel-jest": "^29.7.0",
     "concurrently": "^9.1.2",
     "identity-obj-proxy": "^3.0.0",
