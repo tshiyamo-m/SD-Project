@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
+import { Search, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
+//import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
 import './projects.css';
 import './viewproject.css';
 import { jwtDecode } from "jwt-decode";
@@ -341,33 +342,33 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                     </button>
                     <h1 className="page-title">{project.title}</h1>
                 </hgroup>
-                <nav className="header-menu">
-                    <ul>
-                        <li>
-                            <button className="icon-button" aria-label="Search">
-                                <Search size={20} />
-                            </button>
-                        </li>
-                        <li>
-                            <button className="icon-button" aria-label="Notifications">
-                                <Bell size={20} />
-                            </button>
-                        </li>
-                        <li>
-                            <button className="user-button">
-                                <figure className="user-icon">
-                                    <User size={20} />
-                                </figure>
-                                <em className="user-name">{fullName}</em>
-                            </button>
-                        </li>
-                        <li>
-                            <button className="menu-button" aria-label="More options">
-                                <MoreVertical size={20} />
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
+                {/*<nav className="header-menu">*/}
+                {/*    <ul>*/}
+                {/*        <li>*/}
+                {/*            <button className="icon-button" aria-label="Search">*/}
+                {/*                <Search size={20} />*/}
+                {/*            </button>*/}
+                {/*        </li>*/}
+                {/*        <li>*/}
+                {/*            <button className="icon-button" aria-label="Notifications">*/}
+                {/*                <Bell size={20} />*/}
+                {/*            </button>*/}
+                {/*        </li>*/}
+                {/*        <li>*/}
+                {/*            <button className="user-button">*/}
+                {/*                <figure className="user-icon">*/}
+                {/*                    <User size={20} />*/}
+                {/*                </figure>*/}
+                {/*                <em className="user-name">{fullName}</em>*/}
+                {/*            </button>*/}
+                {/*        </li>*/}
+                {/*        <li>*/}
+                {/*            <button className="menu-button" aria-label="More options">*/}
+                {/*                <MoreVertical size={20} />*/}
+                {/*            </button>*/}
+                {/*        </li>*/}
+                {/*    </ul>*/}
+                {/*</nav>*/}
             </header>
 
             <section className="project-details">
@@ -619,7 +620,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
             </section>
 
             <section className="documents-section" >
-                <header className="section-header">
+                <header className="section-doc-header">
                     <h2 className="section-title">Project Documents</h2>
                     <button
                         className="upload-button"

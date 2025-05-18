@@ -216,7 +216,7 @@ const loadReviewerNames = useCallback(async () => {
         <main className="reviews-page">
             <header className="header">
                 <hgroup className="header-title-group">
-                    <figure className="back-arrow" onClick={onBack}>
+                    <figure className="back-arrow-view" onClick={onBack} aria-label="Go back">
                         <ArrowLeft />
                     </figure>
                     <h1 className="page-title">Project Reviews: {project.title}</h1>
@@ -224,7 +224,7 @@ const loadReviewerNames = useCallback(async () => {
             </header>
 
             <section className="project-summary">
-                <h2 className="section-title">Project Summary</h2>
+                <h2 className="sectiontitle">Project Summary</h2>
                 <article className="project-card summary-card">
                     <h3 className="project-title">{project.title}</h3>
                     <p className="project-description">{project.description}</p>
@@ -235,7 +235,7 @@ const loadReviewerNames = useCallback(async () => {
 
             <section className="reviews-section">
                 <header className="section-header">
-                    <h2 className="section-title">Reviews</h2>
+                    <h2 className="sectiontitle">Reviews</h2>
                     <button
                         className="add-review-button"
                         onClick={() => setShowReviewForm(true)}
