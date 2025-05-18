@@ -122,6 +122,12 @@ a.google-btn img {
   width: 20px;
   height: 20px;
 }
+.admin-page-container {
+  flex: 1;
+  padding-top: 60px; /* Keep header spacing */
+  padding-left: 0 !important; /* Force remove sidebar space */
+}
+
 
 /* Responsive */
 @media (max-width: 600px) {
