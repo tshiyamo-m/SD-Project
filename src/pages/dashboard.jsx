@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import './dashboard.css';
 import { getFinance } from '../utils/financeUtils';
 import { getAllProjects } from '../utils/projectUtils';
