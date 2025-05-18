@@ -63,8 +63,8 @@ module.exports = {
   // This ensures Jest looks in both Pages and Models folders
   roots: [
     
-    "<rootDir>/src/Backend/models",
-    "<rootDir>/src/Backend/Controllers"
+    "<rootDir>/Backend/models",
+    "<rootDir>/Backend/Controllers"
   ],
   
   // Setup files
