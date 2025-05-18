@@ -36,7 +36,7 @@ const fetchReviews = useCallback(async (Id) => {
         console.error('Error finding reviews:', error);
         return [];
     }
-}, [findReviewer]); // Only depends on findReviewer
+}, [/*findReviewer*/]); // Only depends on findReviewer
 
     const loadReviews = useCallback(async (Id) => {
         const reviews = await fetchReviews(Id);
@@ -61,7 +61,7 @@ const fetchReviews = useCallback(async (Id) => {
 
 
 
-    }, [project.id, loadReviews]);
+    }, [project.id, loadReviews, fetchReviews]);
 
     // State for new review form
     const [showReviewForm, setShowReviewForm] = useState(false);

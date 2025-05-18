@@ -35,7 +35,7 @@ const getAUser = useCallback(async (findId) => {
             token: '',
         }; // More graceful fallback
     }
-}, [getUser]); // Only depends on getUser
+}, [/*getUser*/]); // Only depends on getUser
 
 const loadUser = useCallback(async (userId) => {
     const userEnter = await getAUser(userId);
@@ -240,7 +240,7 @@ const fetchAllReviews = useCallback(async () => {
         });
         return [];
     }
-}, [getAllReviews]); // Dependency: getAllReviews
+}, [/*getAllReviews*/]); // Dependency: getAllReviews
 
     const loadReviews = useCallback(async () => {
         const reviews = await fetchAllReviews();

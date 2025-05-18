@@ -28,7 +28,7 @@ const fetchUsers = useCallback(async () => {
         console.error("Error:", error);
         // Handle error case as needed
     }
-}, [currentUserId, getChatters, setUsers]); // Include all dependencies
+}, [currentUserId, /*getChatters,*/ setUsers]); // Include all dependencies
 
 const fetchConvos = useCallback(async (userID) => {
     try {
@@ -38,7 +38,7 @@ const fetchConvos = useCallback(async (userID) => {
         // Consider returning a default value or re-throwing the error
         return null; // or throw error;
     }
-}, [currentUserId, retrieveConvos]); // Dependencies
+}, [currentUserId, /*retrieveConvos*/]); // Dependencies
 const initializeChats = useCallback((usersData, userChats) => {
     if (userChats) {
         const setUserChats = userChats.map(chat => ({
@@ -109,7 +109,7 @@ const initializeChats = useCallback((usersData, userChats) => {
         try {
             const response = await createConvo(id_1, id_2);
             if(!response.ok){
-                throw new Error;
+                throw new Error();
             }
         } catch (error) {
             console.error("Error:", error());

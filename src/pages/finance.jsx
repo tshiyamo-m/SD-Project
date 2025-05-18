@@ -24,45 +24,52 @@ const Finance = () => {
   const activeFunds = funds.filter(fund => fund.amountUsed < fund.amount);
   const exhaustedFunds = funds.filter(fund => fund.amountUsed >= fund.amount);
 
-  const fetchProjects = async (Id) => {
-    try{
-      const Project_data = await getAllProjects(Id);
-      if (!Array.isArray(Project_data)) {
-        console.warn('API response is not an array:', Project_data);
-        return [];
-      }
-      return Project_data.map((project) => ({
-        id: project._id,
-        title: project.title,
-      }));
-    }
-    catch(error) {
-      console.error('Error finding projects:', error);
-      return [];
-    }
-  }
-
-  const fetchFunds = async () => {
+const fetchProjects = useCallback(async (Id) => {
     try {
-      const Finance_data = await getFinance(Id);
+        const Project_data = await getAllProjects(Id);
+        
+        if (!Array.isArray(Project_data)) {
+            console.warn('API response is not an array:', Project_data);
+            return [];
+        }
 
-      if (!Array.isArray(Finance_data)) {
-        console.warn('API response is not an array:', Finance_data);
-        return [];
-      }
-      return Finance_data.map((fund) => ({
-        id: fund._id,
-        amount: fund.amount,
-        purpose: fund.purpose, // This is now the project ID
-        source: fund.source,
-        amountUsed: fund.used,
-      }));
-    } catch(error) {
-      console.error('Error finding funds:', error);
-      setError(error.message);
-      return [];
+        return Project_data.map((project) => ({
+            id: project._id,
+            title: project.title,
+        }));
+
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        return []; // Consistent return type
     }
-  }
+}, [getAllProjects]); // Dependency: getAllProjects
+
+const fetchFunds = useCallback(async () => {
+    try {
+        const Finance_data = await getFinance(Id);
+
+        if (!Array.isArray(Finance_data)) {
+            console.warn('API response is not an array:', Finance_data);
+            return [];
+        }
+
+        return Finance_data.map((fund) => ({
+            id: fund._id,
+            amount: fund.amount,
+            purpose: fund.purpose,  // Project ID
+            source: fund.source,
+            amountUsed: fund.used,
+            // Consider adding:
+            // date: fund.date,
+            // status: fund.status
+        }));
+
+    } catch (error) {
+        console.error('Error fetching funds:', error);
+        setError(error.message);
+        return []; // Consistent fallback
+    }
+}, [Id, getFinance, setError]); // All dependencies included
 
 const loadFunds = useCallback(async () => {
   setIsLoading(true);
