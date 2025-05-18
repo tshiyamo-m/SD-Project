@@ -51,7 +51,7 @@ const ReviewerPage = () => {
     useEffect(() => {
         if (!userId) return;
         loadUser(userId);
-    }, [userId]);
+    }, [userId, loadUser]);
 
     //remove this
     // useEffect(() => {
@@ -219,7 +219,7 @@ const ReviewerPage = () => {
         //const fullName = localStorage.getItem('fullName');
         loadReviews();
 
-    }, []);
+    }, [loadReviews]);
 
     const UpdateProject = async () => {
 

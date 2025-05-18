@@ -33,7 +33,7 @@ const ChatsPage = () => {
                     }
     
                     const result = await response.json();
-                    console.log("res". result)
+                    console.log("res".result)
     
                     const formattedUsers = result.map(user => ({
                         _id: user._id, 
@@ -102,7 +102,7 @@ const ChatsPage = () => {
         };
 
         fetchUsers();
-    }, []);
+    }, [stubUsers]);
 
     // useEffect to show conversations upon opening chats page - using stub data
     useEffect(() => {
@@ -122,7 +122,7 @@ const ChatsPage = () => {
         };
 
         FindChats();
-    }, [Mongo_id]);
+    }, [Mongo_id, stubChats]);
 
     // Load messages when a chat is selected - using stub data
     const selectChat = async (chat) => {

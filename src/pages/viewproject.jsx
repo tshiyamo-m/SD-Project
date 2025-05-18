@@ -58,7 +58,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         if (initialProject.collaborators.length > 0) {
             fetchCollaboratorNames();
         }
-    }, [initialProject.collaborators]);
+    }, [initialProject.collaborators, reviewerNames]);
 
     // Fetch all users when component mounts
     
@@ -104,7 +104,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         };
 
         fetchUsers();
-    }, []);
+    }, [initialProject.collaborators, loggedInUserId, projectOwnerId]);
 
     // Filter users based on search term
     useEffect(() => {

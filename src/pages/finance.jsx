@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './finance.css';
 import {createFinance, getFinance, updateFinance} from '../utils/financeUtils'
 import { getAllProjects } from '../utils/projectUtils';
+import {toast, Toaster} from "sonner";
 
 const Finance = () => {  
   const Id = localStorage.getItem('Mongo_id');
@@ -90,7 +91,7 @@ const Finance = () => {
   useEffect(() => {
     loadFunds();
     loadProjects();
-  }, [Id]);
+  }, [Id, loadFunds, loadProjects]);
 
   const handleAddFund = async (e) => {
     e.preventDefault();
@@ -120,6 +121,9 @@ const Finance = () => {
         source: newFund.source,
         amountUsed: 0
       }]);
+      toast.success("New fund added successfully.", {
+        style: { backgroundColor: "green", color: "white" },
+      });
 
       setNewFund({ amount: '', source: '' });
       setSelectedProjectId('');
@@ -167,6 +171,10 @@ const Finance = () => {
         used: newAmountUsed
       }
       await updateFinance(Data);
+
+      toast.success("Increased amount used", {
+        style: { backgroundColor: "green", color: "white" },
+      });
 
       setFunds(funds.map(fund => {
         if (fund.id === id) {
@@ -358,6 +366,7 @@ const Finance = () => {
               </>
           )}
         </section>
+        <Toaster position="bottom-right" />
       </main>
   );
 };

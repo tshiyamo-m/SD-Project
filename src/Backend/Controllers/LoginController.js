@@ -106,7 +106,7 @@ const update_is_reviewer = async (req, res) => {
 
 const make_admin = async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, isAdmin } = req.body;
 
         // No need to sanitize isReviewer since it should be a string value, not an object
 
@@ -114,7 +114,7 @@ const make_admin = async (req, res) => {
             .collection('Users')
             .findOneAndUpdate(
                 { _id: new mongoose.Types.ObjectId(userId) },
-                { $set: { isAdmin : true } },
+                { $set: { isAdmin : isAdmin } },
                 { returnDocument: 'after' } // Returns the updated document
             );
 
