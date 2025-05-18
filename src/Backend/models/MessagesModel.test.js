@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const MessageModel = require('./MessageModel');
+const MessageModel = require('./MessagesModel');
 
 describe('Message Model', () => {
   beforeAll(async () => {
