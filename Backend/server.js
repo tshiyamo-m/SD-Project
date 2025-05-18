@@ -19,7 +19,7 @@ const { ObjectId } = mongoose.Types;
 
 const LoginRoutes = require('./routes/LoginRoutes');
 const ProjectsRoutes =require('./routes/ProjectsRoutes');
-const InviteRoutes = require('./routes/InviteRoutes');
+// const InviteRoutes = require('./routes/InviteRoutes');
 const MilestoneRoutes = require('./routes/MilestoneRoutes');
 const ReviewRoutes = require('./routes/ReviewRoutes');
 const FinanceRoutes = require('./routes/FinanceRoutes');
@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 //routes
 app.use('/api/login', LoginRoutes);
 app.use('/api/Projects', ProjectsRoutes);
-app.use('/api/invite', InviteRoutes);//Tells express to take any request starting with /api/invite to go to InviteRoutes.js
+// app.use('/api/invite', InviteRoutes);//Tells express to take any request starting with /api/invite to go to InviteRoutes.js
 app.use('/api/Milestone', MilestoneRoutes);
 app.use('/api/Review', ReviewRoutes);
 app.use('/api/Finance', FinanceRoutes);
