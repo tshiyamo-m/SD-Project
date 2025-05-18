@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import { ArrowLeft, Star, StarOff, Send, XCircle, UserCircle, Calendar } from 'lucide-react';
 import './projects.css';
 import './viewreview.css';

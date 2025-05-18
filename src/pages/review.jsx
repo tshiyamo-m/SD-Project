@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
 import './projects.css'
 import './review.css'
@@ -161,7 +161,7 @@ const loadUser = useCallback(async (userId) => {
 
     useEffect(() => {
         if (!activeProject) return;
-        let isMounted = true;
+        // let isMounted = true;
 
         const loadDocuments = async () => {
             try {
@@ -181,11 +181,11 @@ const loadUser = useCallback(async (userId) => {
         };
 
         loadDocuments();
-        return () => { isMounted = false; };
+        // return () => { isMounted = false; };
     }, [activeProject]);
 
     useEffect(() => {
-        let isMounted = true;
+        // let isMounted = true;
 
         const loadProjects = async () => {
             try{
@@ -194,7 +194,7 @@ const loadUser = useCallback(async (userId) => {
                     setProjects(userEnter);
                     //console.log("User loaded:", userEnter.name);
                 }
-                if (!isMounted) return;
+                // if (!isMounted) return;
                 if (!userEnter) {                  
                     throw new Error();
                 }
@@ -209,7 +209,7 @@ const loadUser = useCallback(async (userId) => {
         };
 
         loadProjects();
-        return () => { isMounted = false; };
+        // return () => { isMounted = false; };
     }, [userId]);
 
     // Reviews data
