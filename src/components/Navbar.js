@@ -17,6 +17,10 @@ const Navbar = () => {
         localStorage.removeItem('authToken');
         sessionStorage.removeItem('userData');
 
+        localStorage.removeItem('token');
+        localStorage.removeItem('fullName');
+        localStorage.removeItem('Mongo_id');
+
         // You can add any other session data that needs to be cleared
 
         // Redirect to root with replace (prevents back button navigation)

@@ -16,6 +16,7 @@ const ProjectsPage = () => {
     //const fullName = localStorage.getItem('fullName');
     const [projects, setProjects] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
+    const [isLoadingProjects, setIsLoadingProjects] = useState(false);
 
     //testable
     const getUserNameById = (userId) => {
@@ -61,11 +62,21 @@ const ProjectsPage = () => {
 
     useEffect(() => {
         const Id = localStorage.getItem('Mongo_id');
-        //const fullName = localStorage.getItem('fullName');
 
         const loadProjects = async () => {
-            const projects = await fetchProjects(Id);
-            setProjects(projects);
+
+            setIsLoadingProjects(true);
+
+            try{
+                const projects = await fetchProjects(Id);
+                setProjects(projects);
+            }
+            catch(error){
+                console.error("Error loading projects on projects page: ", error);
+            }
+            finally{
+                setIsLoadingProjects(false);
+            }
         };
 
         // Only load projects if allUsers is populated
@@ -177,12 +188,37 @@ const ProjectsPage = () => {
                 <button
                     className="create-project-button"
                     onClick={() => setShowCreateForm(true)}
+                    disabled={isLoadingProjects}
+                    aria-disabled={isLoadingProjects}
                 >
                     Create new project
                 </button>
             </section>
 
-            <section className="space-y-4">
+            <section className="space-y-4">     
+                {isLoadingProjects ? (
+                    <figure className="loading-projects" role="status" aria-busy="true">
+                        <svg 
+                            className="loading-spinner" 
+                            viewBox="0 0 50 50" 
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <circle 
+                                cx="25" 
+                                cy="25" 
+                                r="20" 
+                                fill="none" 
+                                stroke="currentColor"
+                                strokeWidth="5"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                        <figcaption className="visually-hidden">Loading projects...</figcaption>
+                    </figure>
+                ) : projects.length > 0 ? (
+                <>                
+                           
                 {projects.map(project => (
                     <article key={project.id} className="project-card">
                         <header className="project-header">
@@ -271,6 +307,10 @@ const ProjectsPage = () => {
                         </footer>
                     </article>
                 ))}
+            </>
+            ) : (
+                <p role="status">No projects found</p>
+            )}   
             </section>
         </article>
     );

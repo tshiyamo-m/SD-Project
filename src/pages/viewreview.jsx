@@ -3,9 +3,9 @@ import { ArrowLeft, Star, StarOff, Send, XCircle, UserCircle, Calendar } from 'l
 import './projects.css';
 import './viewreview.css';
 import {jwtDecode} from "jwt-decode";
-import { submitReview } from '../utils/reviewUtils';
-import { findReviewer } from '../utils/reviewUtils';
+import { submitReview, findReviewer } from '../utils/reviewUtils';
 import { getUser } from '../utils/loginUtils';
+import { toast } from "sonner";
 
 const ReviewsPage = ({ project, onBack }) => {
     // Sample reviews data (in a real app, this would be fetched from an API)
@@ -14,7 +14,7 @@ const ReviewsPage = ({ project, onBack }) => {
     // Filter reviews for the current project
     //const projectReviews = reviews.filter(review => review.projectId === project.id);
     const fetchReviews = async (Id) => {
-
+        
         try{
 
             const Review_data = await findReviewer(Id);
@@ -49,13 +49,20 @@ const ReviewsPage = ({ project, onBack }) => {
     };
 
     useEffect(() => {
-
+        let isMounted = true;
         const Id = project.id;
         //console.log(project);
         //const fullName = localStorage.getItem('fullName');
-
-        fetchReviews(Id)
-        loadReviews(Id);
+        try{
+            fetchReviews(Id);
+            loadReviews(Id);
+            isMounted = false;
+        }
+        catch(error){
+            toast.error("Failed to load reviews", {
+                        style: { backgroundColor: "red", color: "white" },
+                        });
+        }
 
 
 
