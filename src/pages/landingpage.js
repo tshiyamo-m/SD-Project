@@ -12,11 +12,11 @@ function LandingPage() {
                     U-Collab
                 </a>
 
-                <ul className="nav-links">
-                    <li><a href="/about">About Us</a></li>
-                    <li><a href="/features">Features</a></li>
-                    <li><a href="/why-us">Why Us</a></li>
-                </ul>
+                {/*<ul className="nav-links">*/}
+                {/*    <li><a href="/about">About Us</a></li>*/}
+                {/*    <li><a href="/features">Features</a></li>*/}
+                {/*    <li><a href="/why-us">Why Us</a></li>*/}
+                {/*</ul>*/}
 
                 <LoginButton/>
             </nav>

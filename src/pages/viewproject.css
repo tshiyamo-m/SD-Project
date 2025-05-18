@@ -377,7 +377,7 @@ textarea {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.section-header {
+.section-doc-header {
     display: flex;
     justify-content: space-between;
     align-items: center;

@@ -26,6 +26,10 @@
     margin-top: 2rem;
 }
 
+.back-arrow-view {
+    color: #1e293b;
+}
+
 .add-review-button {
     background-color: #60a5fa;
     color: white;
