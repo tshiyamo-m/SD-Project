@@ -43,20 +43,20 @@ const ReviewsPage = ({ project, onBack }) => {
         }
     }
 
-    const loadReviews = async (Id) => {
+    const loadReviews = useCallback(async (Id) => {
         const reviews = await fetchReviews(Id);
         setReviews(reviews);
-    };
+    }, [fetchReviews, setReviews]); // Dependencies: fetchReviews and setReviews
 
     useEffect(() => {
-        let isMounted = true;
+        // let isMounted = true;
         const Id = project.id;
         //console.log(project);
         //const fullName = localStorage.getItem('fullName');
         try{
             fetchReviews(Id);
             loadReviews(Id);
-            isMounted = false;
+            // isMounted = false;
         }
         catch(error){
             toast.error("Failed to load reviews", {

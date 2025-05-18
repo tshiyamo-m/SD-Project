@@ -67,7 +67,7 @@ const ChatsPage = () => {
         };
         
         loadData();
-    }, [currentUserId]);
+    }, [currentUserId, fetchConvos, fetchUsers, initializeChats]);
 
     const initializeChats = (usersData, userChats) => {
 
@@ -114,6 +114,9 @@ const ChatsPage = () => {
     const CreateConvo = async (id_1, id_2) => {
         try {
             const response = await createConvo(id_1, id_2);
+            if(!response.ok){
+                throw new Error;
+            }
         } catch (error) {
             console.error("Error:", error);
         }       
@@ -180,7 +183,7 @@ const ChatsPage = () => {
         };
 
 
-        if (selectedChat.members[0] == currentUserId){
+        if (selectedChat.members[0] === currentUserId){
             sender = selectedChat.members[0];
             partnerID = selectedChat.members[1];
         }

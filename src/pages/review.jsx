@@ -41,13 +41,13 @@ const ReviewerPage = () => {
         }
     };
 
-    const loadUser = async (userId) => {
-        const userEnter = await getAUser(userId);
-        if (userEnter) {
-            setUser(userEnter);
-            //console.log("User loaded:", userEnter.name);
-        }
-    };
+const loadUser = useCallback(async (userId) => {
+    const userEnter = await getAUser(userId);
+    if (userEnter) {
+        setUser(userEnter);
+        //console.log("User loaded:", userEnter.name);
+    }
+}, [getAUser, setUser]); 
 
     useEffect(() => {
         if (!userId) return;
@@ -85,7 +85,7 @@ const ReviewerPage = () => {
         try {
             const userData = await findActiveProject();
             if (!userData){
-                throw new Error;
+                throw new Error();
             }
             
             return userData.map((project) => ({
@@ -166,7 +166,7 @@ const ReviewerPage = () => {
         const loadDocuments = async () => {
             try {
                 const fetchedDocuments = await retrieveFiles(activeProject);
-                if (!isMounted) return;
+                // if (!isMounted) return;
                 if (!fetchedDocuments) {
                     toast.error("Could not load documents", {
                         style: { backgroundColor: "red", color: "white" },
@@ -216,19 +216,19 @@ const ReviewerPage = () => {
     const [reviews, setReviews] = useState([]);
 
     const fetchAllReviews = async () => {
-        let isMounted = true;
+        // let isMounted = true;
         try{
             
             const Review_data = await getAllReviews();
             if (!Review_data){
-                throw new Error;
+                throw new Error();
             }
 
             if (!Array.isArray(Review_data)) {
                 console.warn('API response is not an array:', Review_data);
                 return [];
             }
-            isMounted = true;
+            // isMounted = true;
             //map data since we are making an async call
             return Review_data.map((review) => ({
                 _id: review._id,
@@ -249,10 +249,10 @@ const ReviewerPage = () => {
         }
     }
 
-    const loadReviews = async () => {
+    const loadReviews = useCallback(async () => {
         const reviews = await fetchAllReviews();
         setReviews(reviews);
-    };
+    }, [fetchAllReviews, setReviews]);
 
     useEffect(() => {
         

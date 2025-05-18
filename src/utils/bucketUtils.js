@@ -54,7 +54,7 @@ export const uploadFiles = async (formData) => {
             body: formData
         });
 
-        const data = await response.json();
+        // const data = await response.json();
         toast.success("Document uploaded successfully", {
                         style: { backgroundColor: "green", color: "white" },
                         });

@@ -105,6 +105,7 @@ export const sendmesssage = async (messageText, sender, partnerID) => {
 
     try {
         const response = await fetch('https://sd-project-qb1w.onrender.com/api/message/sendmessage', {
+        
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -115,6 +116,9 @@ export const sendmesssage = async (messageText, sender, partnerID) => {
                text: messageText
             })
         })
+                    if(!response.ok){
+                throw new Error;
+            }
 
     }
     catch (error) {

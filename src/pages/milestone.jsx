@@ -19,28 +19,28 @@ export default function MilestonesPage({ project, onBack }) {
     ]
     //.filter(user => user.id !== currentUserId);
 
-    const fetchMilestones = async (Id) => {
-        try{
-            const Milestone_data = await getMilestone(Id);
+const fetchMilestones = useCallback(async (Id) => {
+    try {
+        const Milestone_data = await getMilestone(Id);
 
-            if (!Array.isArray(Milestone_data)) {
-                console.warn('API response is not an array:', Milestone_data);
-                return [];
-            }
-            return Milestone_data.map((milestone) => ({
-                id: milestone._id,
-                name: milestone.name,
-                description: milestone.description,
-                dueDate: milestone.dueDate,
-                assignedTo: milestone.assignedTo,
-                status: milestone.status,
-            }));
-        }
-        catch(error) {
-            console.error('Error finding milestones:', error);
+        if (!Array.isArray(Milestone_data)) {
+            console.warn('API response is not an array:', Milestone_data);
             return [];
         }
+        return Milestone_data.map((milestone) => ({
+            id: milestone._id,
+            name: milestone.name,
+            description: milestone.description,
+            dueDate: milestone.dueDate,
+            assignedTo: milestone.assignedTo,
+            status: milestone.status,
+        }));
     }
+    catch (error) {
+        console.error('Error finding milestones:', error);
+        return [];
+    }
+}, []);
 
     const loadMilestones = useCallback(async (Id) => {
         const milestones = await fetchMilestones(Id);

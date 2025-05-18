@@ -75,7 +75,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-  }, [userId]);
+  }, [userId, fetchData]);
 
   if (isLoading) return <section className="loading"><p>Loading...</p></section>;
   if (error) return <section className="error"><p>Error: {error}</p></section>;

@@ -84,7 +84,7 @@ const ProjectsPage = () => {
         if (allUsers.length > 0) {
             loadProjects();
         }
-    }, [allUsers]);
+    }, [allUsers, fetchProjects]);
 
     const fetchUsers = async () => {
         try {

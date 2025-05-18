@@ -60,7 +60,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         if (initialProject.collaborators.length > 0) {
             fetchCollaboratorNames();
         }
-    }, [initialProject.collaborators]);
+    }, [initialProject.collaborators, reviewerNames]);
 
     // Fetch all users when component mounts
     
@@ -189,7 +189,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                 const fetchedDocuments = await fetchFiles(initialProject.id);
 
                 if (!fetchedDocuments){
-                    throw new Error;
+                    throw new Error();
                 }
                 setDocuments(fetchedDocuments);
             } catch (error) {
