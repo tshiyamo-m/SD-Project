@@ -117,7 +117,7 @@ export const sendmesssage = async (messageText, sender, partnerID) => {
             })
         })
                     if(!response.ok){
-                throw new Error;
+                throw new Error();
             }
 
     }

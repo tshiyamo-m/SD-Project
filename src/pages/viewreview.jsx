@@ -13,35 +13,30 @@ const ReviewsPage = ({ project, onBack }) => {
 
     // Filter reviews for the current project
     //const projectReviews = reviews.filter(review => review.projectId === project.id);
-    const fetchReviews = async (Id) => {
-        
-        try{
+const fetchReviews = useCallback(async (Id) => {
+    try {
+        const Review_data = await findReviewer(Id);
 
-            const Review_data = await findReviewer(Id);
-
-            if (!Array.isArray(Review_data)) {
-                console.warn('API response is not an array:', Review_data);
-                return [];
-            }
-            //map data since we are making an async call
-            return Review_data.map((review) => ({
-                id: review._id,
-                reviewerId: review.reviewerId,
-                projectId: review.projectId,
-                rating: review.rating,
-                comment: review.comment,
-                date: review.date,
-                type: review.type,
-            }));
-
-
-        }
-        catch(error) {
-            console.error('Error finding reviews:', error);
-            //console.log("hello sir");
+        if (!Array.isArray(Review_data)) {
+            console.warn('API response is not an array:', Review_data);
             return [];
         }
+
+        return Review_data.map((review) => ({
+            id: review._id,
+            reviewerId: review.reviewerId,
+            projectId: review.projectId,
+            rating: review.rating,
+            comment: review.comment,
+            date: review.date,
+            type: review.type,
+        }));
+
+    } catch (error) {
+        console.error('Error finding reviews:', error);
+        return [];
     }
+}, [findReviewer]); // Only depends on findReviewer
 
     const loadReviews = useCallback(async (Id) => {
         const reviews = await fetchReviews(Id);
@@ -136,15 +131,25 @@ const ReviewsPage = ({ project, onBack }) => {
         return "Unknown Reviewer";
     };
 
-    const loadReviewerNames = async () => {
-        const uniqueReviewerIds = [...new Set(reviews.map(r => r.reviewerId))];
+const loadReviewerNames = useCallback(async () => {
+    if (!reviews.length) return;
 
-        for (const reviewerId of uniqueReviewerIds) {
+    const uniqueReviewerIds = [...new Set(reviews.map(r => r.reviewerId))];
+    const newNames = {};
+
+    await Promise.all(
+        uniqueReviewerIds.map(async (reviewerId) => {
             if (!reviewerNames[reviewerId]) {
-                await getReviewerName(reviewerId);
+                const name = await getReviewerName(reviewerId);
+                newNames[reviewerId] = name;
             }
-        }
-    };
+        })
+    );
+
+    if (Object.keys(newNames).length > 0) {
+        setReviewerNames(prev => ({ ...prev, ...newNames }));
+    }
+}, [reviews, reviewerNames, getReviewerName, setReviewerNames]);
 
     useEffect(() => {
         if (reviews.length > 0) {

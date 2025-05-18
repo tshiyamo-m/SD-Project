@@ -12,38 +12,66 @@ const ChatsPage = () => {
     //const [ConvoID, setConvoID] = useState(null);
 
 
-    const fetchUsers = async () => {
-        try {
-            const response = await getChatters(currentUserId);
-            //console.log(response);
-            const filteredUsers = { ...response }; // create copy first
-            delete filteredUsers[currentUserId];
-            //console.log(filteredUsers);
-            const usersObj = Array.isArray(filteredUsers)
-                ? Object.fromEntries(response.map(user => [user._id, user]))
-                : response || {};
-           
-            setUsers(usersObj);
-            return usersObj;
-        } catch (error) {
-            console.error("Error:", error);
-            //setUsers(mockUsers); // Fallback to mock data
-            //return mockUsers;
-
-        }
-    };
-
-    const fetchConvos = async (userID) => {
-
-        try {
-            return await retrieveConvos(currentUserId)
-
-        }
-        catch (error){
-            console.error("Error:", error);
-        }
+const fetchUsers = useCallback(async () => {
+    try {
+        const response = await getChatters(currentUserId);
+        const filteredUsers = { ...response }; // create copy first
+        delete filteredUsers[currentUserId];
+        
+        const usersObj = Array.isArray(filteredUsers)
+            ? Object.fromEntries(response.map(user => [user._id, user]))
+            : response || {};
+       
+        setUsers(usersObj);
+        return usersObj;
+    } catch (error) {
+        console.error("Error:", error);
+        // Handle error case as needed
     }
+}, [currentUserId, getChatters, setUsers]); // Include all dependencies
 
+const fetchConvos = useCallback(async (userID) => {
+    try {
+        return await retrieveConvos(currentUserId);
+    } catch (error) {
+        console.error("Error:", error);
+        // Consider returning a default value or re-throwing the error
+        return null; // or throw error;
+    }
+}, [currentUserId, retrieveConvos]); // Dependencies
+const initializeChats = useCallback((usersData, userChats) => {
+    if (userChats) {
+        const setUserChats = userChats.map(chat => ({
+            ...chat,
+            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
+        }));
+        setChats(setUserChats);
+    } else {
+        const initialChats = [
+            {
+                _id: "chat1",
+                members: [currentUserId, "2"],
+                messages: [
+                    { _id: "m1", text: "Hey, how are you?", sender: "2", timestamp: new Date(Date.now() - 3600000).toISOString() },
+                    { _id: "m2", text: "I'm good, thanks!", sender: currentUserId, timestamp: new Date(Date.now() - 1800000).toISOString() }
+                ]
+            },
+            {
+                _id: "chat2",
+                members: [currentUserId, "3"],
+                messages: [
+                    { _id: "m3", text: "Can we meet tomorrow?", sender: "3", timestamp: new Date(Date.now() - 7200000).toISOString() },
+                    { _id: "m4", text: "Sure, what time?", sender: currentUserId, timestamp: new Date(Date.now() - 3600000).toISOString() }
+                ]
+            }
+        ].map(chat => ({
+            ...chat,
+            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
+        }));
+
+        setChats(initialChats);
+    }
+}, [currentUserId, setChats]); // Dependencies
     useEffect(() => {
         const loadData = async () => {
             const fetchedUsers = await fetchUsers();
@@ -67,44 +95,10 @@ const ChatsPage = () => {
         };
         
         loadData();
+
     }, [currentUserId, fetchConvos, fetchUsers, initializeChats]);
 
-    const initializeChats = (usersData, userChats) => {
 
-
-        if (userChats){
-            const setUserChats = userChats.map(chat => ({
-            ...chat,
-            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
-            }));
-            setChats(setUserChats);
-        }
-        else{
-        const initialChats = [
-            {
-                _id: "chat1",
-                members: [currentUserId, "2"],
-                messages: [
-                    { _id: "m1", text: "Hey, how are you?", sender: "2", timestamp: new Date(Date.now() - 3600000).toISOString() },
-                    { _id: "m2", text: "I'm good, thanks!", sender: currentUserId, timestamp: new Date(Date.now() - 1800000).toISOString() }
-                ]
-            },
-            {
-                _id: "chat2",
-                members: [currentUserId, "3"],
-                messages: [
-                    { _id: "m3", text: "Can we meet tomorrow?", sender: "3", timestamp: new Date(Date.now() - 7200000).toISOString() },
-                    { _id: "m4", text: "Sure, what time?", sender: currentUserId, timestamp: new Date(Date.now() - 3600000).toISOString() }
-                ]
-            }
-        ].map(chat => ({
-            ...chat,
-            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
-        }));
-
-
-        setChats(initialChats);}
-    };
  
     const getAvailableUsers = () => {
         return Object.values(users).filter(user => user._id !== currentUserId);
@@ -118,7 +112,7 @@ const ChatsPage = () => {
                 throw new Error;
             }
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error:", error());
         }       
     };
 

@@ -37,41 +37,41 @@ const Dashboard = () => {
     };
   };
 
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Fetch projects
-      const projectsData = await getAllProjects(userId);
-      const formattedProjects = Array.isArray(projectsData) ? 
-        projectsData.map(project => ({
-          id: project._id,
-          title: project.title,
-          startDate: project.startDate,
-          endDate: project.endDate,
-          status: project.status
-        })) : [];
-      
-      // Fetch funds
-      const fundsData = await getFinance(userId);
-      const formattedFunds = Array.isArray(fundsData) ? 
-        fundsData.map(fund => ({
-          id: fund._id,
-          amount: fund.amount,
-          purpose: fund.purpose,
-          source: fund.source,
-          amountUsed: fund.used,
-        })) : [];
+const fetchData = useCallback(async () => {
+  try {
+    setIsLoading(true);
+    
+    // Fetch projects
+    const projectsData = await getAllProjects(userId);
+    const formattedProjects = Array.isArray(projectsData) ? 
+      projectsData.map(project => ({
+        id: project._id,
+        title: project.title,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        status: project.status
+      })) : [];
+    
+    // Fetch funds
+    const fundsData = await getFinance(userId);
+    const formattedFunds = Array.isArray(fundsData) ? 
+      fundsData.map(fund => ({
+        id: fund._id,
+        amount: fund.amount,
+        purpose: fund.purpose,
+        source: fund.source,
+        amountUsed: fund.used,
+      })) : [];
 
-      setProjects(formattedProjects);
-      setFunds(formattedFunds);
-      
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    setProjects(formattedProjects);
+    setFunds(formattedFunds);
+    
+  } catch (error) {
+    setError(error.message);
+  } finally {
+    setIsLoading(false);
+  }
+}, [userId, getAllProjects, getFinance, setProjects, setFunds, setIsLoading, setError]);
 
   useEffect(() => {
     fetchData();

@@ -17,29 +17,25 @@ const ReviewerPage = () => {
 
     const [user, setUser] = useState({});
 
-    const getAUser = async (findId) => {
-        try {
-
-            const uD = await getUser(findId);
-            // if (!Array.isArray(userData) || userData.length === 0) {
-            //     console.warn('API response is not a valid array:', userData);
-            //     return null;
-            // }
-            //const userData = ud;
-            //console.log(uD);
-            //console.log("token", userData.token)
-            const decoded = jwtDecode(uD.token);
-            return {
-                name: decoded.name || '',
-                isReviewer: uD.isReviewer,
-                token: uD.token,
-            };
-
-        } catch (error) {
-            console.error('Error finding user:', error);
-            return null;
-        }
-    };
+const getAUser = useCallback(async (findId) => {
+    try {
+        const uD = await getUser(findId);
+        const decoded = jwtDecode(uD.token);
+        
+        return {
+            name: decoded.name || '',
+            isReviewer: uD.isReviewer,
+            token: uD.token,
+        };
+    } catch (error) {
+        console.error('Error finding user:', error);
+        return {
+            name: 'Unknown User',
+            isReviewer: 'false',
+            token: '',
+        }; // More graceful fallback
+    }
+}, [getUser]); // Only depends on getUser
 
 const loadUser = useCallback(async (userId) => {
     const userEnter = await getAUser(userId);
@@ -215,39 +211,36 @@ const loadUser = useCallback(async (userId) => {
     // Reviews data
     const [reviews, setReviews] = useState([]);
 
-    const fetchAllReviews = async () => {
-        // let isMounted = true;
-        try{
-            
-            const Review_data = await getAllReviews();
-            if (!Review_data){
-                throw new Error();
-            }
-
-            if (!Array.isArray(Review_data)) {
-                console.warn('API response is not an array:', Review_data);
-                return [];
-            }
-            // isMounted = true;
-            //map data since we are making an async call
-            return Review_data.map((review) => ({
-                _id: review._id,
-                reviewerId: review.reviewerId,
-                projectId: review.projectId,
-                rating: review.rating,
-                comment: review.comment,
-                date: review.date,
-                type: review.type,
-            }));
+const fetchAllReviews = useCallback(async () => {
+    try {
+        const Review_data = await getAllReviews();
+        
+        if (!Review_data) {
+            throw new Error('No review data received');
         }
-        catch(error) {
-            console.error('Error finding reviews:', error);
-            toast.error("Failed to find reviews", {
-                        style: { backgroundColor: "red", color: "white" },
-                        });
+
+        if (!Array.isArray(Review_data)) {
+            console.warn('API response is not an array:', Review_data);
             return [];
         }
+
+        return Review_data.map((review) => ({
+            _id: review._id,
+            reviewerId: review.reviewerId,
+            projectId: review.projectId,
+            rating: review.rating,
+            comment: review.comment,
+            date: review.date,
+            type: review.type,
+        }));
+    } catch (error) {
+        console.error('Error finding reviews:', error);
+        toast.error("Failed to find reviews", {
+            style: { backgroundColor: "red", color: "white" },
+        });
+        return [];
     }
+}, [getAllReviews]); // Dependency: getAllReviews
 
     const loadReviews = useCallback(async () => {
         const reviews = await fetchAllReviews();

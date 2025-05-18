@@ -64,29 +64,29 @@ const Finance = () => {
     }
   }
 
-  const loadFunds = async () => {
-    setIsLoading(true);
-    try {
-      const funds = await fetchFunds();
-      setFunds(funds);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const loadFunds = useCallback(async () => {
+  setIsLoading(true);
+  try {
+    const funds = await fetchFunds();
+    setFunds(funds);
+  } catch (error) {
+    setError(error.message);
+  } finally {
+    setIsLoading(false);
+  }
+}, [fetchFunds, setFunds, setIsLoading, setError]); // Dependencies
 
-  const loadProjects = async () => {
-    setIsLoading(true);
-    try {
-      const projects = await fetchProjects(Id);
-      setProjects(projects);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const loadProjects = useCallback(async () => {
+  setIsLoading(true);
+  try {
+    const projects = await fetchProjects(Id);
+    setProjects(projects);
+  } catch (error) {
+    setError(error.message);
+  } finally {
+    setIsLoading(false);
+  }
+}, [Id, fetchProjects, setProjects, setIsLoading, setError]); // All dependencies included
 
   useEffect(() => {
     loadFunds();

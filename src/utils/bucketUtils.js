@@ -50,6 +50,7 @@ export const uploadFiles = async (formData) => {
 
     try {
         const response = await fetch('https://sd-project-qb1w.onrender.com/Bucket/submitdoc', {
+           
             method: 'POST',
             body: formData
         });
