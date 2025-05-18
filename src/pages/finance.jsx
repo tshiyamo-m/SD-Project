@@ -91,7 +91,7 @@ const Finance = () => {
   useEffect(() => {
     loadFunds();
     loadProjects();
-  }, [Id, loadFunds, loadProjects]);
+  }, [Id/*, loadFunds, loadProjects*/]); //load functions in dependency array creating a weird glitchly effect
 
   const handleAddFund = async (e) => {
     e.preventDefault();

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './homepage.css';
 import { findProject } from '../utils/projectUtils';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
     const [name, setName] = useState("");
@@ -10,17 +11,24 @@ const HomePage = () => {
         collaborations: 0
     });
 
-useEffect(() => {
-  try {
-    const fullName = localStorage.getItem('fullName');
-    // Handle cases: null/undefined, empty string, or valid string
-    const firstName = fullName ? fullName.split(' ')[0] : '';
-    setName(firstName);
-  } catch (error) {
-    console.error('Error processing name:', error);
-    setName('');
-  }
-}, []);
+    useEffect(() => {
+        try {
+            const fullName = localStorage.getItem('fullName');
+            // Handle cases: null/undefined, empty string, or valid string
+            const firstName = fullName ? fullName.split(' ')[0] : '';
+            setName(firstName);
+        } catch (error) {
+            console.error('Error processing name:', error);
+            setName('');
+        }
+    }, []);
+
+    //const fetchAllReviews = () => {
+
+    //}
+
+    const navigate = useNavigate();
+
 
     const fetchProjects = async (Id) => {
         try {
@@ -55,7 +63,9 @@ useEffect(() => {
                             The best place for you to create amazing projects with the best people.
                         </p>
                         <p className="feature-cta">START YOUR DREAM PROJECT NOW</p>
-                        <button className="view-projects-button">
+                        <button 
+                            className="view-projects-button"
+                            onClick={() => navigate('/src/pages/projects')}>                        
                             View Projects Page
                         </button>
                     </section>
