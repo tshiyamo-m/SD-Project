@@ -1,25 +1,27 @@
-/* App css */
+/* Base styles */
 body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: #f9f9f9;
+  background-color: #dbdfec;
+  background-image: radial-gradient(#516ed6 0.5px, transparent 0.5px);
+  background-size: 30px 30px;
   color: #333;
 }
 
 .app-container {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
-/* For pages with navbar */
+/* Content area adjustments */
 .content-with-navbar {
   flex: 1;
-  padding-left: 240px; /* Adjust based on your navbar width */
   padding-top: 60px; /* Space for top header */
+  transition: margin-left 0.3s ease;
 }
 
-/* For full-width pages (like landing) */
 .content-full-width {
   flex: 1;
 }
@@ -37,7 +39,7 @@ main.app {
   text-align: center;
 }
 
-/* Glowing logo in header (not used in nav anymore) */
+/* Header styles */
 header h1 {
   font-size: 32px;
   font-weight: 700;
@@ -46,27 +48,27 @@ header h1 {
   text-shadow: 0 0 5px #00bfff33;
 }
 
-
 header p {
   font-size: 18px;
   color: #444;
   line-height: 1.6;
 }
 
-/* Top nav bar */
+/* Top navigation bar */
 nav.topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: white;
   border-bottom: 1px solid #ddd;
-  padding: 14px 28px;
-  position: sticky;
+  padding: 14px 20px;
+  position: fixed;
   top: 0;
-  z-index: 1000;
+  width: 100%;
+  z-index: 900;
 }
 
-/* Left logo + title */
+/* Logo link styles */
 a.logo-link {
   display: flex;
   align-items: center;
@@ -83,15 +85,13 @@ a.logo-link img {
   filter: drop-shadow(0 0 10px #00bfff);
 }
 
-/* Center nav links */
+/* Navigation links */
 ul.nav-links {
   list-style: none;
   display: flex;
-  gap: 28px;
+  gap: 20px;
   margin: 0;
   padding: 0;
-  justify-content: center;
-  flex: 1;
 }
 
 ul.nav-links li a {
@@ -100,7 +100,7 @@ ul.nav-links li a {
   color: #333;
 }
 
-/* Google sign in button (right) */
+/* Google sign in button */
 a.google-btn {
   display: inline-flex;
   align-items: center;
@@ -122,34 +122,78 @@ a.google-btn img {
   width: 20px;
   height: 20px;
 }
+
+/* Admin page specific */
 .admin-page-container {
   flex: 1;
-  padding-top: 60px; /* Keep header spacing */
-  padding-left: 0 !important; /* Force remove sidebar space */
+  padding-top: 60px;
 }
 
-
-/* Responsive */
-@media (max-width: 600px) {
-  ul.nav-links {
-    display: none;
-  }
-  header h1 {
-    font-size: 24px;
-  }
-  header p {
-    font-size: 16px;
-  }
-}
-/* Center hero logo styling */
+/* Hero logo styling */
 .hero-logo {
   width: 100px;
   height: auto;
   margin-bottom: 20px;
   filter: drop-shadow(0 0 10px #00bfff);
 }
-body {
-  background-color: #dbdfec;
-  background-image: radial-gradient(#516ed6 0.5px, transparent 0.5px);
-  background-size: 30px 30px;
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  /* Desktop layout */
+  .app-container {
+    flex-direction: row;
+  }
+
+  .content-with-navbar {
+    margin-left: 250px;
+    padding-left: 20px;
+  }
+
+  nav.topbar {
+    padding: 14px 28px;
+  }
+
+  ul.nav-links {
+    gap: 28px;
+    justify-content: center;
+    flex: 1;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Mobile layout */
+  .content-with-navbar {
+    padding-left: 0;
+  }
+
+  ul.nav-links {
+    display: none;
+  }
+
+  header h1 {
+    font-size: 24px;
+  }
+
+  header p {
+    font-size: 16px;
+  }
+}
+
+/* Animation for navbar toggle */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
 }

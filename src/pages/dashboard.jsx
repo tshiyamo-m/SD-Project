@@ -209,7 +209,7 @@ const fetchData = useCallback(async () => {
       
       <section className="dashboard-section" ref={pdfProjectsRef} id="projects-container">
         <header className="section-header">
-          <h2 className="section-title">Projects</h2>
+          <h2 className="sectiontitle">Projects</h2>
         </header>
         
         <div className="section-content">
@@ -252,7 +252,7 @@ const fetchData = useCallback(async () => {
       
       <section className="dashboard-section" ref={pdfFundingRef} id="funding-container">
         <header className="section-header">
-          <h2 className="section-title">Funding Overview</h2>
+          <h2 className="sectiontitle">Funding Overview</h2>
         </header>
         
         <div className="section-content">
