@@ -1,7 +1,7 @@
 
 export const getChatters = async (_id) => {
     try {
-        const response = await fetch('/api/message/getUsers', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/message/getUsers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ export const getChatters = async (_id) => {
 export const retrieveConvos = async (userID) => {
 
     try {
-        const response = await fetch('/api/message/getConvos', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/message/getConvos', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -49,7 +49,7 @@ export const retrieveConvos = async (userID) => {
 export const retrieveAConvo = async (userID_1, userID_2) => {
 
     try {
-        const response = await fetch('/api/message/getConvo', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/message/getConvo', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
@@ -104,7 +104,7 @@ export const createConvo = async (userID_1, userID_2) => {
 export const sendmesssage = async (messageText, sender, partnerID) => {
 
     try {
-        const response = await fetch('/api/message/sendmessage', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/message/sendmessage', {
             method: 'POST',
             headers: {
                 'Content-Type' : 'application/json'
