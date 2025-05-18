@@ -9,8 +9,8 @@ const {
 const router = express.Router()  //create an instance of router
 
 
-router.post('/retrievedocs', fetchFiles);
-router.post('/delete', deleteFile);
-router.post('/download', downloadDoc);
+//router.post('/retrievedocs', fetchFiles);
+//router.post('/delete', deleteFile);
+//router.post('/download', downloadDoc);
 
 module.exports = router

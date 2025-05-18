@@ -40,6 +40,7 @@ function Login() {
         setUserId(json._id);
         if (json.isAdmin) navigate('src/pages/admin_pages/admin');
         else navigate('src/pages/dashboard');
+       
         
     }
 
