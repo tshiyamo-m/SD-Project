@@ -44,7 +44,7 @@ const Navbar = () => {
                     <ul>
                         <li>
                             <NavLink
-                                to="/src/pages/homepage"
+                                to="/src/pages/dashboard"
                                 className={({isActive}) => `nav-link ${isActive ? 'active' : ''}`}
                             >
                                 <Home size={20}/>

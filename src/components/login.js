@@ -39,10 +39,8 @@ function Login() {
         localStorage.setItem('Mongo_id', json._id);
         setUserId(json._id);
         if (json.isAdmin) navigate('src/pages/admin_pages/admin');
-        else navigate('src/pages/homepage');
-        //navigate('src/pages/homepage');
-        //navigate('src/pages/admin_pages/admin');
-        //console.log("Mongo ID:", json._id);
+        else navigate('src/pages/dashboard');
+        
     }
 
     const onFailure = (err) => {

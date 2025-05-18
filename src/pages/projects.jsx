@@ -62,10 +62,11 @@ const ProjectsPage = () => {
 
     useEffect(() => {
         const Id = localStorage.getItem('Mongo_id');
+        setIsLoadingProjects(true);
 
         const loadProjects = async () => {
 
-            setIsLoadingProjects(true);
+            
 
             try{
                 const projects = await fetchProjects(Id);
