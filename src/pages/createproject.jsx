@@ -51,7 +51,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (formData.startDate && formData.endDate && new Date(formData.endDate) <= new Date(formData.startDate)) {
+        if (formData.startDate && formData.endDate && new Date(formData.endDate) < new Date(formData.startDate)) {
             toast.error("End date cannot be before start date", {
                 style: { backgroundColor: "red", color: "white" },
             });
