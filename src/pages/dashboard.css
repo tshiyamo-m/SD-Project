@@ -1,44 +1,44 @@
-
+/* Dashboard Container - Match Finance Page */
 .dashboard-container {
-  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-.section-header {
-  background-color: #f8fafc; /* Very light gray background for header */
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.sectiontitle {
-  color: #000000; /* Pure black */
-  font-weight: 700;
-}
-
-.dashboard-title {
-  font-size: 2rem;
-  font-weight: bold;
+  padding: 2rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   color: #111827;
+  background-color: #ffffff;
+}
+
+/* Section Headers */
+.section-header {
+  background-color: transparent;
+  padding: 1rem 0;
   margin-bottom: 2rem;
 }
 
+.sectiontitle{
+  color: white;
+}
+
+.dashboard-title {
+  color: #111827;
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+/* Dashboard Sections */
 .dashboard-section {
-  margin-bottom: 3rem;
-  background-color: white;
+  background: #111827; /* white background */
+  color: white; /* dark text for readability */
+  border: 1px solid #e5e7eb;
   border-radius: 0.5rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-/*
-.section-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #111827;
-  margin-bottom: 1.5rem;
-}*/
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* lighter shadow for white bg */
 
+}
+
+/* Projects Grid */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -46,29 +46,27 @@
 }
 
 .project-card {
-  background-color: #f9fafb;
+  background: #111827;
+  border: 1px solid #60a5fa;
+  color: white;
   border-radius: 0.5rem;
   padding: 1.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.project-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .project-title {
   font-size: 1.25rem;
-  font-weight: bold;
-  color: #111827;
+  font-weight: 600;
+  color: white;
   margin-bottom: 0.5rem;
 }
 
 .project-dates {
-  color: #6b7280;
+  color: #d1d5db;
   margin-bottom: 0.5rem;
 }
 
+/* Status Badges */
 .project-status {
   display: inline-block;
   padding: 0.25rem 0.75rem;
@@ -78,90 +76,77 @@
 }
 
 .project-status.planning {
-  background-color: #e5e7eb;
-  color: #374151;
+  background-color: #6b7280;
+  color: white;
 }
 
 .project-status.active {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: #3b82f6;
+  color: white;
 }
 
 .project-status.on-hold {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: #f87171;
+  color: white;
 }
 
 .project-status.completed {
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: #10b981;
+  color: white;
 }
 
-.funding-overview,
-.project-funding-breakdown {
-  margin-bottom: 2rem;
-}
-
-.funding-overview h3,
-.project-funding-breakdown h3 {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-  color: #374151;
-}
-
+/* Funding Stats */
 .funding-stats,
 .project-funding-stats {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
 .stat-card {
   flex: 1;
   min-width: 200px;
-  background-color: #f9fafb;
+  background: #1f2937;
+  border: 1px solid #60a5fa;
   border-radius: 0.5rem;
   padding: 1.5rem;
   text-align: center;
+  color: white;
 }
 
 .stat-number {
   font-size: 2rem;
   font-weight: bold;
-  color: #3b82f6;
-  background-color: rgba(59, 130, 246, 0.1);
-  border-radius: 50%;
-  width: 4rem;
-  height: 4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 0.5rem;
-  border: 2px solid #3b82f6;
+  color: #60a5fa;
+  margin-bottom: 0.5rem;
 }
 
 .stat-title {
   font-size: 1rem;
-  color: #374151;
+  color: #d1d5db;
 }
 
+/* Expandable Details */
 .project-funding-details {
   margin-bottom: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #60a5fa;
   border-radius: 0.5rem;
   overflow: hidden;
+  background: #111827;
+  color: white;
 }
 
 .project-funding-summary {
   padding: 1rem;
-  background-color: #f9fafb;
   cursor: pointer;
   font-weight: 500;
   list-style: none;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #374151;
 }
 
 .project-funding-summary:hover {
-  background-color: #f3f4f6;
+  background-color: #1f2937;
 }
 
 .project-funding-summary::-webkit-details-marker {
@@ -179,34 +164,78 @@
 
 .project-funding-stats {
   padding: 1rem;
-  background-color: white;
+  background-color: #1f2937;
 }
 
-.loading, .no-data {
+/* Button Group (Download, Actions) */
+.dashboard-section .button-group {
+  display: flex;
+  gap: 1rem; /* Increased space between buttons */
+  margin-top: 1rem;
+}
+
+.dashboard-section .button-group button {
+  background: #60a5fa;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+}
+
+.dashboard-section .button-group button:hover {
+  background: #3b82f6;
+}
+
+/* States */
+.loading,
+.no-data {
   text-align: center;
-  color: #6b7280;
+  color: #9ca3af;
   padding: 2rem;
 }
 
 .error {
-  color: #b91c1c;
+  color: #f87171;
   padding: 2rem;
   text-align: center;
-  background-color: #fee2e2;
+  background-color: #1f2937;
   border-radius: 0.5rem;
+  border: 1px solid #f87171;
+}
+.section-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem; /* spacing between buttons */
+  padding-top: 1rem;
 }
 
+/* Responsive Layout */
 @media (max-width: 768px) {
   .projects-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .funding-stats,
   .project-funding-stats {
     flex-direction: column;
   }
-  
+
   .stat-card {
     min-width: 100%;
+  }
+
+  .dashboard-section .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5rem; /* spacing between buttons */
+    padding-top: 1rem;
   }
 }
