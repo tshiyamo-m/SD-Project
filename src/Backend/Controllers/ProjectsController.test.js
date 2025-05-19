@@ -1,4 +1,4 @@
-const projectController = require('../controllers/ProjectsController');
+const projectController = require('./ProjectsController');
 const ProjectModel = require('../models/ProjectsModel');
 const LoginModel = require('../models/LoginModel');
 const mongoose = require('mongoose');

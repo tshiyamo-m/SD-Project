@@ -1,4 +1,4 @@
-const FinanceController = require('../controllers/FinanceController');
+const FinanceController = require('../Controllers/FinanceController');
 const FinanceModel = require('../models/FinanceModel');
 const mongoose = require('mongoose');
 

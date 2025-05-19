@@ -26,7 +26,7 @@ jest.mock('mongoose', () => ({
 }));
 
 // Import the controller - the mocks will be used instead of the real models
-const messageController = require('../controllers/messageController');
+const messageController = require('../Controllers/MessageController');
 
 describe('Message Controller Tests', () => {
   let req, res;

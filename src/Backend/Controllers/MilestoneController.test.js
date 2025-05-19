@@ -3,7 +3,7 @@ const {
   submit_milestone,
   retrieve_milestone,
   update_status,
-} = require('../controllers/milestoneController');
+} = require('../Controllers/MilestoneController');
 const MilestoneModel = require('../models/MilestoneModel');
 
 // Mock the model methods
