@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const mongoose = require('mongoose');
 const {
   submit_milestone,

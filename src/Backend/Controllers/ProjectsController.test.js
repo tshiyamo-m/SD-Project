@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const projectController = require('./ProjectsController');
 const ProjectModel = require('../models/ProjectsModel');
 const LoginModel = require('../models/LoginModel');

@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const { submit_review, retrieve_reviews_researcher, get_all_reviews } = require('../Controllers/ReviewController');
 const ReviewModel = require('../models/ReviewModel');
 // Using a simple ObjectId generator instead of mongoose

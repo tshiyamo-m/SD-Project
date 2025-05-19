@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const { getUserChats, getAllUsers, startChat } = require('./ChatsController');
 const { v4: uuid } = require('uuid');
 

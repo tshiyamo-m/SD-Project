@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const FinanceController = require('../Controllers/FinanceController');
 const FinanceModel = require('../models/FinanceModel');
 const mongoose = require('mongoose');

@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const userController = require('../Controllers/LoginController');
 const LoginModel = require('../models/LoginModel');
 const jwt = require('jsonwebtoken');

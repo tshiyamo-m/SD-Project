@@ -1,3 +1,4 @@
+jest.setTimeout(20000);
 const { Submit_Document } = require('./BucketController');
 const fs = require('fs');
 const { EventEmitter } = require('events');

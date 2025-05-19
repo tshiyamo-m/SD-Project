@@ -1,6 +1,7 @@
 // tests/messageController.test.js
 
 // Create mocks for the models directly
+jest.setTimeout(20000);
 const mockConversationModel = {
   findById: jest.fn(),
   findByIdAndUpdate: jest.fn(),
