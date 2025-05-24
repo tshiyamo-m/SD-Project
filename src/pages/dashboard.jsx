@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const pdfFundingRef = useRef(null);
-    const pdfProjectsRef = useRef(null);
+  const pdfProjectsRef = useRef(null);
 
   const userId = localStorage.getItem('Mongo_id');
 
@@ -252,13 +252,13 @@ const exportFundingToPDF = () => {
           <h2 className="sectiontitle">Projects</h2>
         </header>
         
-        <div className="section-content">
+        <section className="section-content">
           {projects.length > 0 ? (
-            <div className="projects-grid" role="list">
+            <section className="projects-grid" role="list">
               {projects.map(project => (
                 <article key={project.id} className="project-card" role="listitem">
                   <h3 className="project-title">{project.title}</h3>
-                  <div className="project-dates">
+                  <section className="project-dates">
                     <time dateTime={project.startDate}>
                       {new Date(project.startDate).toLocaleDateString()}
                     </time>
@@ -266,17 +266,17 @@ const exportFundingToPDF = () => {
                     <time dateTime={project.endDate}>
                       {new Date(project.endDate).toLocaleDateString()}
                     </time>
-                  </div>
-                  <div className={`project-status ${project.status.toLowerCase().replace(' ', '-')}`}>
+                  </section>
+                  <section className={`project-status ${project.status.toLowerCase().replace(' ', '-')}`}>
                     {project.status}
-                  </div>
+                  </section>
                 </article>
               ))}
-            </div>
+            </section>
           ) : (
             <p className="no-data">No projects found</p>
           )}
-        </div>
+        </section>
         
        <footer className="section-footer">
           <button 
@@ -295,11 +295,11 @@ const exportFundingToPDF = () => {
           <h2 className="sectiontitle">Funding Overview</h2>
         </header>
         
-        <div className="section-content">
+        <section className="section-content">
           {/* Overall Funding Stats */}
           <section className="funding-overview">
             <h3>Total Across All Projects</h3>
-            <div className="funding-stats" role="list">
+            <section className="funding-stats" role="list">
               <article className="stat-card" role="listitem">
                 <p className="stat-number">R{totalBudget.toLocaleString()}</p>
                 <h3 className="stat-title">Total Budget</h3>
@@ -314,14 +314,14 @@ const exportFundingToPDF = () => {
                 <p className="stat-number">R{remainingBudget.toLocaleString()}</p>
                 <h3 className="stat-title">Remaining Budget</h3>
               </article>
-            </div>
+            </section>
           </section>
           
           {/* Per-Project Funding Breakdown */}
           <section className="project-funding-breakdown">
             <h3>Per Project Breakdown</h3>
             {projects.length > 0 ? (
-              <div role="list">
+              <section role="list">
                 {projects.map(project => {
                   const stats = getProjectFundingStats(project.id);
                   return (
@@ -329,7 +329,7 @@ const exportFundingToPDF = () => {
                       <summary className="project-funding-summary">
                         {project.title} - Budget: R{stats.budget.toLocaleString()}
                       </summary>
-                      <div className="project-funding-stats" role="list">
+                      <section className="project-funding-stats" role="list">
                         <article className="stat-card" role="listitem">
                           <p className="stat-number">R{stats.spent.toLocaleString()}</p>
                           <h3 className="stat-title">Spent ({stats.percentage}%)</h3>
@@ -338,16 +338,16 @@ const exportFundingToPDF = () => {
                           <p className="stat-number">R{stats.remaining.toLocaleString()}</p>
                           <h3 className="stat-title">Remaining</h3>
                         </article>
-                      </div>
+                      </section>
                     </details>
                   );
                 })}
-              </div>
+              </section>
             ) : (
               <p className="no-data">No projects with funding data</p>
             )}
           </section>
-        </div>
+        </section>
         
         <footer className="section-footer">
           <button 
