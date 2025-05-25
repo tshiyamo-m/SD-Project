@@ -76,33 +76,33 @@ const ChatsPage = () => {
         }
     }, [currentUserId, setChats]); // Dependencies
 
-    const loadData = async () => { //If linter error, wrap whole function in useCallback()
-        try {
-            const fetchedUsers = await fetchUsers();
-            const fetchedConvos = await fetchConvos();
-
-            const FormattedConvos = fetchedConvos.map(chat => ({ 
-                _id: chat._id,
-                members: [chat.userID_1, chat.userID_2],
-                messages: Array.isArray(chat.Messages) && chat.Messages.length > 0
-                    ? chat.Messages.map(message => ({
-                        _id: message._id,
-                        text: message.text,
-                        sender: message.sender,
-                        timestamp: message.timestamp
-                    }))
-                    : []
-            }));
-
-            initializeChats(fetchedUsers, FormattedConvos);
-        } catch(error) {
-            console.error("Could not fetch messages: ", error);
-        } finally {
-            setIsLoadingMessages(false);
-        }
-    };
-
     useEffect(() => { 
+
+        const loadData = async () => { //If linter error, wrap whole function in useCallback()
+            try {
+                const fetchedUsers = await fetchUsers();
+                const fetchedConvos = await fetchConvos();
+
+                const FormattedConvos = fetchedConvos.map(chat => ({ 
+                    _id: chat._id,
+                    members: [chat.userID_1, chat.userID_2],
+                    messages: Array.isArray(chat.Messages) && chat.Messages.length > 0
+                        ? chat.Messages.map(message => ({
+                            _id: message._id,
+                            text: message.text,
+                            sender: message.sender,
+                            timestamp: message.timestamp
+                        }))
+                        : []
+                }));
+
+                initializeChats(fetchedUsers, FormattedConvos);
+            } catch(error) {
+                console.error("Could not fetch messages: ", error);
+            } finally {
+                setIsLoadingMessages(false);
+            }
+        };        
 
         loadData();
 
