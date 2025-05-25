@@ -215,6 +215,8 @@ app.post('/Bucket/submitdoc', User_Files.single('file'), (req, res) => {
     });
   });
 });
-
+app.get('/', (req, res) => {
+  res.send('✅ Backend is running. Use POST routes to interact.');
+});
 
 
