@@ -22,6 +22,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
     const [downloadingDocuments, setDownloadingDocuments] = useState({});
     const [deletingDocuments, setDeletingDocuments] = useState({});
+    const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB in bytes
 
     const projectId = initialProject.id;
     const fullName = localStorage.getItem('fullName');
@@ -237,6 +238,14 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+                toast.error("File size exceeds 16MB limit", {
+                    style: { backgroundColor: "red", color: "white" },
+                });
+                e.target.value = ""; // Clear the file input
+                return;
+            }
+            
             setNewDocument({
                 ...newDocument,
                 file: file,
@@ -672,7 +681,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                     required
                                 />
                                 <output className="file-input-text">
-                                    {newDocument.file ? newDocument.file.name : 'Choose a file'}
+                                    {newDocument.file ? newDocument.file.name : 'Choose a file (max 16MB)'}
                                 </output>
                             </label>
 
@@ -687,7 +696,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                 <button
                                     type="submit"
                                     className="submit-button"
-                                    disabled={!newDocument.file}
+                                    disabled={!newDocument.file || newDocument.file?.size > MAX_FILE_SIZE}
                                 >
                                     Upload
                                 </button>

@@ -18,6 +18,7 @@ const ReviewerPage = () => {
     const [isLoadingProjects, setIsLoadingProjects] = useState(true);
 
     const [user, setUser] = useState({});
+    const [Timeout, setTimeout] = useState(false);
 
 const getAUser = useCallback(async (findId) => {
     try {
@@ -318,6 +319,7 @@ const fetchAllReviews = useCallback(async () => {
 
     // Submit a review
     const handleReviewSubmit = async (projectId) => {
+        setTimeout(true);
         const newReview = {
             //_id: `rev${reviews.length + 1}`,
             rating: reviewForm.rating,
@@ -334,6 +336,9 @@ const fetchAllReviews = useCallback(async () => {
             }
             catch(error) {
                 console.error('Error creating review:', error);
+            }
+            finally{
+                setTimeout(false);
             }
         }
 
@@ -553,7 +558,7 @@ const fetchAllReviews = useCallback(async () => {
                         </fieldset>
 
                         <footer>
-                            <button type="button" onClick={() => handleReviewSubmit(project._id)}>
+                            <button type="button" onClick={() => handleReviewSubmit(project._id)}  disabled={Timeout}>
                                 Submit Review
                             </button>
                         </footer>

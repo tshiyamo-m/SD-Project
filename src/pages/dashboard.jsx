@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const pdfFundingRef = useRef(null);
   const pdfProjectsRef = useRef(null);
+  const [isDownloading, SetIsDownloading] = useState(false);
 
   const userId = localStorage.getItem('Mongo_id');
 
@@ -81,6 +82,7 @@ const fetchData = useCallback(async () => {
   if (error) return <section className="error"><p>Error: {error}</p></section>;
 
  const exportProjectsToCSV = () => {
+    SetIsDownloading(true);
     if (!projects.length) return;
     
     const headers = ['Title', 'Start Date', 'End Date', 'Status'];
@@ -97,8 +99,10 @@ const fetchData = useCallback(async () => {
     ].join('\n');
     
     downloadCSV(csvContent, 'projects_export.csv');
+    SetIsDownloading(false);
   };
 const exportProjectsToPDF = () => {
+  SetIsDownloading(true);
   if (!projects.length) return;
 
   const content = `
@@ -132,9 +136,11 @@ const exportProjectsToPDF = () => {
   };
 
   html2pdf().set(opt).from(content).save();
+  SetIsDownloading(false);
 };
 
   const exportFundingToCSV = () => {
+    SetIsDownloading(true);
     if (!funds.length) return;
     
     const headers = ['Project', 'Source', 'Budget', 'Spent', 'Remaining', 'Percentage Used'];
@@ -166,6 +172,7 @@ const exportProjectsToPDF = () => {
     ].join('\n');
     
     downloadCSV(csvContent, 'funding_export.csv');
+    SetIsDownloading(false);
   };
 
   const downloadCSV = (content, filename) => {
@@ -179,6 +186,7 @@ const exportProjectsToPDF = () => {
   };
  
 const exportFundingToPDF = () => {
+  SetIsDownloading(true);
   if (!projects.length) return;
 
   const content = `
@@ -240,6 +248,7 @@ const exportFundingToPDF = () => {
   };
 
   html2pdf().set(opt).from(content).save();
+  SetIsDownloading(false);
 };
   return (
     <main className="dashboard-container">
@@ -282,11 +291,14 @@ const exportFundingToPDF = () => {
           <button 
             className="section-button" 
             onClick={exportProjectsToCSV}
-            disabled={!projects.length}
+            disabled={!projects.length || isDownloading}
           >
             Download CSV
           </button>
-          <button onClick={exportProjectsToPDF}>Download PDF</button>
+          <button 
+            onClick={exportProjectsToPDF}
+            disabled={isDownloading}         
+          >Download PDF</button>
         </footer>
       </section>
       
@@ -353,11 +365,14 @@ const exportFundingToPDF = () => {
           <button 
             className="section-button" 
             onClick={exportFundingToCSV}
-            disabled={!funds.length}
+            disabled={!funds.length || isDownloading}
           >
             Download CSV
           </button>
-            <button onClick={exportFundingToPDF}>Download PDF</button>
+            <button 
+              onClick={exportFundingToPDF}
+              disabled={isDownloading}           
+            >Download PDF</button>
         </footer>
       </section>
     </main>

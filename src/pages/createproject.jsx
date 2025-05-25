@@ -21,6 +21,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
     });
 
     //const [newCollaborator, setNewCollaborator] = useState('');
+    const [Timeout, setTimeout] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,6 +51,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
     
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setTimeout(true);
 
         if (formData.startDate && formData.endDate && new Date(formData.endDate) < new Date(formData.startDate)) {
             toast.error("End date cannot be before start date", {
@@ -98,10 +100,10 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                     style: { backgroundColor: "green", color: "white" },
                 });
 
-
             onBack();
+            setTimeout(false);
 
-
+            
         }
         catch(error){
 
@@ -304,7 +306,7 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                         </button>
                     </li>
                     <li>
-                        <button type="submit" className="submit-button">
+                        <button type="submit" className="submit-button" disabled={Timeout}>
                             <Check size={18} className="mr-2"/>
                             Create Project
                         </button>

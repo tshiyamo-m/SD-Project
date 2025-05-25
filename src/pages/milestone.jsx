@@ -9,6 +9,7 @@ export default function MilestonesPage({ project, onBack }) {
     const collaboratorNames = project.collaboratorNames.split(',');
     const [isLoadingMilestones, setIsLoadingMilestones] = useState(true);
     const [selectMilestone, setSelectMilestone] = useState(false);
+    const [Timeout, setTimeout] = useState(false);
 
     // Combine owner and collaborators, then filter out current user
     const allAssignableUsers = [
@@ -20,28 +21,28 @@ export default function MilestonesPage({ project, onBack }) {
     ]
     //.filter(user => user.id !== currentUserId);
 
-const fetchMilestones = useCallback(async (Id) => {
-    try {
-        const Milestone_data = await getMilestone(Id);
+    const fetchMilestones = useCallback(async (Id) => {
+        try {
+            const Milestone_data = await getMilestone(Id);
 
-        if (!Array.isArray(Milestone_data)) {
-            console.warn('API response is not an array:', Milestone_data);
+            if (!Array.isArray(Milestone_data)) {
+                console.warn('API response is not an array:', Milestone_data);
+                return [];
+            }
+            return Milestone_data.map((milestone) => ({
+                id: milestone._id,
+                name: milestone.name,
+                description: milestone.description,
+                dueDate: milestone.dueDate,
+                assignedTo: milestone.assignedTo,
+                status: milestone.status,
+            }));
+        }
+        catch (error) {
+            console.error('Error finding milestones:', error);
             return [];
         }
-        return Milestone_data.map((milestone) => ({
-            id: milestone._id,
-            name: milestone.name,
-            description: milestone.description,
-            dueDate: milestone.dueDate,
-            assignedTo: milestone.assignedTo,
-            status: milestone.status,
-        }));
-    }
-    catch (error) {
-        console.error('Error finding milestones:', error);
-        return [];
-    }
-}, []);
+    }, []);
 
     const loadMilestones = useCallback(async (Id) => {
         try{
@@ -97,18 +98,25 @@ const fetchMilestones = useCallback(async (Id) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const projectId = project.id;
-        await API_CALL_CREATE_MILESTONE(projectId);
-        setNewMilestone({
-            name: '',
-            description: '',
-            dueDate: '',
-            assignedTo: '',
-            projectId: '',
-            status: 'Not Started'
-        });
-        setShowForm(false);
-        loadMilestones(projectId);
+        setTimeout(true);
+        try{
+            const projectId = project.id;
+            await API_CALL_CREATE_MILESTONE(projectId);
+            setNewMilestone({
+                name: '',
+                description: '',
+                dueDate: '',
+                assignedTo: '',
+                projectId: '',
+                status: 'Not Started'
+            });
+            setShowForm(false);
+            loadMilestones(projectId);
+            setTimeout(false);
+        }
+        catch(error){
+            console.error(error);
+        }
     };
 
     const toggleComplete = async (id, currentStatus) => {        
@@ -242,7 +250,7 @@ const fetchMilestones = useCallback(async (Id) => {
 
                     <menu className="form-actions">
                         <li>
-                            <button type="submit" className="submit-button">
+                            <button type="submit" className="submit-button" disabled={Timeout}>
                                 <Check size={18} className="mr-2" />
                                 Add Milestone
                             </button>
