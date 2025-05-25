@@ -83,23 +83,23 @@ Our API uses POST requests only. Access via browser (GET) will show a basic conf
 Content-Type: application/json
 
 **Sample Endpoints**
- 1. Create a Project:
-    -Endpoint: https://sd-project-qb1w.onrender.com/api/Projects
-    -Method:POST
-    -Body:{
-          "owner":"sd",
-          "title": "sd",
-          "description": "sd",
-          "field": "sd",
-          "collaborators": [],
-          "requirements": "sd",
-          "fundingAmount": "sd",
-          "fundingSource": "sd",
-          "startDate": "sd",
-          "endDate": "sd",
-          "status": "Planning",
-          "tags":"sd",
-          "skills": "sd"
+ 1. Create a Project:\
+    -Endpoint: https://sd-project-qb1w.onrender.com/api/Projects\
+    -Method:POST\
+    -Body:{\
+          "owner":"sd",\
+          "title": "sd",\
+          "description": "sd",\
+          "field": "sd",\
+          "collaborators": [],\
+          "requirements": "sd",\
+          "fundingAmount": "sd",\
+          "fundingSource": "sd",\
+          "startDate": "sd",\
+          "endDate": "sd",\
+          "status": "Planning",\
+          "tags":"sd",\
+          "skills": "sd"\
         }
 2. Create a Review:
     -Endpoint: https://sd-project-qb1w.onrender.com/api/Review
