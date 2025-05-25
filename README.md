@@ -7,6 +7,24 @@ A MERN stack university research collaboration platform...
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Setup
+**Prerequisites**
+- Node.js (v16 or higher recommended)
+- npm (comes with Node.js)
+- Git
+
+**1. Clone the Repository**
+
+### `git clone https://github.com/tshiyamo-m/SD-Project.git`
+
+### `cd SD-Project`
+
+**2. Install Dependencies**
+
+In the project directory, you run:
+
+### `npm install`
+
 ## Available Scripts
 
 In the project directory, you can run:
