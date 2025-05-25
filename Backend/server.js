@@ -216,7 +216,7 @@ app.post('/Bucket/submitdoc', User_Files.single('file'), (req, res) => {
   });
 });
 app.get('/', (req, res) => {
-  res.send('✅ Backend is running. Use POST routes to interact.');
+  res.send('✅ U-Collab Express Backend is live!We primarily used post requests which don’t display anything directly when visited in the browser.Please use Postman or curl should you wish to test our endpoints :)');
 });
 
 
