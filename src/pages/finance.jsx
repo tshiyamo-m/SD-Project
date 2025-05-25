@@ -336,7 +336,7 @@ const loadProjects = useCallback(async () => {
                                   />
                                 </label>
                                 <button type="submit" disabled={!addAmounts[fund.id] || addAmounts[fund.id] <= 0 || isLoading}>
-                                  {isLoading ? 'Updating...' : 'Add'}
+                                  {isLoading ? 'Updating...' : 'Increase used amount'}
                                 </button>
                               </form>
                             </footer>
