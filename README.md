@@ -75,7 +75,7 @@ This command is specifically configured to test React page components and their 
 
 ## API Deployment (Render)
 **Base URL:**
-https://sd-project-qb1w.onrender.com
+https://sd-project-qb1w.onrender.com .\
 Our API uses POST requests only. Access via browser (GET) will show a basic confirmation message.
 
 ### Testing the API
