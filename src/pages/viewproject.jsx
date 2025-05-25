@@ -343,8 +343,8 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
 
     // Save project changes
     const saveProjectChanges = async () => {
-        const Mongo_id = localStorage.getItem("Mongo_id");
-        const Updated_Project = {...editData, owner: Mongo_id, updated: new Date().toISOString().split('T')[0]};
+        //const Mongo_id = localStorage.getItem("Mongo_id");
+        const Updated_Project = {...editData, owner: projectOwnerId, updated: new Date().toISOString().split('T')[0]};
         setProject({...editData, updated: new Date().toISOString().split('T')[0]});
         setIsEditing(false);
 
