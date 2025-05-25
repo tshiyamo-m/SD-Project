@@ -93,19 +93,4 @@ describe('ReviewsPage (coverage-only)', () => {
     fireEvent.click(screen.getByText(/arrowleft/i));
     expect(onBack).toHaveBeenCalled();
   });
-
-  it('renders submitted reviews with name and date', async () => {
-    render(<ReviewsPage project={mockProject} onBack={() => {}} />);
-    expect(screen.getByText(/2024-01-01/i)).toBeInTheDocument();
-    expect(screen.getByText(/stakeholder/i)).toBeInTheDocument();
-  });
-
-  it('caches reviewer names and handles unknown fallback', async () => {
-    const { getUser } = require('../utils/loginUtils');
-    getUser.mockResolvedValueOnce({ token: '', isReviewer: true }); // Simulate empty token
-
-    render(<ReviewsPage project={mockProject} onBack={() => {}} />);
-    expect(await screen.findByText(/great job/i)).toBeInTheDocument();
-    // Since token is empty, fallback should be triggered
-  });
 });

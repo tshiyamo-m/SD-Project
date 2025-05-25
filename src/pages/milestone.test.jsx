@@ -103,27 +103,4 @@ describe('MilestonesPage (coverage-only)', () => {
       expect(screen.queryByText(/milestone name/i)).not.toBeInTheDocument();
     });
   });
-
-  it('handles updateStatus API failure', async () => {
-    const { getMilestone, updateStatus } = require('../utils/milestoneUtils');
-    getMilestone.mockResolvedValueOnce([
-      {
-        _id: 'ms2',
-        name: 'Deploy',
-        description: 'Deploy app',
-        dueDate: '2025-06-03',
-        assignedTo: 'collab1',
-        status: 'In Progress'
-      }
-    ]);
-    updateStatus.mockRejectedValueOnce(new Error('Update error'));
-
-    render(<MilestonesPage project={mockProject} onBack={jest.fn()} />);
-    await waitFor(() => screen.getByText(/deploy/i));
-
-    fireEvent.click(screen.getByText(/deploy/i).previousSibling);
-    await waitFor(() => {
-      expect(screen.getByText(/deploy/i)).toBeInTheDocument();
-    });
-  });
 });

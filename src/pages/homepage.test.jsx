@@ -1,81 +1,54 @@
-import { render, waitFor, act } from '@testing-library/react';
-import HomePage from './HomePage';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import HomePage from './homepage';
+import { findProject } from '../utils/projectUtils';
 
-// Mocking localStorage
-global.localStorage = {
-    getItem: jest.fn((key) => {
-        if (key === 'fullName') return 'John Doe';
-        if (key === 'Mongo_id') return '12345';
-        return null;
-    }),
-};
+jest.mock('../utils/projectUtils');
 
-// Mocking fetch to avoid actual API calls
-global.fetch = jest.fn(() =>
-    Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve([{ id: 1, name: 'Project A' }]),
-    })
-);
+// Mock localStorage
+beforeEach(() => {
+  Storage.prototype.getItem = jest.fn((key) => {
+    if (key === 'fullName') return 'Alice Johnson';
+    if (key === 'Mongo_id') return '12345';
+    return null;
+  });
+});
 
-describe('HomePage', () => {
-    // Test: Render the homepage header with greeting message
-    it('renders the homepage header with greeting message', () => {
-        const { getByText } = render(<HomePage />);
-        expect(getByText(/Good Day,/i)).toBeInTheDocument();
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+describe('HomePage Component', () => {
+  test('renders greeting with first name from localStorage', async () => {
+    render(<HomePage />);
+    expect(await screen.findByText(/Good Day, Alice/i)).toBeInTheDocument();
+  });
+
+  test('displays correct active projects count after fetching', async () => {
+    findProject.mockResolvedValueOnce([
+      { _id: 'p1', title: 'Project 1' },
+      { _id: 'p2', title: 'Project 2' }
+    ]);
+
+    render(<HomePage />);
+
+    await waitFor(() => {
+      expect(findProject).toHaveBeenCalledWith('12345');
     });
 
-    // Test: Render the "Start Research Collabs" section
-    it('renders the start research collabs section', () => {
-        const { getByText } = render(<HomePage />);
-        expect(getByText(/Start Research Collabs/i)).toBeInTheDocument();
-    });
+    expect(await screen.findByText('2')).toBeInTheDocument();
+    expect(screen.getByText('Active Projects')).toBeInTheDocument();
+  });
 
-    // Test: Render the notifications panel
-    it('renders the notifications panel', () => {
-        const { getByText } = render(<HomePage />);
-        expect(getByText(/Notifications/i)).toBeInTheDocument();
-    });
+  test('displays 0 for reviewed projects and collaborations initially', () => {
+    render(<HomePage />);
 
-    // Test: Render the "no new notifications" message
-    it('renders the no notifications message', () => {
-        const { getByText } = render(<HomePage />);
-        expect(getByText(/You have no new notifications/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText('Projects Reviewed')).toBeInTheDocument();
+    expect(screen.getByText('Collaborations')).toBeInTheDocument();
+  });
 
-    // Test: Ensure fetch is called to update the state when the component mounts
-    it('fetches and updates the activeProjects state', async () => {
-        const { getByText } = render(<HomePage />);
-        
-        // Wait for the component to finish rendering and updating state
-        await waitFor(() => getByText('Good Day, John')); // Ensures rendering is complete
-        
-        // Check if fetch was called
-        expect(global.fetch).toHaveBeenCalledTimes(1); // Ensure fetch was called once
-    });
-
-    // Test: Ensure the "View Projects" button is rendered
-    it('renders the "View Projects" button', () => {
-        const { getByText } = render(<HomePage />);
-        expect(getByText('View Projects Page')).toBeInTheDocument();
-    });
-
-    // Test: Check initial state when component renders
-    it('should render with initial state', () => {
-        const { getByText } = render(<HomePage />);
-        expect(getByText('Active Projects')).toBeInTheDocument();
-        expect(getByText('0')).toBeInTheDocument(); // Initial state should be 0
-    });
-
-    // Test: Simulate the state update after fetching projects (active projects)
-    it('should update the state when projects are fetched', async () => {
-        const { getByText } = render(<HomePage />);
-        
-        // Wait for the useEffect to complete and state update
-        await act(async () => {}); // Wait for useEffect to run
-
-        // Assuming fetch returns a project, check if the active projects count is updated
-        expect(getByText('Active Projects')).toBeInTheDocument();
-        expect(getByText('1')).toBeInTheDocument(); // Simulating 1 active project
-    });
+  test('shows fallback message for no notifications', () => {
+    render(<HomePage />);
+    expect(screen.getByText(/you have no new notifications/i)).toBeInTheDocument();
+  });
 });

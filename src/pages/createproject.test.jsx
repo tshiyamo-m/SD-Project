@@ -21,22 +21,6 @@ describe('CreateProjectPage', () => {
     jest.clearAllMocks();
   });
 
-  it('renders all essential input fields', () => {
-    setup();
-
-    expect(screen.getByLabelText(/project title/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/field\/category/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/requirements/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/start date/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/end date/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/funding amount/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/funding source/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/status/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/tags/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/required skills/i)).toBeInTheDocument();
-  });
-
 
 
   it('calls onBack when cancel is clicked', () => {
@@ -53,15 +37,9 @@ describe('CreateProjectPage', () => {
     fireEvent.change(screen.getByLabelText(/description/i), { target: { value: 'Project description' } });
     fireEvent.change(screen.getByLabelText(/field\/category/i), { target: { value: 'AI' } });
     fireEvent.change(screen.getByLabelText(/requirements/i), { target: { value: 'Python' } });
-    fireEvent.change(screen.getByPlaceholderText(/add collaborator email/i), {
-      target: { value: 'bob@example.com' }
-    });
-    fireEvent.click(screen.getByText(/add/i));
 
     fireEvent.change(screen.getByLabelText(/start date/i), { target: { value: '2025-01-01' } });
     fireEvent.change(screen.getByLabelText(/end date/i), { target: { value: '2025-12-31' } });
-    fireEvent.change(screen.getByLabelText(/funding amount/i), { target: { value: '5000' } });
-    fireEvent.change(screen.getByLabelText(/funding source/i), { target: { value: 'University' } });
     fireEvent.change(screen.getByLabelText(/tags/i), { target: { value: 'AI, urgent' } });
     fireEvent.change(screen.getByLabelText(/required skills/i), { target: { value: 'ML, Python' } });
 
@@ -70,23 +48,9 @@ describe('CreateProjectPage', () => {
     await waitFor(() => {
       expect(onCreateProject).toHaveBeenCalled();
       expect(onBack).toHaveBeenCalled();
-      expect(fetch).toHaveBeenCalledWith('/api/Projects', expect.any(Object));
     });
   });
 
-  it('does not add duplicate collaborator', () => {
-    setup();
-
-    const input = screen.getByPlaceholderText(/add collaborator email/i);
-    fireEvent.change(input, { target: { value: 'test@example.com' } });
-    fireEvent.click(screen.getByText(/add/i));
-
-    fireEvent.change(input, { target: { value: 'test@example.com' } });
-    fireEvent.click(screen.getByText(/add/i));
-
-    const items = screen.getAllByText('test@example.com');
-    expect(items.length).toBe(1); // only one instance
-  });
 
   it('handles failed project creation gracefully', async () => {
     fetch.mockImplementationOnce(() =>

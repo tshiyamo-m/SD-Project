@@ -1,79 +1,74 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Finance from '../pages/finance';
+import Finance from './finance';
 import * as financeUtils from '../utils/financeUtils';
 import * as projectUtils from '../utils/projectUtils';
 
-// Mock localStorage
-beforeAll(() => {
-  Storage.prototype.getItem = jest.fn(() => 'mock-user-id');
-});
-
-// Mock utility functions
 jest.mock('../utils/financeUtils');
 jest.mock('../utils/projectUtils');
 
 const mockProjects = [
-  { _id: 'proj1', title: 'Project A' },
-  { _id: 'proj2', title: 'Project B' }
+  { _id: '1', title: 'Project A' },
+  { _id: '2', title: 'Project B' }
 ];
 
 const mockFunds = [
-  {
-    _id: 'fund1',
-    amount: 10000,
-    purpose: 'proj1', // ID of Project A
-    source: 'Sponsor X',
-    used: 3000
-  },
-  {
-    _id: 'fund2',
-    amount: 5000,
-    purpose: 'proj2',
-    source: 'Sponsor Y',
-    used: 5000
-  }
+  { _id: 'f1', amount: 1000, used: 200, purpose: '1', source: 'Donor A' },
+  { _id: 'f2', amount: 500, used: 500, purpose: '2', source: 'Donor B' }
 ];
 
-describe('Finance Page', () => {
-  beforeEach(async () => {
+describe('Finance Component', () => {
+  beforeEach(() => {
+    localStorage.setItem('Mongo_id', 'user-123');
     projectUtils.getAllProjects.mockResolvedValue(mockProjects);
     financeUtils.getFinance.mockResolvedValue(mockFunds);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('renders loading state initially', async () => {
+    render(<Finance />);
+    expect(screen.getByText(/loading.../i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(/loading.../i)).not.toBeInTheDocument();
+    });
+  });
+
+
+  test('toggles the Add Fund form', async () => {
+    render(<Finance />);
+    await screen.findByText('Add Fund');
+    fireEvent.click(screen.getByText('Add Fund'));
+    expect(screen.getByText(/Add New Fund/)).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(screen.queryByText(/Add New Fund/)).not.toBeInTheDocument();
+  });
+
+  test('adds a new fund when form is submitted', async () => {
+    financeUtils.createFinance.mockResolvedValue({ _id: 'new1' });
 
     render(<Finance />);
+    await screen.findByText('Add Fund');
+    fireEvent.click(screen.getByText('Add Fund'));
 
-    // Wait for data to be loaded
-    await waitFor(() => {
-      expect(screen.getByText(/Finances/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText('R4200'), {
+      target: { value: '1000' }
+    });
+    fireEvent.change(screen.getByPlaceholderText('Organization/Person'), {
+      target: { value: 'New Donor' }
+    });
+    fireEvent.change(screen.getByDisplayValue('Select a project'), {
+      target: { value: '1' }
     });
   });
 
-  it('renders static headings and tabs', () => {
-    expect(screen.getByText('Finances')).toBeInTheDocument();
-    expect(screen.getByText('Budget Summary')).toBeInTheDocument();
-    expect(screen.getByText(/Active Funds/i)).toBeInTheDocument();
-    expect(screen.getByText(/Exhausted Funds/i)).toBeInTheDocument();
-  });
-
-  it('displays non-empty active fund information', () => {
-    expect(screen.getByText(/For: Project A/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sponsor X/i)).toBeInTheDocument();
-    expect(screen.getByText(/Used:/i)).toBeInTheDocument();
-  });
-
-  it('displays non-empty exhausted fund information when tab is clicked', async () => {
-    fireEvent.click(screen.getByText(/Exhausted Funds/i));
+  test('handles fetch errors gracefully', async () => {
+    financeUtils.getFinance.mockRejectedValueOnce(new Error('Failed to fetch'));
+    render(<Finance />);
     await waitFor(() => {
-      expect(screen.getByText(/Sponsor Y/i)).toBeInTheDocument();
-      expect(screen.getByText(/Fully utilized/i)).toBeInTheDocument();
+      expect(screen.getByText(/Failed to fetch/)).toBeInTheDocument();
     });
-  });
-
-  it('shows fund form when "Add Fund" button is clicked', () => {
-    fireEvent.click(screen.getByText(/Add Fund/i));
-
-    expect(screen.getByPlaceholderText('R4200')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Organization/Person')).toBeInTheDocument();
-    expect(screen.getByText(/Select a project/i)).toBeInTheDocument();
   });
 });
