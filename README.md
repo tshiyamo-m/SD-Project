@@ -73,6 +73,46 @@ The coverage report will be generated in the `coverage` directory.
 Runs the frontend test suite for page components.\
 This command is specifically configured to test React page components and their functionality.
 
+## API Deployment (Render)
+**Base URL:**
+https://sd-project-qb1w.onrender.com
+Our API uses POST requests only. Access via browser (GET) will show a basic confirmation message.
+
+### Testing the API
+**Required Headers**
+Content-Type: application/json
+
+**Sample Endpoints**
+ 1. Create a Project:
+    -Endpoint: https://sd-project-qb1w.onrender.com/api/Projects
+    -Method:POST
+    -Body:{
+          "owner":"sd",
+          "title": "sd",
+          "description": "sd",
+          "field": "sd",
+          "collaborators": [],
+          "requirements": "sd",
+          "fundingAmount": "sd",
+          "fundingSource": "sd",
+          "startDate": "sd",
+          "endDate": "sd",
+          "status": "Planning",
+          "tags":"sd",
+          "skills": "sd"
+        }
+2. Create a Review:
+    -Endpoint: https://sd-project-qb1w.onrender.com/api/Review
+    -Method:POST
+    -Body:{
+          "projectId" : "683360dc2d00546b91095834",
+          "reviewerId" : "6831e900dbc3b0464f54d42a",
+          "rating:" : 5,
+          "comment" : "Top Project of the year",
+          "date" : "2025-05-24",
+          "type" : "reviewer"
+          }
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
