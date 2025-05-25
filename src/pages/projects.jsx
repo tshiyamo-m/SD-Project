@@ -64,9 +64,7 @@ const ProjectsPage = () => {
         const Id = localStorage.getItem('Mongo_id');
         //setIsLoadingProjects(true);
 
-        const loadProjects = async () => {
-
-            
+        const loadProjects = async () => {  
 
             try{
                 const projects = await fetchProjects(Id);

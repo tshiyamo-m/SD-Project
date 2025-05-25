@@ -79,7 +79,7 @@ export const createConvo = async (userID_1, userID_2) => {
             throw new Error('Cannot create conversation with yourself');
         }
 
-        const response = await fetch('/api/message/CreateConvo', {
+        const response = await fetch('https://sd-project-qb1w.onrender.com/api/message/CreateConvo', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

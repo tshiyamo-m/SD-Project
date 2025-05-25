@@ -276,3 +276,51 @@
         color: white;
     }
 }
+
+/* Loading Component  */
+.loading-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #111827; /* Dark bg matches project cards */
+}
+
+.loading-figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem; 
+    padding: 2rem;
+    border: 1px solid #60a5fa; /* Blue border like project cards */
+    border-radius: 0.5rem; /* Same radius */
+    background-color: #1e293b; /* Slightly lighter than card bg */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Same shadow */
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid #60a5fa; /* Projects accent color */
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    color: #d1d5db; /* Light gray matching projects text */
+    font-size: 1.25rem;
+    font-weight: 500; /* Matches projects typography */
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive - Matches projects breakpoint */
+@media (max-width: 768px) {
+    .loading-figure {
+        padding: 1.5rem;
+        width: 90%;
+    }
+}

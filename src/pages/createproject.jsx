@@ -156,14 +156,14 @@ export default function CreateProjectPage({ onBack, onCreateProject }) {
                 </section>
 
                 <section className="form-group">
-                    <label htmlFor="requirements">Requirements (Skills/Expertise Needed)</label>
+                    <label htmlFor="requirements">High-Level Project Requirements</label>
                     <input
                         type="text"
                         id="requirements"
                         name="requirements"
                         value={formData.requirements}
                         onChange={handleChange}
-                        placeholder="e.g., Machine Learning, Python, Data Analysis"
+                        placeholder="e.g. Functional/Non-Functional Requirements of System"
                     />
                 </section>
 

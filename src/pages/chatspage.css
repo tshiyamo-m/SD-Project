@@ -99,3 +99,46 @@ button:hover {
     border-color: #4e73df;
     box-shadow: 0 0 0 2px rgba(78, 115, 223, 0.25);
 }
+
+/* Loading Spinner Styles */
+.loading-spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100px;
+    margin: 2rem 0;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    animation: spin 1.5s linear infinite;
+}
+
+.loading-spinner circle {
+    stroke-dasharray: 80, 200;
+    stroke-dashoffset: 0;
+    animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+    }
+    50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35;
+    }
+    100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124;
+    }
+}

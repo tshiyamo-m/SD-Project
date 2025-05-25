@@ -9,71 +9,75 @@ const ChatsPage = () => {
     const [selectedChat, setSelectedChat] = useState(null);
     const [messageText, setMessageText] = useState("");
     const [searchTerm, setSearchTerm] = useState("");
+    const [MessageTimeout, setMessageTimeout] = useState(false);
+    const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     //const [ConvoID, setConvoID] = useState(null);
 
 
-const fetchUsers = useCallback(async () => {
-    try {
-        const response = await getChatters(currentUserId);
-        const filteredUsers = { ...response }; // create copy first
-        delete filteredUsers[currentUserId];
+    const fetchUsers = useCallback(async () => {
+        try {
+            const response = await getChatters(currentUserId);
+            const filteredUsers = { ...response }; // create copy first
+            delete filteredUsers[currentUserId];
+            
+            const usersObj = Array.isArray(filteredUsers)
+                ? Object.fromEntries(response.map(user => [user._id, user]))
+                : response || {};
         
-        const usersObj = Array.isArray(filteredUsers)
-            ? Object.fromEntries(response.map(user => [user._id, user]))
-            : response || {};
-       
-        setUsers(usersObj);
-        return usersObj;
-    } catch (error) {
-        console.error("Error:", error);
-        // Handle error case as needed
-    }
-}, [currentUserId, /*getChatters,*/ setUsers]); // Include all dependencies
+            setUsers(usersObj);
+            return usersObj;
+        } catch (error) {
+            console.error("Error:", error);
+            // Handle error case as needed
+        }
+    }, [currentUserId, /*getChatters,*/ setUsers]); // Include all dependencies
 
-const fetchConvos = useCallback(async (userID) => {
-    try {
-        return await retrieveConvos(currentUserId);
-    } catch (error) {
-        console.error("Error:", error);
-        // Consider returning a default value or re-throwing the error
-        return null; // or throw error;
-    }
-}, [currentUserId, /*retrieveConvos*/]); // Dependencies
-const initializeChats = useCallback((usersData, userChats) => {
-    if (userChats) {
-        const setUserChats = userChats.map(chat => ({
-            ...chat,
-            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
-        }));
-        setChats(setUserChats);
-    } else {
-        const initialChats = [
-            {
-                _id: "chat1",
-                members: [currentUserId, "2"],
-                messages: [
-                    { _id: "m1", text: "Hey, how are you?", sender: "2", timestamp: new Date(Date.now() - 3600000).toISOString() },
-                    { _id: "m2", text: "I'm good, thanks!", sender: currentUserId, timestamp: new Date(Date.now() - 1800000).toISOString() }
-                ]
-            },
-            {
-                _id: "chat2",
-                members: [currentUserId, "3"],
-                messages: [
-                    { _id: "m3", text: "Can we meet tomorrow?", sender: "3", timestamp: new Date(Date.now() - 7200000).toISOString() },
-                    { _id: "m4", text: "Sure, what time?", sender: currentUserId, timestamp: new Date(Date.now() - 3600000).toISOString() }
-                ]
-            }
-        ].map(chat => ({
-            ...chat,
-            partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
-        }));
+    const fetchConvos = useCallback(async (userID) => {
+        try {
+            return await retrieveConvos(currentUserId);
+        } catch (error) {
+            console.error("Error:", error);
+            // Consider returning a default value or re-throwing the error
+            return null; // or throw error;
+        }
+    }, [currentUserId, /*retrieveConvos*/]); // Dependencies
 
-        setChats(initialChats);
-    }
-}, [currentUserId, setChats]); // Dependencies
-    useEffect(() => {
-        const loadData = async () => {
+    const initializeChats = useCallback((usersData, userChats) => {
+        if (userChats) {
+            const setUserChats = userChats.map(chat => ({
+                ...chat,
+                partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
+            }));
+            setChats(setUserChats);
+        } else {
+            const initialChats = [
+                {
+                    _id: "chat1",
+                    members: [currentUserId, "2"],
+                    messages: [
+                        { _id: "m1", text: "Hey, how are you?", sender: "2", timestamp: new Date(Date.now() - 3600000).toISOString() },
+                        { _id: "m2", text: "I'm good, thanks!", sender: currentUserId, timestamp: new Date(Date.now() - 1800000).toISOString() }
+                    ]
+                },
+                {
+                    _id: "chat2",
+                    members: [currentUserId, "3"],
+                    messages: [
+                        { _id: "m3", text: "Can we meet tomorrow?", sender: "3", timestamp: new Date(Date.now() - 7200000).toISOString() },
+                        { _id: "m4", text: "Sure, what time?", sender: currentUserId, timestamp: new Date(Date.now() - 3600000).toISOString() }
+                    ]
+                }
+            ].map(chat => ({
+                ...chat,
+                partner: usersData[chat.members.find(id => id !== currentUserId)] || { name: "Unknown User" }
+            }));
+
+            setChats(initialChats);
+        }
+    }, [currentUserId, setChats]); // Dependencies
+
+    const loadData = async () => { //If linter error, wrap whole function in useCallback()
+        try {
             const fetchedUsers = await fetchUsers();
             const fetchedConvos = await fetchConvos();
 
@@ -90,10 +94,16 @@ const initializeChats = useCallback((usersData, userChats) => {
                     : []
             }));
 
-            //console.log(fetchedConvos);
             initializeChats(fetchedUsers, FormattedConvos);
-        };
-        
+        } catch(error) {
+            console.error("Could not fetch messages: ", error);
+        } finally {
+            setIsLoadingMessages(false);
+        }
+    };
+
+    useEffect(() => { 
+
         loadData();
 
     }, [currentUserId, fetchConvos, fetchUsers, initializeChats]);
@@ -139,7 +149,7 @@ const initializeChats = useCallback((usersData, userChats) => {
             await CreateConvo(currentUserId, userId);
 
         }
-        catch (error) {
+        catch(error) {
         console.error('Error creating conversation:', error);
         }
 
@@ -151,7 +161,7 @@ const initializeChats = useCallback((usersData, userChats) => {
     };
 
     const Send_Message_To_DB = async (text, sender, partnerID) => {
-
+        
         try {
             await sendmesssage(text, sender, partnerID);
 
@@ -159,12 +169,15 @@ const initializeChats = useCallback((usersData, userChats) => {
         catch (error){
             console.error("Error:", error);
         }
+        
     }
 
 
     const sendMessage = async (e) => {
         let sender;/* = selectedChat.members[0];*/
         let partnerID; /*= selectedChat.members[1];*/
+        setMessageTimeout(true);
+        setMessageText("");
 
         e.preventDefault();
         if (!messageText.trim() || !selectedChat) return;
@@ -187,10 +200,14 @@ const initializeChats = useCallback((usersData, userChats) => {
         }
 
         try{
+            
             await Send_Message_To_DB(messageText, sender, partnerID);
         }
         catch (error){
             console.error("Error sending message:", error);
+        }
+        finally{
+            setMessageTimeout(false);
         }
 
         setChats(prevChats => prevChats.map(chat => 
@@ -210,7 +227,7 @@ const initializeChats = useCallback((usersData, userChats) => {
                 : chat
         ));*/
         
-        setMessageText("");
+        
         //console.log(chats)
         
     };
@@ -232,7 +249,29 @@ const initializeChats = useCallback((usersData, userChats) => {
                     <nav>
                         <h2>Existing chats</h2>
                         <ul className="chat-list">
-                            {chats.map(chat => (
+                            {isLoadingMessages ? (
+                               
+                                <figure className="loading-spinner-container">
+                                    <svg 
+                                        className="loading-spinner" 
+                                        viewBox="0 0 50 50" 
+                                        aria-hidden="true"
+                                        focusable="false"
+                                    >
+                                        <circle 
+                                            cx="25" 
+                                            cy="25" 
+                                            r="20" 
+                                            fill="none" 
+                                            stroke="#4e73df"
+                                            strokeWidth="5"
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+                                    <figcaption className="visually-hidden">Loading Chats...</figcaption>
+                                </figure>
+                                
+                            ) : chats.map(chat => (
                                 <li key={chat._id} className="chat-item">
                                     <button
                                         onClick={() => setSelectedChat(chat)}
@@ -333,7 +372,7 @@ const initializeChats = useCallback((usersData, userChats) => {
                             placeholder="Type your message..."
                             required
                         />
-                        <button type="submit">Send</button>
+                        <button type="submit" disable={MessageTimeout.toString()}>Send</button>
                     </form>
                 </article>
             )}

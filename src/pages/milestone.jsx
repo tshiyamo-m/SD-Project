@@ -1,5 +1,5 @@
 import {useEffect, useState, useCallback} from 'react';
-import {ArrowLeft, Check, Plus} from 'lucide-react';
+import {ArrowLeft, Check, Plus, Loader2} from 'lucide-react';
 import './milestone.css'
 import { createMilestone, getMilestone, updateStatus } from '../utils/milestoneUtils';
 import { Toaster, toast } from "sonner";
@@ -7,7 +7,8 @@ import { Toaster, toast } from "sonner";
 export default function MilestonesPage({ project, onBack }) {
     const [milestones, setMilestones] = useState([]);
     const collaboratorNames = project.collaboratorNames.split(',');
-    //const currentUserId = localStorage.getItem('Mongo_id');
+    const [isLoadingMilestones, setIsLoadingMilestones] = useState(true);
+    const [selectMilestone, setSelectMilestone] = useState(false);
 
     // Combine owner and collaborators, then filter out current user
     const allAssignableUsers = [
@@ -43,8 +44,16 @@ const fetchMilestones = useCallback(async (Id) => {
 }, []);
 
     const loadMilestones = useCallback(async (Id) => {
-        const milestones = await fetchMilestones(Id);
-        setMilestones(milestones);
+        try{
+            const milestones = await fetchMilestones(Id);
+            setMilestones(milestones);
+        }
+        catch(error){
+            console.error(error);
+        }
+        finally{
+            setIsLoadingMilestones(false);
+        }
     }, [fetchMilestones, setMilestones]);
 
     useEffect(() => {
@@ -102,10 +111,20 @@ const fetchMilestones = useCallback(async (Id) => {
         loadMilestones(projectId);
     };
 
-    const toggleComplete = async (id, currentStatus) => {
-        const newStatus = currentStatus === "Complete" ? "In Progress" : "Complete";
-        await changeStatus(id, newStatus);
-        loadMilestones(project.id);
+    const toggleComplete = async (id, currentStatus) => {        
+        setSelectMilestone(true);
+
+        try{
+            const newStatus = currentStatus === "Complete" ? "In Progress" : "Complete";
+            await changeStatus(id, newStatus);
+            loadMilestones(project.id);
+        }
+        catch(error){
+            console.error("Could not select milestone", error);
+        }
+        finally{
+            setSelectMilestone(false);
+        }
     };
 
     // Function to get user name by ID
@@ -233,7 +252,27 @@ const fetchMilestones = useCallback(async (Id) => {
             )}
 
             <section className="milestones-list">
-                {milestones.length === 0 ? (
+                {isLoadingMilestones ? ( 
+                    <figure className="loading-milestones" role="status" aria-busy="true">
+                        <svg 
+                            className="loading-spinner" 
+                            viewBox="0 0 50 50" 
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <circle 
+                                cx="25" 
+                                cy="25" 
+                                r="20" 
+                                fill="none" 
+                                stroke="currentColor"
+                                strokeWidth="5"
+                                strokeLinecap="round"
+                            />
+                        </svg>
+                        <figcaption className="visually-hidden" style={{ color: 'black' }}>Loading milestones...</figcaption>
+                    </figure>
+                ): milestones.length === 0 ? (
                     <p className="no-milestones">No milestones yet. Add your first milestone!</p>
                 ) : (
                     <ul>
@@ -244,8 +283,12 @@ const fetchMilestones = useCallback(async (Id) => {
                                         <button
                                             className="status-toggle"
                                             onClick={() => toggleComplete(milestone.id, milestone.status)}
+                                            disabled={selectMilestone}
                                         >
-                                            {milestone.status === "Complete" ? <Check size={20} /> : <strong className="checkbox" />}
+                                        {selectMilestone ? (
+                                            <Loader2 size={16} className="animate-spin" /> 
+                                        ) :
+                                        (milestone.status === "Complete" ? <Check size={20} /> : <strong className="checkbox" />)}
                                         </button>
                                         {milestone.name}
                                     </h2>

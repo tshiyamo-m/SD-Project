@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './admin.css';
 import { getAllUsers, updateIsReviewer, makeAdmin } from "../../utils/loginUtils";
 import { Toaster, toast } from "sonner";
+import { Loader2 } from "lucide-react"
 
 const AdminPage = () => {
     const [users, setUsers] = useState([]);
@@ -15,6 +16,11 @@ const AdminPage = () => {
         users: [],
         admins: []
     });
+    const [isLoadingApprovedReviiewer, setIsLoadingApprovingReviewer] = useState(false);
+    const [isLoadingDeniedReviiewer, setIsLoadingDeniedReviewer] = useState(false);
+    const [isLoadingMakeAdmin, setIsLoadingMakeAdmin] = useState(false);
+    const [isLoadingRemoveAdmin, setIsLoadingRemoveAdmin] = useState(false);
+
     const navigate = useNavigate();
 
     const fetchUsers = async () => {
@@ -93,6 +99,7 @@ const AdminPage = () => {
     }, [searchTerm, reviewRequests, users, admins]);
 
     const approveReviewer = async (userId) => {
+        setIsLoadingApprovingReviewer(true);
         try {
             const update = {
                 userId: userId,
@@ -108,9 +115,13 @@ const AdminPage = () => {
         } catch (error) {
             console.error('Error approving reviewer:', error);
         }
+        finally{
+            setIsLoadingApprovingReviewer(false);
+        }
     };
 
     const denyReviewer = async (userId) => {
+        setIsLoadingDeniedReviewer(true);
         try {
             const update = {
                 userId: userId,
@@ -126,9 +137,13 @@ const AdminPage = () => {
         } catch (error) {
             console.error('Error denying reviewer:', error);
         }
+        finally{
+            setIsLoadingDeniedReviewer(false);
+        }
     };
 
     const makeUserAdmin = async (userId) => {
+        setIsLoadingMakeAdmin(true);
         try {
             const isAdmin = true;
             await makeAdmin(userId, isAdmin);
@@ -145,9 +160,13 @@ const AdminPage = () => {
         } catch (error) {
             console.error('Error making user admin:', error);
         }
+        finally{
+            setIsLoadingMakeAdmin(false);
+        }
     };
 
     const removeAdmin = async (userId) => {
+        setIsLoadingRemoveAdmin(true);
         try {
             const isAdmin = false;
             await makeAdmin(userId, isAdmin);
@@ -164,10 +183,15 @@ const AdminPage = () => {
         } catch (error) {
             console.error('Error removing admin:', error);
         }
+        finally{
+            setIsLoadingRemoveAdmin(false);
+        }
     };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('Mongo_id');
+        localStorage.removeItem('fullName');
         navigate('../', { replace: true });
     };
 
@@ -215,11 +239,24 @@ const AdminPage = () => {
                                         <h3 className="user-name">{request.name}</h3>
                                         <p className="user-email">{request.email}</p>
                                         <fieldset className="button-group">
-                                            <button className="approve-button" onClick={() => approveReviewer(request._id)}>
-                                                Approve as Reviewer
+                                            <button className="approve-button" 
+                                                onClick={() => approveReviewer(request._id)}
+                                                disabled={isLoadingApprovedReviiewer || isLoadingDeniedReviiewer}
+                                                
+                                            >
+                                            {isLoadingApprovedReviiewer ? (
+                                                <Loader2 size={16} className="animate-spin" />
+                                            ) : (
+                                                "Approve as Reviewer" )}
                                             </button>
-                                            <button className="deny-button" onClick={() => denyReviewer(request._id)}>
-                                                Deny Request
+                                            <button className="deny-button" 
+                                                onClick={() => denyReviewer(request._id)}
+                                                disabled={isLoadingApprovedReviiewer || isLoadingDeniedReviiewer}
+                                            >
+                                            {isLoadingDeniedReviiewer ? (
+                                                <Loader2 size={16} className="animate-spin" />
+                                            ) : (
+                                                "Deny Request" )}
                                             </button>
                                         </fieldset>
                                     </article>
@@ -243,8 +280,12 @@ const AdminPage = () => {
                                         <button
                                             className="admin-button"
                                             onClick={() => makeUserAdmin(user._id)}
+                                            disabled={isLoadingMakeAdmin ||isLoadingRemoveAdmin}
                                         >
-                                            Make Admin
+                                        {isLoadingMakeAdmin ? (
+                                            <Loader2 size={16} className="animate-spin" />
+                                        ) : (
+                                            "Make Admin"  )}
                                         </button>
                                     </article>
                                 </li>
@@ -268,8 +309,12 @@ const AdminPage = () => {
                                             <button
                                                 className="deny-button"
                                                 onClick={() => removeAdmin(admin._id)}
+                                                disabled={isLoadingMakeAdmin ||isLoadingRemoveAdmin}
                                             >
-                                                Remove Admin Rights
+                                            { isLoadingRemoveAdmin ? (
+                                                <Loader2 size={16} className="animate-spin" />
+                                            ) : (
+                                                "Remove Admin Rights" )}
                                             </button>
                                         </fieldset>
                                     </article>

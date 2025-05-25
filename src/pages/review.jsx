@@ -51,25 +51,6 @@ const loadUser = useCallback(async (userId) => {
         loadUser(userId);
     }, [userId, loadUser]);
 
-    //remove this
-    // useEffect(() => {
-    //     if (Object.keys(user).length > 0) {
-    //         console.log('Updated user state:', user.name);
-    //     }
-    // }, [user]);
-
-
-    // const tokenName = (token) => {
-    //     try {
-    //         const decodedUser = jwtDecode(token);
-    //         if (decodedUser && decodedUser.name) {
-    //             return decodedUser.name;
-    //         }
-    //     } catch (error) {
-    //         console.error("Error decoding token:", error);
-    //     }
-    // }
-
     const [activeTab, setActiveTab] = useState('available');
     const [activeProject, setActiveProject] = useState(null);
 
@@ -110,44 +91,7 @@ const loadUser = useCallback(async (userId) => {
 
 
     const retrieveFiles = async (ProjectID) => {
-        try {/*
-            
-            if (!ProjectID || typeof ProjectID !== 'string') {
-                throw new Error('Invalid project ID');
-            }
-
-            const response = await fetch('/Bucket/retrievedocs', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({projectID: ProjectID})
-            });
-
-            if (!response.ok) {
-                const errorData = await response.text();
-                console.error('Download failed with status:', response.status, errorData);
-                throw new Error('Failed to download file');
-            }
-
-            const fileData = await response.json();
-
-            if (!(fileData == null)){
-                //console.log('Retrieved file:', fileData);
-
-                return fileData.map(file => ({
-                    id: file._id.toString(),
-                    name: file.filename,
-                    type: file.filename.split('.').pop().toUpperCase(),
-                    uploadedBy: file.uploadedBy, // You might want to store this in metadata
-                    uploadDate: new Date(file.uploadDate).toLocaleDateString(),
-                    size: `${(file.length / 1024).toFixed(1)} KB`,
-                    metadata: file.metadata // Include all metadata
-                }));
-            }
-            else{
-                return [];
-            }*/
+        try {
             return await fetchFiles(ProjectID);
 
         } catch (error) {
@@ -213,6 +157,7 @@ const loadUser = useCallback(async (userId) => {
 
     // Reviews data
     const [reviews, setReviews] = useState([]);
+    const [isLoadingReviews, setIsLoadingReviews] = useState(false);
 
 const fetchAllReviews = useCallback(async () => {
     try {
@@ -251,11 +196,15 @@ const fetchAllReviews = useCallback(async () => {
     }, [fetchAllReviews, setReviews]);
 
     useEffect(() => {
-        
+        setIsLoadingReviews(true);
         try{
             loadReviews();
         }
         catch(error){
+            console.error(error);
+        }
+        finally {
+            setIsLoadingReviews(false);
         }
 
     }, [loadReviews]);
@@ -400,29 +349,7 @@ const fetchAllReviews = useCallback(async () => {
     const handleDownloadDoc = async (docId, docName) => {
 
         const stringDocId = docId.toString();
-        try {/*
-            const response = await fetch('/Bucket/download', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({fileId: stringDocId})
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to download file');
-
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = docName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            a.remove();*/
+        try {
 
             downloadFile(stringDocId, docName);
 
@@ -624,7 +551,27 @@ const fetchAllReviews = useCallback(async () => {
                     {projectReviews.length > 0 && (
                         <section>
                             <h3>Previous Reviews</h3>
-                            {projectReviews.map(review => (
+                    { isLoadingReviews ? (
+                        <figure className="loading-projects" role="status" aria-busy="true">
+                        <svg 
+                            className="loading-spinner" 
+                            viewBox="0 0 50 50" 
+                            aria-hidden="true"
+                            focusable="false"
+                        >
+                            <circle 
+                            cx="25" 
+                            cy="25" 
+                            r="20" 
+                            fill="none" 
+                            stroke="currentColor"
+                            strokeWidth="5"
+                            strokeLinecap="round"
+                            />
+                        </svg>
+                        <figcaption className="visually-hidden">Loading projects...</figcaption>
+                        </figure>
+                    ) :projectReviews.map(review => (
                                 <article key={review._id}>
                                     <header>
                                         <h4>Review by {reviewerNames[review.reviewerId] || "Loading..."}</h4>

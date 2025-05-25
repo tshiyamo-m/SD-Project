@@ -10,33 +10,34 @@ import { toast } from "sonner";
 const ReviewsPage = ({ project, onBack }) => {
     // Sample reviews data (in a real app, this would be fetched from an API)
     const [reviews, setReviews] = useState([]);
+    
 
     // Filter reviews for the current project
     //const projectReviews = reviews.filter(review => review.projectId === project.id);
-const fetchReviews = useCallback(async (Id) => {
-    try {
-        const Review_data = await findReviewer(Id);
+    const fetchReviews = useCallback(async (Id) => {
+        try {
+            const Review_data = await findReviewer(Id);
 
-        if (!Array.isArray(Review_data)) {
-            console.warn('API response is not an array:', Review_data);
+            if (!Array.isArray(Review_data)) {
+                console.warn('API response is not an array:', Review_data);
+                return [];
+            }
+
+            return Review_data.map((review) => ({
+                id: review._id,
+                reviewerId: review.reviewerId,
+                projectId: review.projectId,
+                rating: review.rating,
+                comment: review.comment,
+                date: review.date,
+                type: review.type,
+            }));
+
+        } catch (error) {
+            console.error('Error finding reviews:', error);
             return [];
         }
-
-        return Review_data.map((review) => ({
-            id: review._id,
-            reviewerId: review.reviewerId,
-            projectId: review.projectId,
-            rating: review.rating,
-            comment: review.comment,
-            date: review.date,
-            type: review.type,
-        }));
-
-    } catch (error) {
-        console.error('Error finding reviews:', error);
-        return [];
-    }
-}, [/*findReviewer*/]); // Only depends on findReviewer
+    }, [/*findReviewer*/]); // Only depends on findReviewer
 
     const loadReviews = useCallback(async (Id) => {
         const reviews = await fetchReviews(Id);

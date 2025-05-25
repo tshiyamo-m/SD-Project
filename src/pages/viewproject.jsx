@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
+import { Search, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check, Loader2 } from 'lucide-react';
 //import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
 import './projects.css';
 import './viewproject.css';
@@ -20,7 +20,8 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const [showUserDropdown, setShowUserDropdown] = useState(false);
     const [reviewerNames, setReviewerNames] = useState({});
     const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
-    //const [isLoadingNames, setIsLoadingNames] = useState(false);
+    const [downloadingDocuments, setDownloadingDocuments] = useState({});
+    const [deletingDocuments, setDeletingDocuments] = useState({});
 
     const projectId = initialProject.id;
     const fullName = localStorage.getItem('fullName');
@@ -61,7 +62,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
         if (initialProject.collaborators.length > 0) {
             fetchCollaboratorNames();
         }
-    }, [initialProject.collaborators, reviewerNames]);
+    }, [initialProject.collaborators/*, reviewerNames*/]);
 
     // Fetch all users when component mounts
     
@@ -274,19 +275,33 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
 
     // Handle document deletion
     const handleDeleteDocument = async (docId) => {
-        const strDocId = docId.toString();
+        setDeletingDocuments(prev => ({...prev, [docId]: true}));
 
-        await deleteFile(strDocId);
-
-        // Update UI after successful deletion
-        setDocuments(documents.filter(doc => doc.id !== docId));
-        console.log('File deleted successfully');
+        try {
+            await deleteFile(docId.toString());
+            setDocuments(documents.filter(doc => doc.id !== docId));
+            console.log('File deleted successfully');
+        }
+        catch(error){
+            console.error("Could not delete: ",error);
+        }
+        finally{
+            setDeletingDocuments(prev => ({...prev, [docId]: false}))
+        }
     };
 
     const handleDownloadDocument = async (docId, docName) => {
-        const strDocId = docId.toString();
-
-        await downloadFile(strDocId,docName);
+        setDownloadingDocuments(prev => ({ ...prev, [docId]: true }));
+        
+        try{
+            await downloadFile(docId.toString(), docName);
+        }
+        catch(error){
+            console.error('Download failed:', error);
+        }
+        finally {
+        setDownloadingDocuments(prev => ({ ...prev, [docId]: false }));
+        }
 
     };
 
@@ -708,8 +723,13 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                                 className="action-button download-button"
                                                 aria-label="Download document"
                                                 onClick={() => handleDownloadDocument(doc.id, doc.name)}
+                                                disabled={downloadingDocuments[doc.id]}
                                             >
+                                            {downloadingDocuments[doc.id] ? (
+                                                <Loader2 size={16} className="animate-spin" /> 
+                                            ) : (
                                                 <Download size={16} />
+                                            )}
                                             </button>
                                         </li>
                                         <li>
@@ -718,7 +738,11 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                                 onClick={() => handleDeleteDocument(doc.id)}
                                                 aria-label="Delete document"
                                             >
+                                            {deletingDocuments[doc.id] ? (
+                                                 <Loader2 size={16} className="animate-spin" />
+                                            ) : (
                                                 <Trash2 size={16} />
+                                            )}
                                             </button>
                                         </li>
                                     </menu>

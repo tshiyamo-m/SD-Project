@@ -15,6 +15,7 @@ const Finance = () => {
   const [error, setError] = useState(null);
   const [projects, setProjects] = useState([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
+  
 
   const totalSpent = funds.reduce((sum, fund) => sum + fund.amountUsed, 0);
   const totalBudget = funds.reduce((sum, fund) => sum + fund.amount, 0);
@@ -302,7 +303,28 @@ const loadProjects = useCallback(async () => {
         </nav>
 
         <section className="funds-list">
-          {activeTab === 'active' ? (
+          {isLoading ? (
+            <figure className="loading-spinner-container">
+                <svg 
+                    className="loading-spinner" 
+                    viewBox="0 0 50 50" 
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    <circle 
+                        cx="25" 
+                        cy="25" 
+                        r="20" 
+                        fill="none" 
+                        stroke="#4e73df"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                    />
+                </svg>
+                <figcaption className="visually-hidden">Loading available funds...</figcaption>
+            </figure>)  : 
+            
+          activeTab === 'active' ? (
               <>
                 <h3>Active Funds</h3>
                 {activeFunds.length > 0 ? (

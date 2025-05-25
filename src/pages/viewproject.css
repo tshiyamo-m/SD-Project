@@ -632,3 +632,34 @@ textarea {
     padding: 0;
     margin: 0;
 }
+
+/* Add to the existing loading spinner styles */
+.loading-spinner {
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+}
+
+.download-spinner {
+    color: #60a5fa;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Add this to make sure the spinner is properly centered */
+.action-button {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
