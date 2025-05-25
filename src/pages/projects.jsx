@@ -45,6 +45,7 @@ const ProjectsPage = () => {
                 owner: getUserNameById(project.owner),
                 ownerId: project.owner,
                 status: project.status,
+                description: project.description,
                 collaborators: project.collaborators,
                 collaboratorNames: getCollaboratorNames(project.collaborators),
                 field: project.field,
