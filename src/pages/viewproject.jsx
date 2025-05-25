@@ -283,12 +283,15 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                 console.error(error);
 
             }
+            finally{
+                setIsLoadingDocuments(false); 
+            }
 
             // Refresh documents list after upload
             const fetchedDocuments = await fetchFiles(projectId);
             setDocuments(fetchedDocuments);
 
-            setIsLoadingDocuments(false); 
+            
 
             setShowUploadForm(false);
             setNewDocument({ name: "", file: null });
@@ -696,7 +699,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                 <button
                                     type="submit"
                                     className="submit-button"
-                                    disabled={!newDocument.file || newDocument.file?.size > MAX_FILE_SIZE}
+                                    disabled={!newDocument.file || newDocument.file?.size > MAX_FILE_SIZE || isLoadingDocuments}
                                 >
                                     Upload
                                 </button>
@@ -758,6 +761,7 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
                                             <button
                                                 className="action-button delete-button"
                                                 onClick={() => handleDeleteDocument(doc.id)}
+                                                disabled={deletingDocuments[doc.id]}
                                                 aria-label="Delete document"
                                             >
                                             {deletingDocuments[doc.id] ? (

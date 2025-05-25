@@ -78,7 +78,7 @@ const ChatsPage = () => {
 
     useEffect(() => { 
 
-        const loadData = async () => { //If linter error, wrap whole function in useCallback()
+        const loadData = async () => {
             try {
                 const fetchedUsers = await fetchUsers();
                 const fetchedConvos = await fetchConvos();
