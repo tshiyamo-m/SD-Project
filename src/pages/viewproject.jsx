@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { Search, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check, Loader2 } from 'lucide-react';
 //import { Search, Bell, User, MoreVertical, ArrowLeft, Upload, FileText, Download, Trash2, Save, Edit, X, ChevronDown, Check } from 'lucide-react';
 import './projects.css';
@@ -32,37 +32,50 @@ const ViewProjectPage = ({ project: initialProject, onBack }) => {
     const [documents, setDocuments] = useState([]);
 
     // Pre-fetch and store collaborator names
+    const fetchedCollaborators = useRef(new Set());
+
     useEffect(() => {
         const fetchCollaboratorNames = async () => {
-            //setIsLoadingNames(true);
             try {
                 const namesObj = {};
+                const toFetch = [];
+
+                // Find collaborators we haven't fetched yet
                 for (const collabId of initialProject.collaborators) {
-                    if (!reviewerNames[collabId]) {
-                        const user = await getuser(collabId);
-                        if (user) {
-                            namesObj[collabId] = user.name;
-                        } else {
-                            namesObj[collabId] = "Unknown Reviewer";
-                        }
+                    if (!fetchedCollaborators.current.has(collabId)) {
+                        toFetch.push(collabId);
                     }
                 }
 
-                setReviewerNames(prev => ({
-                    ...prev,
-                    ...namesObj
-                }));
+                // Fetch names in parallel
+                const fetchPromises = toFetch.map(async collabId => {
+                    const user = await getuser(collabId);
+                    return {
+                        id: collabId,
+                        name: user?.name || "Unknown Reviewer"
+                    };
+                });
+
+                const results = await Promise.all(fetchPromises);
+
+                // Update the ref and state
+                results.forEach(({id, name}) => {
+                    namesObj[id] = name;
+                    fetchedCollaborators.current.add(id);
+                });
+
+                if (Object.keys(namesObj).length > 0) {
+                    setReviewerNames(prev => ({...prev, ...namesObj}));
+                }
             } catch (error) {
                 console.error('Error fetching collaborator names:', error);
-            } finally {
-                //setIsLoadingNames(false);
             }
         };
 
         if (initialProject.collaborators.length > 0) {
             fetchCollaboratorNames();
         }
-    }, [initialProject.collaborators/*, reviewerNames*/]);
+    }, [initialProject.collaborators]); // Proper dependencies
 
     // Fetch all users when component mounts
     

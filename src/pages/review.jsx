@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useState, useCallback} from 'react';
-import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
+//import { Search, Bell, User, MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
+import { MoreVertical, ArrowLeft, CheckCircle, MessageSquare } from 'lucide-react';
 import './projects.css'
 import './review.css'
 //import { useUser } from "../components/UserContext";
@@ -365,26 +366,6 @@ const fetchAllReviews = useCallback(async () => {
             <main className="reviewer-page-content">
                 <header className="header">
                     <h1>Research Project Reviews</h1>
-                    <nav>
-                        <ul>
-                            <li>
-                                <button aria-label="Notifications">
-                                    <Bell size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                            <li>
-                                <button>
-                                    <User size={20} aria-hidden="true" />
-                                    <strong>{user.name}</strong>
-                                </button>
-                            </li>
-                            <li>
-                                <button aria-label="More options">
-                                    <MoreVertical size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
                 </header>
 
                 <section>
@@ -409,26 +390,6 @@ const fetchAllReviews = useCallback(async () => {
             <main className="reviewer-page-content">
                 <header className="header">
                     <h1>Research Project Reviews</h1>
-                    <nav>
-                        <ul>
-                            <li>
-                                <button aria-label="Notifications">
-                                    <Bell size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                            <li>
-                                <button>
-                                    <User size={20} aria-hidden="true" />
-                                    <strong>{user.name}</strong>
-                                </button>
-                            </li>
-                            <li>
-                                <button aria-label="More options">
-                                    <MoreVertical size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
                 </header>
 
                 <section>
@@ -459,31 +420,6 @@ const fetchAllReviews = useCallback(async () => {
                         </button>
                         <h1>Review Project</h1>
                     </hgroup>
-                    <nav>
-                        <ul>
-                            <li>
-                            <button aria-label="Search">
-                                    <Search size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                            <li>
-                                <button aria-label="Notifications">
-                                    <Bell size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                            <li>
-                                <button>
-                                    <User size={20} aria-hidden="true" />
-                                    <strong>{user.name}</strong>
-                                </button>
-                            </li>
-                            <li>
-                                <button aria-label="More options">
-                                    <MoreVertical size={20} aria-hidden="true" />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
                 </header>
 
                 <section>
@@ -644,22 +580,7 @@ const fetchAllReviews = useCallback(async () => {
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
-                                <button type="submit">
-                                    <Search size={20} aria-hidden="true" />
-                                    <span className="sr-only">Search</span>
-                                </button>
                             </form>
-                        </li>
-                        <li>
-                            <button aria-label="Notifications">
-                                <Bell size={20} aria-hidden="true" />
-                            </button>
-                        </li>
-                        <li>
-                            <button>
-                                <User size={20} aria-hidden="true" />
-                                <strong>{user.name}</strong>
-                            </button>
                         </li>
                         <li>
                             <button aria-label="More options">

@@ -48,7 +48,7 @@ const ProjectsPage = () => {
                 collaborators: project.collaborators,
                 collaboratorNames: getCollaboratorNames(project.collaborators),
                 field: project.field,
-                created: project.created,
+                created: project.startDate,
                 updated: project.updated,
                 skills: project.skills,
                 tags: project.tags

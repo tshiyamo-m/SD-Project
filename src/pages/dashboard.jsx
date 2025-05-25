@@ -11,7 +11,7 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const pdfFundingRef = useRef(null);
-    const pdfProjectsRef = useRef(null);
+  const pdfProjectsRef = useRef(null);
 
   const userId = localStorage.getItem('Mongo_id');
 
@@ -98,35 +98,41 @@ const fetchData = useCallback(async () => {
     
     downloadCSV(csvContent, 'projects_export.csv');
   };
-   const exportProjectsToPDF = () => {
-    if (!projects.length) return;
-    
-    const element = pdfProjectsRef.current;
-    const opt = {
-      margin: 10,
-      filename: 'projects_report.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        scrollY: 0
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+const exportProjectsToPDF = () => {
+  if (!projects.length) return;
 
-    // Clone the element to avoid modifying the original
-    const elementClone = element.cloneNode(true);
-    elementClone.style.padding = '20px';
-    elementClone.style.width = '100%';
-    
-    // Remove buttons from the PDF
-    const buttons = elementClone.querySelectorAll('button');
-    buttons.forEach(button => button.remove());
+  const content = `
+    <h1>Projects Report</h1>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${projects.map(project => `
+          <tr>
+            <td>${project.title}</td>
+            <td>${new Date(project.startDate).toLocaleDateString()}</td>
+            <td>${new Date(project.endDate).toLocaleDateString()}</td>
+            <td>${project.status}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
 
-    html2pdf().set(opt).from(elementClone).save();
+  const opt = {
+    margin: 10,
+    filename: 'projects_report.pdf',
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
+
+  html2pdf().set(opt).from(content).save();
+};
 
   const exportFundingToCSV = () => {
     if (!funds.length) return;
@@ -172,35 +178,69 @@ const fetchData = useCallback(async () => {
     URL.revokeObjectURL(url);
   };
  
-   const exportFundingToPDF = () => {
-    if (!projects.length) return;
-    
-    const element = pdfFundingRef.current;
-    const opt = {
-      margin: 10,
-      filename: 'funding_report.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        scrollY: 0
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+const exportFundingToPDF = () => {
+  if (!projects.length) return;
 
-    // Clone the element to avoid modifying the original
-    const elementClone = element.cloneNode(true);
-    elementClone.style.padding = '20px';
-    elementClone.style.width = '100%';
-    
-    // Remove buttons from the PDF
-    const buttons = elementClone.querySelectorAll('button');
-    buttons.forEach(button => button.remove());
+  const content = `
+    <h1>Funding Report</h1>
+    <h2>Total Across All Projects</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Total Budget</th>
+          <th>Total Spent</th>
+          <th>Remaining</th>
+          <th>Percentage Used</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>R${totalBudget.toLocaleString()}</td>
+          <td>R${totalSpent.toLocaleString()}</td>
+          <td>R${remainingBudget.toLocaleString()}</td>
+          <td>${percentageUsed}%</td>
+        </tr>
+      </tbody>
+    </table>
 
-    html2pdf().set(opt).from(elementClone).save();
+    <h2>Per Project Breakdown</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Source</th>
+          <th>Budget</th>
+          <th>Spent</th>
+          <th>Remaining</th>
+          <th>Percentage Used</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${projects.map(project => {
+          const stats = getProjectFundingStats(project.id);
+          return `
+            <tr>
+              <td>${project.title}</td>
+              <td>${funds.find(f => f.purpose === project.id)?.source || 'N/A'}</td>
+              <td>R${stats.budget.toLocaleString()}</td>
+              <td>R${stats.spent.toLocaleString()}</td>
+              <td>R${stats.remaining.toLocaleString()}</td>
+              <td>${stats.percentage}%</td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+
+  const opt = {
+    margin: 10,
+    filename: 'funding_report.pdf',
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
+
+  html2pdf().set(opt).from(content).save();
+};
   return (
     <main className="dashboard-container">
       <header className="dashboard-header">
@@ -212,13 +252,13 @@ const fetchData = useCallback(async () => {
           <h2 className="sectiontitle">Projects</h2>
         </header>
         
-        <div className="section-content">
+        <section className="section-content">
           {projects.length > 0 ? (
-            <div className="projects-grid" role="list">
+            <section className="projects-grid" role="list">
               {projects.map(project => (
                 <article key={project.id} className="project-card" role="listitem">
                   <h3 className="project-title">{project.title}</h3>
-                  <div className="project-dates">
+                  <section className="project-dates">
                     <time dateTime={project.startDate}>
                       {new Date(project.startDate).toLocaleDateString()}
                     </time>
@@ -226,17 +266,17 @@ const fetchData = useCallback(async () => {
                     <time dateTime={project.endDate}>
                       {new Date(project.endDate).toLocaleDateString()}
                     </time>
-                  </div>
-                  <div className={`project-status ${project.status.toLowerCase().replace(' ', '-')}`}>
+                  </section>
+                  <section className={`project-status ${project.status.toLowerCase().replace(' ', '-')}`}>
                     {project.status}
-                  </div>
+                  </section>
                 </article>
               ))}
-            </div>
+            </section>
           ) : (
             <p className="no-data">No projects found</p>
           )}
-        </div>
+        </section>
         
        <footer className="section-footer">
           <button 
@@ -255,11 +295,11 @@ const fetchData = useCallback(async () => {
           <h2 className="sectiontitle">Funding Overview</h2>
         </header>
         
-        <div className="section-content">
+        <section className="section-content">
           {/* Overall Funding Stats */}
           <section className="funding-overview">
             <h3>Total Across All Projects</h3>
-            <div className="funding-stats" role="list">
+            <section className="funding-stats" role="list">
               <article className="stat-card" role="listitem">
                 <p className="stat-number">R{totalBudget.toLocaleString()}</p>
                 <h3 className="stat-title">Total Budget</h3>
@@ -274,14 +314,14 @@ const fetchData = useCallback(async () => {
                 <p className="stat-number">R{remainingBudget.toLocaleString()}</p>
                 <h3 className="stat-title">Remaining Budget</h3>
               </article>
-            </div>
+            </section>
           </section>
           
           {/* Per-Project Funding Breakdown */}
           <section className="project-funding-breakdown">
             <h3>Per Project Breakdown</h3>
             {projects.length > 0 ? (
-              <div role="list">
+              <section role="list">
                 {projects.map(project => {
                   const stats = getProjectFundingStats(project.id);
                   return (
@@ -289,7 +329,7 @@ const fetchData = useCallback(async () => {
                       <summary className="project-funding-summary">
                         {project.title} - Budget: R{stats.budget.toLocaleString()}
                       </summary>
-                      <div className="project-funding-stats" role="list">
+                      <section className="project-funding-stats" role="list">
                         <article className="stat-card" role="listitem">
                           <p className="stat-number">R{stats.spent.toLocaleString()}</p>
                           <h3 className="stat-title">Spent ({stats.percentage}%)</h3>
@@ -298,16 +338,16 @@ const fetchData = useCallback(async () => {
                           <p className="stat-number">R{stats.remaining.toLocaleString()}</p>
                           <h3 className="stat-title">Remaining</h3>
                         </article>
-                      </div>
+                      </section>
                     </details>
                   );
                 })}
-              </div>
+              </section>
             ) : (
               <p className="no-data">No projects with funding data</p>
             )}
           </section>
-        </div>
+        </section>
         
         <footer className="section-footer">
           <button 
