@@ -84,7 +84,7 @@ Content-Type: application/json
 
 **Sample Endpoints**
  1. Create a Project:\
-    -Endpoint: https://sd-project-qb1w.onrender.com/api/Projects\
+    -Endpoint: https://sd-project-qb1w.onrender.com/api/Projects \
     -Method:POST\
     -Body:{\
           "owner":"sd",\
@@ -101,10 +101,10 @@ Content-Type: application/json
           "tags":"sd",\
           "skills": "sd"\
         }
-2. Create a Review:
-    -Endpoint: https://sd-project-qb1w.onrender.com/api/Review
-    -Method:POST
-    -Body:{
+2. Create a Review: \
+    -Endpoint: https://sd-project-qb1w.onrender.com/api/Review \
+    -Method:POST \
+    -Body:{ \
           "projectId" : "683360dc2d00546b91095834",
           "reviewerId" : "6831e900dbc3b0464f54d42a",
           "rating:" : 5,
